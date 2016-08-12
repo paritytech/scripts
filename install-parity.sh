@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PARITY_DEB_URL=https://github.com/ethcore/parity/releases/download/v1.2.4/parity_1.2.4-0_amd64.deb
+PARITY_DEB_URL=https://github.com/ethcore/parity/releases/download/v1.3.0/parity_1.3.0-0_amd64.deb
                
 
 
