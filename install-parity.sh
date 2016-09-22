@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PARITY_DEB_URL=https://github.com/ethcore/parity/releases/download/v1.3.0/parity_1.3.0-0_amd64.deb
+PARITY_DEB_URL=https://s3-us-west-2.amazonaws.com/builds-parity/master/x86_64-unknown-linux-gnu/parity
                
 
 
@@ -217,7 +217,7 @@ function run_installer()
 		source /etc/lsb-release
 		
 		if [[ $DISTRIB_ID == "Ubuntu" ]]; then
-			if [[ $DISTRIB_RELEASE == "14.04" || $DISTRIB_RELEASE == "15.04" || $DISTRIB_RELEASE == "15.10" ]]; then
+			if [[ $DISTRIB_RELEASE == "14.04" || $DISTRIB_RELEASE == "15.04" || $DISTRIB_RELEASE == "15.10" || $DISTRIB_RELEASE == "16.04" ]]; then
 				check "Ubuntu"
 				isUbuntu=true
 			else
@@ -417,11 +417,11 @@ function run_installer()
 		verify_dep_installation
 
 		info "Installing parity"
-		file=/tmp/parity.deb
+		file=parity
 
 		curl -L $PARITY_DEB_URL > $file
-		sudo dpkg -i $file
-		rm $file
+		mkdir -p parity
+		cp $file parity/$file
 	}
 
 	
