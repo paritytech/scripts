@@ -543,7 +543,7 @@ EOL
 		echo
 		successHeading "All done"
 		head "Next steps"
-		info "Run ${cyan}\`parity -j\`${reset} to start the Parity Ethereum client.${reset}"
+		info "Run ${cyan}\`parity\`${reset} to start the Parity Ethereum client.${reset}"
 		echo
 		exit 0
 	}
