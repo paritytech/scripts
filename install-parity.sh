@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PARITY_DEB_URL=http://d1h4xl4cr1h0mo.cloudfront.net/v1.5.4/x86_64-unknown-linux-gnu/parity_1.5.4_amd64.deb
+PARITY_DEB_URL=http://d1h4xl4cr1h0mo.cloudfront.net/v1.5.5/x86_64-unknown-linux-gnu/parity_1.5.5_amd64.deb
                
 
 
