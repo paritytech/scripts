@@ -217,7 +217,7 @@ function run_installer()
 		source /etc/lsb-release
 		
 		if [[ $DISTRIB_ID == "Ubuntu" ]]; then
-			if [[ $DISTRIB_RELEASE == "14.04" || $DISTRIB_RELEASE == "15.04" || $DISTRIB_RELEASE == "15.10" ]]; then
+			if [[ $DISTRIB_RELEASE == "14.04" || $DISTRIB_RELEASE == "16.04" || $DISTRIB_RELEASE == "17.04" || $DISTRIB_RELEASE == "16.10" ]]; then
 				check "Ubuntu"
 				isUbuntu=true
 			else
