@@ -96,7 +96,7 @@ function run_installer()
 
 	function wait_for_user() {
 		if [[ $( ask_user "$1" ) == false ]]; then
-			abort_install "${red}==>${reset} Process stopped by user. To resume the install run the one-liner command again."
+			abortInstall "${red}==>${reset} Process stopped by user. To resume the install run the one-liner command again."
 		fi
 	}
 
@@ -385,6 +385,7 @@ function run_installer()
 			if [[ $OPERATOR != '=' ]]
 			then
 					error "Parity update failed"
+					abortInstall
 			else
 					success "Parity has been installed"
 			fi
