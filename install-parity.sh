@@ -1,18 +1,17 @@
 #!/usr/bin/env bash
 
-PARITY_DEB_URL=http://d1h4xl4cr1h0mo.cloudfront.net/v1.6.3/x86_64-unknown-linux-gnu/parity_1.6.3_amd64.deb
-               
-
+PARITY_VERSION=1.6.3
+PARITY_DEB_URL=http://d1h4xl4cr1h0mo.cloudfront.net/v${PARITY_VERSION}/x86_64-unknown-linux-gnu/parity_${PARITY_VERSION}_amd64.deb
 
 function run_installer()
 {
 	####### Init vars
-	
+
 	HOMEBREW_PREFIX=/usr/local
 	HOMEBREW_CACHE=/Library/Caches/Homebrew
 	HOMEBREW_REPO=https://github.com/Homebrew/homebrew
 	OSX_REQUIERED_VERSION="10.7.0"
-	
+
 	declare OS_TYPE
 	declare OSX_VERSION
 	declare GIT_PATH
@@ -29,7 +28,7 @@ function run_installer()
 	depCount=0
 	depFound=0
 
-	
+
 	####### Setup colors
 
 	red=`tput setaf 1`
@@ -203,7 +202,7 @@ function run_installer()
 		errorMessages+="${red}==>${reset} ${b}Mac OS version too old:${reset} eth requires OS X version ${red}$OSX_REQUIERED_VERSION${reset} at least in order to run.${n}"
 		errorMessages+="		Please update the OS and reload the install process.${n}"
 	}
-	
+
 	function get_osx_dependencies()
 	{
 		macos_version
@@ -211,11 +210,11 @@ function run_installer()
 		find_ruby
 		find_brew
 	}
-	
+
 	function linux_version()
 	{
 		source /etc/lsb-release
-		
+
 		if [[ $DISTRIB_ID == "Ubuntu" ]]; then
 			if [[ $DISTRIB_RELEASE == "14.04" || $DISTRIB_RELEASE == "16.04" || $DISTRIB_RELEASE == "17.04" || $DISTRIB_RELEASE == "16.10" ]]; then
 				check "Ubuntu"
@@ -281,7 +280,7 @@ function run_installer()
 
 		depCount=$((depCount+1))
 	}
-	
+
 	function find_ruby()
 	{
 		depCount=$((depCount+1))
@@ -302,7 +301,7 @@ function run_installer()
 			errorMessages+="		Please install Ruby using these instructions ${u}${blue}https://www.ruby-lang.org/en/documentation/installation/${reset}.${n}"
 		fi
 	}
-	
+
 	function find_sudo()
 	{
 		depCount=$((depCount+1))
@@ -319,7 +318,7 @@ function run_installer()
 				if [[ $isApt == false && $isMultirust == false ]]; then
 					canContinue=false
 					errorMessages+="${red}==>${reset} ${b}Couldn't find sudo:${reset} Sudo is needed for the installation of multirust.${n}"
-					errorMessages+="    Please ensure you have sudo installed or alternatively install multirust manually.${n}"
+					errorMessages+="		Please ensure you have sudo installed or alternatively install multirust manually.${n}"
 				fi
 
 				isSudo=false
@@ -327,7 +326,7 @@ function run_installer()
 			else
 				canContinue=false
 				errorMessages+="${red}==>${reset} ${b}Couldn't find sudo:${reset} Root access is needed for parts of this installation.${n}"
-				errorMessages+="    Please ensure you have sudo installed or alternatively run this script as root.${n}"
+				errorMessages+="		Please ensure you have sudo installed or alternatively run this script as root.${n}"
 			fi
 		fi
 	}
@@ -376,13 +375,25 @@ function run_installer()
 
 		if [[ -f $ETH_PATH ]]
 		then
-			success "Parity has been installed"
+			INSTALLED_VERSION=`${ETH_PATH} --version 2>/dev/null | grep -o "[0-9]\.[0-9]\.[0-9]"`
+			compareVersions $PARITY_VERSION $INSTALLED_VERSION
+			case $? in
+					0) OPERATOR='=';;
+					1) OPERATOR='>';;
+					2) OPERATOR='<';;
+			esac
+			if [[ $OPERATOR != '=' ]]
+			then
+					error "Parity update failed"
+			else
+					success "Parity has been installed"
+			fi
 		else
 			error "Parity is missing"
 			abortInstall
 		fi
 	}
-	
+
 	function verify_dep_installation()
 	{
 		info "Verifying installation"
@@ -395,7 +406,7 @@ function run_installer()
 			fi
 		fi
 	}
-	
+
 	function linux_deps_installer()
 	{
 		if [[ $isCurl == false ]]; then
@@ -410,7 +421,7 @@ function run_installer()
 			echo
 		fi
 	}
-	
+
 	function linux_installer()
 	{
 		linux_deps_installer
@@ -424,7 +435,7 @@ function run_installer()
 		rm $file
 	}
 
-	
+
 	function osx_installer()
 	{
 		info "Adding ethcore repository"
@@ -440,7 +451,7 @@ function run_installer()
 		brew linkapps parity
 		echo
 	}
-	
+
 	function install()
 	{
 		echo
@@ -457,7 +468,7 @@ function run_installer()
 		verify_installation
 	}
 
-	
+
 	function install_netstats()
 	{
 		echo "Installing netstats"
@@ -468,7 +479,7 @@ function run_installer()
 
 		curl -sL https://deb.nodesource.com/setup_0.12 | bash -
 		sudo apt-get update
-		
+
 		# install ethereum & install dependencies
 		sudo apt-get install -y -qq build-essential git unzip wget nodejs ntp cloud-utils
 
@@ -518,7 +529,7 @@ function run_installer()
 			"WS_SERVER"				: "wss://rpc.ethstats.net",
 			"WS_SECRET"				: "${secret}",
 			"VERBOSITY"				: 2
-		
+
 		}
 	}
 ]
@@ -527,7 +538,37 @@ EOL
 		pm2 startOrRestart app.json
 		cd $oldpwd
 	}
-	
+
+	compareVersions () {
+			if [[ $1 == $2 ]]
+			then
+					return 0
+			fi
+			local IFS=.
+			local i ver1=($1) ver2=($2)
+			# fill empty fields in ver1 with zeros
+			for ((i=${#ver1[@]}; i<${#ver2[@]}; i++))
+			do
+					ver1[i]=0
+			done
+			for ((i=0; i<${#ver1[@]}; i++))
+			do
+					if [[ -z ${ver2[i]} ]]
+					then
+							# fill empty fields in ver2 with zeros
+							ver2[i]=0
+					fi
+					if ((10#${ver1[i]} > 10#${ver2[i]}))
+					then
+							return 1
+					fi
+					if ((10#${ver1[i]} < 10#${ver2[i]}))
+					then
+							return 2
+					fi
+			done
+			return 0
+	}
 
 	function abortInstall()
 	{
@@ -559,10 +600,10 @@ EOL
 	fi
 
 	#DEBUG
-	
+
 	head "${b}OK,${reset} let's install Parity now!"
 	if [[ $(ask_user "${b}Last chance!${reset} Sure you want to install this software?") == true ]]; then
-		install	
+		install
 		echo
 		echo
 	else
