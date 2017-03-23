@@ -440,7 +440,7 @@ function run_installer()
 	function osx_installer()
 	{
 		info "Adding paritytech repository"
-		brew untap ethcore/ethcore
+		brew untap ethcore/ethcore 2>/dev/null
 		brew tap paritytech/paritytech https://github.com/paritytech/homebrew-paritytech.git
 		echo
 
