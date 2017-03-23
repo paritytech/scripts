@@ -145,7 +145,7 @@ function run_installer()
 			get_osx_dependencies
 		else
 			OS_TYPE="win"
-			abortInstall "${red}==>${reset} ${b}OS not supported:${reset} parity one-liner currently support OS X and Linux.${n}For instructions on installing parity on other platforms please visit ${u}${blue}http://ethcore.io/${reset}"
+			abortInstall "${red}==>${reset} ${b}OS not supported:${reset} parity one-liner currently support OS X and Linux.${n}For instructions on installing parity on other platforms please visit ${u}${blue}http://parity.io/${reset}"
 		fi
 
 		echo
@@ -223,12 +223,12 @@ function run_installer()
 				check "Ubuntu, but version not supported"
 
 				errorMessages+="${red}==>${reset} ${b}Ubuntu version not supported:${reset} This script requires Ubuntu version 14.04, 15.04 or 15.10.${n}"
-				errorMessages+="		Please either upgrade your Ubuntu installation or using the get-deps.ethcore.io script instead, which can help you build Parity.${n}"
+				errorMessages+="		Please either upgrade your Ubuntu installation or using the get-deps.parity.io script instead, which can help you build Parity.${n}"
 			fi
 		else
 			check "Ubuntu not found"
 			errorMessages+="${red}==>${reset} ${b}Linux distribution not supported:${reset} This script requires Ubuntu version 14.04, 15.04 or 15.10.${n}"
-			errorMessages+="		Please either use this on an Ubuntu installation or instead use the get-deps.ethcore.io script, which can help you build Parity.${n}"
+			errorMessages+="		Please either use this on an Ubuntu installation or instead use the get-deps.parity.io script, which can help you build Parity.${n}"
 		fi
 	}
 
@@ -439,8 +439,8 @@ function run_installer()
 
 	function osx_installer()
 	{
-		info "Adding ethcore repository"
-		brew tap ethcore/ethcore https://github.com/ethcore/homebrew-ethcore.git
+		info "Adding paritytech repository"
+		brew tap paritytech/paritytech https://github.com/paritytech/homebrew-paritytech.git
 		echo
 
 		info "Updating brew"
