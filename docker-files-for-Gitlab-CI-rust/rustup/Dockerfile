@@ -34,14 +34,14 @@ RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
     pip install awscli
 
 # install rustup
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y &&rustup show&&rustup install beta&&rustup install nightly
 
 # setup rust beta and nightly channel's
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain beta
-RUN curl https://sh.rustup.rs -sSf | sh -s --  y --default-toolchain nightly
+#RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain beta
+#RUN curl https://sh.rustup.rs -sSf | sh -s --  y --default-toolchain nightly
 
 # setup default stable channel
-RUN rustup default stable
+RUN rustup show
 
 # rustup directory
 ENV PATH /root/.cargo/bin:$PATH
