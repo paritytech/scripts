@@ -1,10 +1,11 @@
 FROM ubuntu:trusty
-MAINTAINER Denis S. Soldatov aka General-Beck <general-beck@ethcore.io>
+MAINTAINER Parity Technologies <devops@parity.io>
 
 # install arm dependencies
 RUN apt-get update&&curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean
+
 # install arm dependencies
 RUN dpkg --add-architecture armhf &&echo "foreign-architecture armhf" >> /etc/dpkg/dpkg.cfg.d/architectures 
 RUN	echo '# source urls for armhf \n\
@@ -41,6 +42,7 @@ ENV PATH /root/.cargo/bin:$PATH
 # target
 ENV RUST_TARGETS arm-unknown-linux-gnueabihf
 ENV TARGET arm-unknown-linux-gnueabihf
+
 # install target toolchain
 RUN rustup target add arm-unknown-linux-gnueabihf
 
@@ -50,6 +52,7 @@ RUN tar xf openssl-1.0.2k.tar.gz
 RUN echo "build openssl"
 RUN export OS_COMPILER=linux-armv4&&export AR=arm-linux-gnueabihf-ar&&export CC=arm-linux-gnueabihf-gcc&&cd openssl-1.0.2k&&./Configure --prefix=${HOME}/openssl ${OS_COMPILER} -fPIC&&make -j$(nproc)&&make install
 ENV OPENSSL_DIR /root/openssl
+
 # cross compile ENV
 RUN CPPFLAGS="-I/usr/include"
 RUN LDFLAGS="-L/usr/lib/arm-linix-gnueabihf"
