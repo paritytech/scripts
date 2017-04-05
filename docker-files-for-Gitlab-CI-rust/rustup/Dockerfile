@@ -1,6 +1,7 @@
 FROM ubuntu:14.04
 MAINTAINER Parity Technologies <devops@parity.io>
 WORKDIR /build
+
 # install tools and dependencies
 RUN apt-get -y update && \
         apt-get install -y --force-yes --no-install-recommends \
@@ -42,5 +43,4 @@ ENV RUST_BACKTRACE 1
 # Set default user
 USER root
 
-# Set build enviroment
 
