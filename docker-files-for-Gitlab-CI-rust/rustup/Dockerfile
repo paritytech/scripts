@@ -37,8 +37,8 @@ RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 
 # setup rust beta and nightly channel's
-RUN rustup install beta
-RUN rustup install nightly
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain beta
+RUN curl https://sh.rustup.rs -sSf | sh -s --  y --default-toolchain nightly
 
 # setup default stable channel
 RUN rustup default stable
