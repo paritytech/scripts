@@ -19,7 +19,9 @@ RUN apt-get -y update && \
 	rhash \
 	openssl \
 	build-essential \
-	pkg-config libssl-dev libudev-dev 
+	pkg-config \
+	libssl-dev \
+	libudev-dev 
 
 # install nodejs
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
@@ -33,6 +35,13 @@ RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
 
 # install rustup
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+# setup rust beta and nightly channel's
+RUN rustup update beta
+RUN rustup update nightly
+
+# setup default stable channel
+RUN rustup default stable
 
 # rustup directory
 ENV PATH /root/.cargo/bin:$PATH
