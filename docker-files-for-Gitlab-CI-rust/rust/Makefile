@@ -1,5 +1,5 @@
 #IMAGE for build rust TOOLCHAIN
-#Created by Denis S. Soldatov aka General-Beck general-beck@ethcore.io
+#Created by Parity Technologies <devops@parity.io>
 USER=ethcore
 NAME=rust
 CHANNEL=${TOOLCHAIN}

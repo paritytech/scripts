@@ -1,6 +1,6 @@
 #IMAGE for build rust i686 arch
-#Created by Denis S. Soldatov aka General-Beck general-beck@ethcore.io
-USER=ethcore
+#Created by Parity Technologies <devops@parity.io>
+USER=parity
 NAME=rust-i686
 TAG=latest
 

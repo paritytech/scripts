@@ -1,5 +1,5 @@
 FROM debian:jessie
-MAINTAINER Denis S. Soldatov aka General-Beck <general-beck@ethcore.io>
+MAINTAINER Parity Technologies <devops@parity.io>
 
 # install build dependencies
 RUN apt-get -y update && \

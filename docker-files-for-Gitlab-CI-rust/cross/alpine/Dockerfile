@@ -1,5 +1,5 @@
 FROM alpine:edge
-MAINTAINER Denis S. Soldatov aka General-Beck <general-beck@ethcore.io>
+MAINTAINER Parity Technologies <devops@parity.io>
 
 # install tools and dependencies
 RUN echo '@testing http://dl-cdn.alpinelinux.org/alpine/edge/testing' >> /etc/apk/repositories
@@ -7,9 +7,9 @@ RUN apk add --no-cache --update alpine-sdk git curl wget python nodejs file open
 RUN rm -rf /var/cache/apk/*
 ENV USER root
 #ENV SHELL /bin/bash
-# Define bash as default command 
+# Define bash as default command
 CMD ["/bin/bash"]
-# install rustup 
+# install rustup
 #RUN set -ex
 #RUN mkdir .rust
 #RUN cd .rust
@@ -32,7 +32,7 @@ ENV LD_LIBRARY_PATH=/root/lib:$LD_LIBRARY_PATH
 #ENV LD_LIBRARY_PATH ~/opt/rust/rustc/lib:$LD_LIBRARY_PATH
 #ENV PATH ~/.rust/rust/rustc/bin:$PATH
 #RUN curl https://sh.rustup.rs -sSf | sudo sh
-#RUN curl -sSf https://static.rust-lang.org/rustup.sh -o rustup.sh &&\ 
+#RUN curl -sSf https://static.rust-lang.org/rustup.sh -o rustup.sh &&\
 #     sudo /bin/bash rustup.sh --channel=stable --verbose
 # install aws cli
 #RUN curl -O https://bootstrap.pypa.io/get-pip.py &&\
@@ -40,7 +40,7 @@ ENV LD_LIBRARY_PATH=/root/lib:$LD_LIBRARY_PATH
 #    pip install awscli
 #VOLUME ["/build"]
 #WORKDIR "/build"
-#ENV cargo  ~/.cargo/bin 
+#ENV cargo  ~/.cargo/bin
 RUN cargo -V
 RUN rustc -V
 RUN git clone https://github.com/ethcore/parity

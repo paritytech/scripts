@@ -2,7 +2,7 @@ Docker images with preinstalled [RUST](https://www.rust-lang.org/) (stable - def
 Usage:
 ```linux-stable:
       stage: build
-      image: parity/rust-arm:gitlab-ci
+      image: parity/rust:gitlab-ci
       script:
         - rustup default stable
         - cargo build ...

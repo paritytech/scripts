@@ -1,6 +1,5 @@
 FROM ubuntu:trusty
-MAINTAINER Denis S. Soldatov aka General-Beck <general-beck@ethcore.io>
-
+MAINTAINER Parity Technologies <devops@parity.io>
 # install armv6 dependencies
 RUN apt-get -y update && \
     apt-get install -y --force-yes --no-install-recommends \

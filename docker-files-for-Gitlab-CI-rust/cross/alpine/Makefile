@@ -1,6 +1,6 @@
 #IMAGE for build rust-alpine
-#Created by Denis S. Soldatov aka General-Beck general-beck@ethcore.io
-USER=ethcore
+#Created by Parity Technologies <devops@parity.io>
+USER=parity
 NAME=rust-alpine
 TAG=latest
 

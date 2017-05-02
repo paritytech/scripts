@@ -1,6 +1,6 @@
 #IMAGE for build rust arm* arch
-#Created by Denis S. Soldatov aka General-Beck general-beck@ethcore.io
-USER=ethcore
+#Created by Parity Technologies <devops@parity.io>
+USER=parity
 NAME=rust-arm
 TAG=latest
 
@@ -21,4 +21,3 @@ push:
 	docker push ${IMAGE}
 
 .PHONY: help image push
-

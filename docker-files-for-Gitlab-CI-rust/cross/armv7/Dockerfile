@@ -1,11 +1,11 @@
 FROM ubuntu:trusty
-MAINTAINER Denis S. Soldatov aka General-Beck <general-beck@ethcore.io>
+MAINTAINER Parity Technologies <devops@parity.io>
 # install nodejs
 RUN apt-get update&&curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean
 # install armv7 dependencies
-RUN dpkg --add-architecture armhf &&echo "foreign-architecture armhf" >> /etc/dpkg/dpkg.cfg.d/architectures 
+RUN dpkg --add-architecture armhf &&echo "foreign-architecture armhf" >> /etc/dpkg/dpkg.cfg.d/architectures
 RUN	echo '# source urls for armhf \n\
 	deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ trusty main \n\
 	deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ trusty main \n\
@@ -55,4 +55,3 @@ RUN LDFLAGS="-L/usr/lib/arm-linix-gnueabihf"
 
 # show backtraces
 ENV RUST_BACKTRACE 1
-

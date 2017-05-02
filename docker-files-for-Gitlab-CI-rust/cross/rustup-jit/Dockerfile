@@ -1,5 +1,5 @@
 FROM ubuntu:14.04
-MAINTAINER Denis S. Soldatov aka General-Beck <general-beck@ethcore.io>
+MAINTAINER Parity Technologies <devops@parity.io>
 WORKDIR /build
 # install tools and dependencies
 RUN apt-get -y update && \
@@ -19,7 +19,7 @@ RUN apt-get -y update && \
 	rhash \
 	openssl \
 	build-essential \
-	pkg-config \ 
+	pkg-config \
 	libssl-dev \
 	g++ gcc libc6 libc6-dev python make \
 	zlib1g-dev \
@@ -74,4 +74,3 @@ RUN file /build/parity/target/release/parity
 
 EXPOSE 8080 8545 8180
 ENTRYPOINT ["/build/parity/target/release/parity"]
-

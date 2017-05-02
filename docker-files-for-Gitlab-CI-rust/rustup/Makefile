@@ -1,5 +1,5 @@
 #IMAGE for build rustup
-#Created by Denis S. Soldatov aka General-Beck general-beck@ethcore.io
+#Created by Parity Technologies <devops@parity.io>
 USER=ethcore
 NAME=rustup
 TAG=latest

@@ -1,11 +1,11 @@
 FROM ubuntu:trusty
-MAINTAINER Denis S. Soldatov aka General-Beck <general-beck@ethcore.io>
+MAINTAINER Parity Technologies <devops@parity.io>
 # install nodejs
 RUN apt-get update&&curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean
 # install aarch64(armv8) dependencies
-RUN dpkg --add-architecture arm64 &&echo "foreign-architecture arm64" >> /etc/dpkg/dpkg.cfg.d/architectures 
+RUN dpkg --add-architecture arm64 &&echo "foreign-architecture arm64" >> /etc/dpkg/dpkg.cfg.d/architectures
 RUN	echo '# source urls for arm64 \n\
 	deb [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ trusty main \n\
 	deb-src [arch=arm64] http://ports.ubuntu.com/ubuntu-ports/ trusty main \n\
@@ -24,7 +24,7 @@ RUN	apt-get update -y && \
 	openssl \
 	build-essential \
 	pkg-config libssl-dev libudev-dev crossbuild-essential-arm64
-#RUN 	
+#RUN
 #RUN apt-get build-dep -a arm64 openssl libssl-dev -y&&apt-get source openssl -o APT::Get::Host-Architecture=arm64 --compile
 #RUN apt-get build-dep -a arm64 libudev-dev -y
 RUN apt-get install libudev-dev:arm64 -y
@@ -58,4 +58,3 @@ RUN CPPFLAGS="-I/usr/include"
 RUN LDFLAGS="-L/usr/lib/arm-linix-aarch64"
 # show backtraces
 ENV RUST_BACKTRACE 1
-

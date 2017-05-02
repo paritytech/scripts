@@ -1,4 +1,4 @@
-#Created by Denis S. Soldatov aka General-Beck general-beck@ethcore.io
+#Created by Parity Technologies <devops@parity.io>
 #USAGE ./docker-build.sh docker_hub_user docker_hub_password
 
 # Delete all containers
@@ -22,7 +22,7 @@ cd ..
 #cd javascript
 #make image&&make push
 #cd ..
-#make and push rust-test image 
+#make and push rust-test image
 cd rust-test
 make image&&make push
 cd ..
