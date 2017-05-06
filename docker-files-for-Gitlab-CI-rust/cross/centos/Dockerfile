@@ -1,4 +1,4 @@
-FROM centos:7.3.1611
+FROM centos:latest
 MAINTAINER Parity Technologies <devops@parity.io>
 
 # install tools and dependencies
