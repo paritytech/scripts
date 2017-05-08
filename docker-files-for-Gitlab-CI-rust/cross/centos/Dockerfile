@@ -3,7 +3,7 @@ MAINTAINER Parity Technologies <devops@parity.io>
 
 # install tools and dependencies
 RUN yum install -y epel-release &&\
-    yum install -y git curl file make binutils gcc-c++ gcc python rhash openssl-devel build-essential pkg-config libudev-devel --enablerepo=epel 
+    yum install -y git curl file make binutils gcc-c++ gcc glib* python rhash openssl-devel build-essential pkg-config libudev-devel --enablerepo=epel 
 # install rustup 
 #RUN curl https://sh.rustup.rs -sSf | sh
 RUN curl -sSf https://static.rust-lang.org/rustup.sh -o rustup.sh &&\ 
