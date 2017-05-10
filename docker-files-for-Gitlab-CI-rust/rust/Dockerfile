@@ -1,4 +1,4 @@
-FROM ethcore/rustup:latest
+FROM parity/rust:gitlab-ci
 MAINTAINER Parity Technologies <devops@parity.io>
 
 # Pass a channel (i.e., stable, beta, nightly)

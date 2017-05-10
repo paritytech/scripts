@@ -1,8 +1,8 @@
 #IMAGE for build rustup
 #Created by Parity Technologies <devops@parity.io>
-USER=ethcore
+USER=parity
 NAME=rustup
-TAG=latest
+TAG=gitlab-ci
 
 IMAGE=${USER}/${NAME}:${TAG}
 

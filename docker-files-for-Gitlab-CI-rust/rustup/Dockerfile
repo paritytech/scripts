@@ -5,6 +5,7 @@ WORKDIR /build
 # install tools and dependencies
 RUN apt-get -y update && \
         apt-get install -y --force-yes --no-install-recommends \
+	software-properties-common \
         curl \
         git \
         file \
@@ -22,6 +23,12 @@ RUN apt-get -y update && \
 	pkg-config \
 	libssl-dev \
 	libudev-dev 
+
+# install java8
+RUN add-apt-repository -y ppa:webupd8team/java
+RUN apt-get update
+RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+RUN apt-get install -y oracle-java8-installer
 
 # install nodejs
 RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \

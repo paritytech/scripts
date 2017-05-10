@@ -1,6 +1,6 @@
 #IMAGE for build rust TOOLCHAIN
 #Created by Parity Technologies <devops@parity.io>
-USER=ethcore
+USER=parity
 NAME=rust
 CHANNEL=${TOOLCHAIN}
 
