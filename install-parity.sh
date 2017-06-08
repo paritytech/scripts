@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PARITY_VERSION=1.6.7
+PARITY_VERSION=1.6.8
 PARITY_DEB_URL=https://d1h4xl4cr1h0mo.cloudfront.net/v${PARITY_VERSION}/x86_64-unknown-linux-gnu/parity_${PARITY_VERSION}_amd64.deb
 
 function run_installer()
