@@ -39,7 +39,7 @@ RUN git clone https://github.com/debris/evmjit && \
         cmake .. && make && make install && cd
 
 # install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean
 

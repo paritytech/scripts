@@ -2,7 +2,7 @@ FROM ubuntu:trusty
 MAINTAINER Parity Technologies <devops@parity.io>
 
 # install arm dependencies
-RUN apt-get update&&curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
+RUN apt-get update&&curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean
 

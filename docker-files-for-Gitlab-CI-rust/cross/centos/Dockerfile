@@ -14,7 +14,7 @@ RUN yum -y update glibc
 RUN curl -sSf https://static.rust-lang.org/rustup.sh -o rustup.sh &&\ 
     sh rustup.sh --disable-sudo --yes --channel=stable
 # install nodejs & npm
-RUN curl --silent --location https://rpm.nodesource.com/setup_6.x | bash - &&\
+RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash - &&\
     yum -y install nodejs
 # install aws cli
 RUN curl -O https://bootstrap.pypa.io/get-pip.py &&\
