@@ -48,38 +48,66 @@ get_package() {
 	echo "Download file: $DOWNLOAD_FILE"
 }
 
-install_package() {
+check_upgrade() {
 
-	case "$PKG" in
-	debian) install_debian ;;
-	linux) install_linux ;;
-	darwin) install_darwin;;
-	*) echo "Unkown o/s" ;;
-	esac
+        TMPDIR=$(mktemp -d)
+        cd $TMPDIR
+        $(wget $DOWNLOAD_FILE)
 
-}
-
-install() {
-
-	TMPDIR=$(mktemp -d)
-	cd $TMPDIR
-	$(wget $DOWNLOAD_FILE)
-	if [ "$PKG" = "debian" ] ; then
-	NAME=$(basename $DOWNLOAD_FILE)
-	sudo dpkg -i $TMPDIR/$NAME
+	if [ -f /usr/bin/parity ] ; then
+		OLD_VERSION=$(parity --version | grep version|  cut -d/ -f2  | cut -d- -f1 | sed 's/v//g')
+	else
+		echo "No older version of parity found"
+		OLD_VERSION="0.0.0"
 	fi
 
 	if [ "$PKG" = "linux" ] ; then
-	sudo cp $TMPDIR/parity /usr/bin
-	sudo chmod +x /usr/bin/parity
+		NEW_VERSION=$($TMPDIR/parity --version  | grep version|  cut -d/ -f2  | cut -d- -f1 | sed 's/v//g')
+
+	fi
+
+	if [ "$PKG" = "debian" ] ; then
+		NEW_VERSION=$(basename $DOWNLOAD_FILE  |  cut -d_ -f2)
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
-	NAME=$(basename $DOWNLOAD_FILE)
-	sudo /usr/sbin/installer -pkg $TMPDIR/$NAME -target /
+		NEW_VERSION=$(basename $DOWNLOAD_FILE | cut -d- -f2)
+	fi
+
+
+	if  version_gt "$NEW_VERSION" "$OLD_VERSION"  ; then
+		echo "Upgrading parity from $OLD_VERSION to $NEW_VERSION"
+	else
+		echo "Old version of parity: $OLD_VERSION is newer than the version you attempting to install: $NEW_VERSION"
+		exit 1
+	fi
+}
+
+
+install() {
+
+	if [ "$PKG" = "debian" ] ; then
+		NAME=$(basename $DOWNLOAD_FILE)
+		sudo dpkg -i $TMPDIR/$NAME
+	fi
+
+	if [ "$PKG" = "linux" ] ; then
+		sudo cp $TMPDIR/parity /usr/bin
+		sudo chmod +x /usr/bin/parity
+	fi
+
+	if [ "$PKG" = "darwin" ] ; then
+		NAME=$(basename $DOWNLOAD_FILE)
+		sudo /usr/sbin/installer -pkg $TMPDIR/$NAME -target /
 	fi
 
 }
+
+
+version_gt() {
+	test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1";
+}
+
 
 help() {
 
@@ -104,4 +132,5 @@ while [ "$1" != "" ]; do
 
 check_os
 get_package
+check_upgrade
 install
