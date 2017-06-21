@@ -2,7 +2,7 @@
 # Copyright 2017 Parity Technologies (UK) Ltd.
 BUILD="beta"
 ARCH=$(uname -m)
-VANITY_SERVICE_URL="https://vanity-service.ethcore.io/parity-binaries?architecture=$ARCH&format=markdown"
+VANITY_SERVICE_URL="https://vanity-service.parity.io/parity-binaries?architecture=$ARCH&format=markdown"
 
 check_os() {
 
