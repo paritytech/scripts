@@ -1,14 +1,16 @@
 #!/bin/bash
 # Copyright 2017 Parity Technologies (UK) Ltd.
-BUILD="beta"
+RELEASE="beta"
 ARCH=$(uname -m)
 VANITY_SERVICE_URL="https://vanity-service.parity.io/parity-binaries?architecture=$ARCH&format=markdown"
 
 check_os() {
 
+
 	if [ "$(uname)" = "Linux" ] ; then
 
-	if [ "$(. /etc/os-release; echo $NAME)" = "Ubuntu" ]; then
+		DIST=$(awk '/DISTRIB_ID=/' /etc/*-release | sed 's/DISTRIB_ID=//' | tr '[:upper:]' '[:lower:]')
+	if [ "$DIST" = "ubuntu" ]; then
 		PKG="debian"
 	else
 		PKG="linux"
@@ -29,7 +31,7 @@ check_os() {
 
 get_package() {
 
-	LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$BUILD"
+	LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$RELEASE"
 
 	if [ "$PKG" = "debian" ] ; then
 		MD=$(curl ${LOOKUP_URL} | grep amd64 )
@@ -45,24 +47,19 @@ get_package() {
 		MD=$(curl ${LOOKUP_URL} | grep pkg )
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
-	echo "Download file: $DOWNLOAD_FILE"
 }
 
 check_upgrade() {
 
-        TMPDIR=$(mktemp -d)
-        cd $TMPDIR
-        $(wget $DOWNLOAD_FILE)
-
 	if [ -f /usr/bin/parity ] ; then
 		OLD_VERSION=$(parity --version | grep version|  cut -d/ -f2  | cut -d- -f1 | sed 's/v//g')
 	else
-		echo "No older version of parity found"
 		OLD_VERSION="0.0.0"
 	fi
 
 	if [ "$PKG" = "linux" ] ; then
-		NEW_VERSION=$($TMPDIR/parity --version  | grep version|  cut -d/ -f2  | cut -d- -f1 | sed 's/v//g')
+		FILE=$(curl $LOOKUP_URL | grep snap | cut -d "(" -f2 | cut -d ")" -f1) 
+		NEW_VERSION=$(basename $FILE | cut -d_ -f2)
 
 	fi
 
@@ -78,13 +75,17 @@ check_upgrade() {
 	if  version_gt "$NEW_VERSION" "$OLD_VERSION"  ; then
 		echo "Upgrading parity from $OLD_VERSION to $NEW_VERSION"
 	else
-		echo "Old version of parity: $OLD_VERSION is newer than the version you attempting to install: $NEW_VERSION"
+		echo "Existing version of parity: $OLD_VERSION is newer than the version you attempting to install: $NEW_VERSION"
 		exit 1
 	fi
 }
 
 
 install() {
+
+        TMPDIR=$(mktemp -d)
+        cd $TMPDIR
+        $(wget $DOWNLOAD_FILE)
 
 	if [ "$PKG" = "debian" ] ; then
 		NAME=$(basename $DOWNLOAD_FILE)
@@ -109,17 +110,18 @@ version_gt() {
 }
 
 
+
 help() {
 
-	echo "Usage is: -b --build [ stable / beta / nightly ]"
+	echo "Usage is: -r --release [ stable / beta / nightly ]"
 
 }
 
 
 while [ "$1" != "" ]; do
 	case $1 in
-	-b | --build )           shift
-		BUILD=$1
+	-r | --release )           shift
+		RELEASE=$1
 		;;
 	* )  	help
 		exit 1
@@ -128,7 +130,7 @@ while [ "$1" != "" ]; do
 	done
 
 
-	echo "Build selected is: $BUILD"
+	echo "Release selected is: $RELEASE"
 
 check_os
 get_package
