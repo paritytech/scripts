@@ -71,6 +71,10 @@ check_upgrade() {
 		NEW_VERSION=$(basename $DOWNLOAD_FILE | cut -d- -f2)
 	fi
 
+	if [ "$NEW_VERSION" = "$OLD_VERSION" ] ; then
+		echo "Parity $NEW_VERSION already installed"
+		exit 1
+	fi
 
 	if  version_gt "$NEW_VERSION" "$OLD_VERSION"  ; then
 		echo "Upgrading parity from $OLD_VERSION to $NEW_VERSION"
