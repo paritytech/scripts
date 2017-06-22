@@ -9,8 +9,7 @@ check_os() {
 
 	if [ "$(uname)" = "Linux" ] ; then
 
-		DIST=$(awk '/DISTRIB_ID=/' /etc/*-release | sed 's/DISTRIB_ID=//' | tr '[:upper:]' '[:lower:]')
-	if [ "$DIST" = "ubuntu" ]; then
+	if [ $(grep -i debian /etc/*-release | wc -l) -gt 0 ] ; then
 		PKG="debian"
 	else
 		PKG="linux"
