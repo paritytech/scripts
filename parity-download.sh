@@ -30,7 +30,11 @@ check_os() {
 
 get_package() {
 
-	LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$RELEASE"
+	if [ "$RELEASE" = "beta" ]; then
+		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=beta-release"
+	else
+		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$RELEASE"
+	fi
 
 	if [ "$PKG" = "debian" ] ; then
 		MD=$(curl ${LOOKUP_URL} | grep amd64 )
