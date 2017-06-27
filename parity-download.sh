@@ -78,7 +78,6 @@ check_upgrade() {
 		echo "Parity $NEW_VERSION already installed"
 		exit 1
 	fi
-
 	if  version_gt "$NEW_VERSION" "$OLD_VERSION"  ; then
 		echo "Upgrading parity from $OLD_VERSION to $NEW_VERSION"
 	else
@@ -141,5 +140,7 @@ while [ "$1" != "" ]; do
 
 check_os
 get_package
-check_upgrade
+if [ "$RELEASE" != "nightly" ] ; then
+	check_upgrade
+fi
 install
