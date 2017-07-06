@@ -91,7 +91,7 @@ install() {
 
         TMPDIR=$(mktemp -d)
         cd $TMPDIR
-        $(wget $DOWNLOAD_FILE)
+        $(curl -O $DOWNLOAD_FILE)
 
 	if [ "$PKG" = "debian" ] ; then
 		NAME=$(basename $DOWNLOAD_FILE)
