@@ -5,3 +5,5 @@ WORKDIR /build
 RUN apt-get update && \
         apt-get install -y --force-yes --no-install-recommends \
         snapcraft git snapd
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
