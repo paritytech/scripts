@@ -4,7 +4,7 @@ WORKDIR /build
 # install tools and dependencies
 RUN apt-get update && \
         apt-get install -y --force-yes --no-install-recommends \
-        snapcraft git snapd python
+        snapcraft git snapd python curl
 # install AWS CLI
 RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
     python get-pip.py && \
