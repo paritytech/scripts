@@ -27,7 +27,7 @@ RUN	apt-get update -y && \
 #RUN
 #RUN apt-get build-dep -a arm64 openssl libssl-dev -y&&apt-get source openssl -o APT::Get::Host-Architecture=arm64 --compile
 #RUN apt-get build-dep -a arm64 libudev-dev -y
-RUN apt-get install libudev-dev:arm64 -y
+RUN apt-get install libudev-dev:arm64 nodejs:arm64 -y
 
 
 # install AWS CLI
