@@ -28,6 +28,11 @@ RUN	apt-get update -y && \
 	pkg-config libssl-dev libudev-dev crossbuild-essential-armhf
 RUN apt-get install libudev-dev:armhf -y
 
+# install nodejs
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean
+
 # install AWS CLI
 RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
     python get-pip.py && \

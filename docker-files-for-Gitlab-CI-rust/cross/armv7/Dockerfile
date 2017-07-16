@@ -31,6 +31,11 @@ RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
     python get-pip.py && \
     pip install awscli
 
+# install nodejs
+RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean
+
 # install rustup
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 # rustup directory
