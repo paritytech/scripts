@@ -37,17 +37,17 @@ get_package() {
 	fi
 
 	if [ "$PKG" = "debian" ] ; then
-		MD=$(curl ${LOOKUP_URL} | grep amd64 )
+		MD=$(curl -sS ${LOOKUP_URL} | grep amd64 )
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
 	if [ "$PKG" = "linux" ] ; then
-		MD=$(curl ${LOOKUP_URL} | grep "\[parity\]")
+		MD=$(curl -sS ${LOOKUP_URL} | grep "\[parity\]")
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
-		MD=$(curl ${LOOKUP_URL} | grep pkg )
+		MD=$(curl -sS ${LOOKUP_URL} | grep pkg )
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 }
@@ -61,7 +61,7 @@ check_upgrade() {
 	fi
 
 	if [ "$PKG" = "linux" ] ; then
-		FILE=$(curl $LOOKUP_URL | grep snap | cut -d "(" -f2 | cut -d ")" -f1) 
+		FILE=$(curl -sS $LOOKUP_URL | grep snap | cut -d "(" -f2 | cut -d ")" -f1) 
 		NEW_VERSION=$(basename $FILE | cut -d_ -f2)
 
 	fi
@@ -91,7 +91,7 @@ install() {
 
         TMPDIR=$(mktemp -d)
         cd $TMPDIR
-        $(curl -O $DOWNLOAD_FILE)
+        $(curl -sS -O $DOWNLOAD_FILE)
 
 	if [ "$PKG" = "debian" ] ; then
 		NAME=$(basename $DOWNLOAD_FILE)
