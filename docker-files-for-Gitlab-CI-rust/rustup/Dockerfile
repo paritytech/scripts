@@ -31,7 +31,7 @@ RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true 
 RUN apt-get install -y oracle-java8-installer
 
 # install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean
 

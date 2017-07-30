@@ -30,7 +30,7 @@ RUN	apt-get update -y && \
 RUN apt-get install libudev-dev:arm64 -y
 
 # install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean
 

@@ -28,7 +28,7 @@ RUN apt-get -y update && \
 RUN apt-get install libudev-dev:i386 -y
 
 # install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_6.x | bash - && \
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
     apt-get install -y nodejs && \
     apt-get clean
 
