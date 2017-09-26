@@ -47,10 +47,10 @@ RUN add-apt-repository -y "ppa:george-edison55/cmake-3.x" && \
         apt-get install -y --force-yes cmake llvm-3.7-dev
 
 # install evmjit
-RUN git clone https://github.com/debris/evmjit && \
-        cd evmjit && \
-        mkdir build && cd build && \
-cmake .. && make && make install && cd
+#RUN git clone https://github.com/debris/evmjit && \
+#        cd evmjit && \
+#        mkdir build && cd build && \
+#cmake .. && make && make install && cd
 
 # install rustup
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
