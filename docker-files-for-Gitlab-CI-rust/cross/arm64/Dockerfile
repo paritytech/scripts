@@ -44,7 +44,7 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 
 # rustup directory
 ENV PATH /root/.cargo/bin:$PATH
-
+RUN rustup install 1.18.0
 # target
 ENV RUST_TARGETS aarch64-unknown-linux-gnueabihf
 ENV TARGET aarch64-unknown-linux-gnueabihf

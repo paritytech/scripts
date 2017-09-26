@@ -53,6 +53,7 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 
 # rustup directory
 ENV PATH /root/.cargo/bin:$PATH
+RUN rustup install 1.18.0
 
 # show backtraces
 ENV RUST_BACKTRACE 1
