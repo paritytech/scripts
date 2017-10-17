@@ -10,9 +10,6 @@ RUN yum install -y epel-release &&\
 RUN yum -y update glibc
 
 # install rustup 
-#RUN curl https://sh.rustup.rs -sSf | sh
-RUN curl -sSf https://static.rust-lang.org/rustup.sh -o rustup.sh &&\ 
-    sh rustup.sh --disable-sudo --yes --channel=1.18.0
 RUN curl -sSf https://static.rust-lang.org/rustup.sh -o rustup.sh &&\ 
     sh rustup.sh --disable-sudo --yes --channel=stable
 # install nodejs & npm

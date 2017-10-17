@@ -59,7 +59,6 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH /root/.cargo/bin:$PATH
 
 # setup rust beta and nightly channel's
-RUN rustup install 1.18.0
 RUN rustup install beta
 RUN rustup install nightly
 
