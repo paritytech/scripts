@@ -1,4 +1,4 @@
-FROM ubuntu:14.04
+FROM ubuntu:trusty
 MAINTAINER Parity Technologies <devops@parity.io>
 WORKDIR /build
 # install tools and dependencies

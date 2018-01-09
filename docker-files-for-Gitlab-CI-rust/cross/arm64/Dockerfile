@@ -52,10 +52,10 @@ ENV TARGET aarch64-unknown-linux-gnueabihf
 RUN rustup target add aarch64-unknown-linux-gnu
 
 # install openssl
-RUN curl -O https://www.openssl.org/source/openssl-1.0.2k.tar.gz
-RUN tar xf openssl-1.0.2k.tar.gz
+RUN curl -O https://www.openssl.org/source/openssl-1.0.2n.tar.gz
+RUN tar xf openssl-1.0.2n.tar.gz
 RUN echo "build openssl"
-RUN export OS_COMPILER=linux-aarch64&&export AR=aarch64-linux-gnu-ar&&export CC=aarch64-linux-gnu-gcc&&cd openssl-1.0.2k&&./Configure --prefix=${HOME}/openssl ${OS_COMPILER} -fPIC&&make -j$(nproc)&&make install
+RUN export OS_COMPILER=linux-aarch64&&export AR=aarch64-linux-gnu-ar&&export CC=aarch64-linux-gnu-gcc&&cd openssl-1.0.2n&&./Configure --prefix=${HOME}/openssl ${OS_COMPILER} -fPIC&&make -j$(nproc)&&make install
 ENV OPENSSL_DIR /root/openssl
 # cross compile ENV
 RUN CPPFLAGS="-I/usr/include"

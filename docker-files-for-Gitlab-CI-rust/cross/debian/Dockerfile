@@ -1,4 +1,4 @@
-FROM debian:jessie
+FROM debian:stretch
 MAINTAINER Parity Technologies <devops@parity.io>
 
 # install build dependencies

@@ -49,10 +49,10 @@ ENV TARGET armv7-unknown-linux-gnueabihf
 RUN rustup target add armv7-unknown-linux-gnueabihf
 
 # install openssl
-RUN curl -O https://www.openssl.org/source/openssl-1.0.2k.tar.gz
-RUN tar xf openssl-1.0.2k.tar.gz
+RUN curl -O https://www.openssl.org/source/openssl-1.0.2n.tar.gz
+RUN tar xf openssl-1.0.2n.tar.gz
 RUN echo "build openssl"
-RUN export OS_COMPILER=linux-armv4&&export AR=arm-linux-gnueabihf-ar&&export CC=arm-linux-gnueabihf-gcc&&cd openssl-1.0.2k&&./Configure --prefix=${HOME}/openssl ${OS_COMPILER} -fPIC&&make -j$(nproc)&&make install
+RUN export OS_COMPILER=linux-armv4&&export AR=arm-linux-gnueabihf-ar&&export CC=arm-linux-gnueabihf-gcc&&cd openssl-1.0.2n&&./Configure --prefix=${HOME}/openssl ${OS_COMPILER} -fPIC&&make -j$(nproc)&&make install
 ENV OPENSSL_DIR /root/openssl
 # cross compile ENV
 RUN CPPFLAGS="-I/usr/include"
