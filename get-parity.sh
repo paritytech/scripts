@@ -1,19 +1,61 @@
 #!/bin/bash
 # Copyright 2017 Parity Technologies (UK) Ltd.
+set -x
 RELEASE="beta"
 ARCH=$(uname -m)
 VANITY_SERVICE_URL="https://vanity-service.parity.io/parity-binaries?architecture=$ARCH&format=markdown"
+DISTRO=$(lsb_release -c -s)
+
+check_alt() {
+    if [ "X${DISTRO}" == "X${2}" ]; then
+        echo
+        echo "## You seem to be using ${1} version ${DISTRO}."
+        echo "## This maps to ${3} \"${4}\"... Adjusting for you..."
+        DISTRO="${4}"
+    fi
+}
 
 check_os() {
 
-
 	if [ "$(uname)" = "Linux" ] ; then
 
-	if [ $(grep -i debian /etc/*-release | wc -l) -gt 0 ] ; then
-		PKG="debian"
-	else
-		PKG="linux"
-	fi
+	if [ -f /usr/bin/dpkg ] ; then
+
+		check_alt "Kali"          "sana"     "Debian" "jessie"
+		check_alt "Kali"          "kali-rolling" "Debian" "jessie"
+		check_alt "Sparky Linux"  "Nibiru"   "Debian" "jessie"
+		check_alt "Linux Mint"    "maya"     "Ubuntu" "precise"
+		check_alt "Linux Mint"    "qiana"    "Ubuntu" "trusty"
+		check_alt "Linux Mint"    "rafaela"  "Ubuntu" "trusty"
+		check_alt "Linux Mint"    "rebecca"  "Ubuntu" "trusty"
+		check_alt "Linux Mint"    "rosa"     "Ubuntu" "trusty"
+		check_alt "Linux Mint"    "sarah"    "Ubuntu" "xenial"
+		check_alt "Linux Mint"    "serena"   "Ubuntu" "xenial"
+		check_alt "Linux Mint"    "sonya"    "Ubuntu" "xenial"
+		check_alt "Linux Mint"    "sylvia"   "Ubuntu" "xenial"
+		check_alt "LMDE"          "betsy"    "Debian" "jessie"
+		check_alt "elementaryOS"  "luna"     "Ubuntu" "precise"
+		check_alt "elementaryOS"  "freya"    "Ubuntu" "trusty"
+		check_alt "elementaryOS"  "loki"     "Ubuntu" "xenial"
+		check_alt "Trisquel"      "toutatis" "Ubuntu" "precise"
+		check_alt "Trisquel"      "belenos"  "Ubuntu" "trusty"
+		check_alt "Trisquel"      "flidas"   "Ubuntu" "xenial"
+		check_alt "BOSS"          "anokha"   "Debian" "wheezy"
+		check_alt "bunsenlabs"    "bunsen-hydrogen" "Debian" "jessie"
+		check_alt "Tanglu"        "chromodoris" "Debian" "jessie"
+		check_alt "Strech"        "strech" "Debian" "stretch"
+
+
+		if [ "$DISTRO" = "jessie" ] || [ "$DISTRO" = "wheezy" ] || [ "$DISTRO" = "stretch" ] ; then
+			PKG="debian"
+		elif [ "$DISTRO" = "xenial" ] || [ "$DISTRO" = "trusty" ]  || [ "$DISTRO" = "precise" ] ; then
+			PKG="linux"
+		fi
+	      fi
+
+	        if [ -f /bin/rpm ] || [ -f /usr/bin/rpm ] ; then
+                     PKG="centos"
+	        fi
 
 	elif [ "$(uname)" = "Darwin" ] ; then
 		PKG="darwin"
@@ -29,7 +71,6 @@ check_os() {
 }
 
 get_package() {
-
 	if [ "$RELEASE" = "beta" ]; then
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=beta-release"
 	else
@@ -37,12 +78,17 @@ get_package() {
 	fi
 
 	if [ "$PKG" = "debian" ] ; then
-		MD=$(curl ${LOOKUP_URL} | grep amd64 )
+        MD=$(curl ${LOOKUP_URL} | grep amd64 | grep deb )
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
 	if [ "$PKG" = "linux" ] ; then
-		MD=$(curl ${LOOKUP_URL} | grep "\[parity\]")
+        MD=$(curl ${LOOKUP_URL} | grep "\[parity\]")
+		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
+	fi
+
+	if [ "$PKG" = "centos" ] ; then
+        MD=$(curl ${LOOKUP_URL} | grep "rpm")
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
@@ -61,13 +107,17 @@ check_upgrade() {
 	fi
 
 	if [ "$PKG" = "linux" ] ; then
-		FILE=$(curl $LOOKUP_URL | grep snap | cut -d "(" -f2 | cut -d ")" -f1) 
+		FILE=$(curl $LOOKUP_URL | grep amd | cut -d "(" -f2 | cut -d ")" -f1)
 		NEW_VERSION=$(basename $FILE | cut -d_ -f2)
-
 	fi
 
 	if [ "$PKG" = "debian" ] ; then
 		NEW_VERSION=$(basename $DOWNLOAD_FILE  |  cut -d_ -f2)
+	fi
+
+	if [ "$PKG" = "centos" ] ; then
+	    NEW_VERSION=$(basename $DOWNLOAD_FILE  |  cut -d_ -f2)
+
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
@@ -89,9 +139,9 @@ check_upgrade() {
 
 install() {
 
-        TMPDIR=$(mktemp -d)
-        cd $TMPDIR
-        $(curl -O $DOWNLOAD_FILE)
+    TMPDIR=$(mktemp -d)
+    cd $TMPDIR
+	$(curl -O $DOWNLOAD_FILE)
 
 	if [ "$PKG" = "debian" ] ; then
 		NAME=$(basename $DOWNLOAD_FILE)
@@ -99,8 +149,13 @@ install() {
 	fi
 
 	if [ "$PKG" = "linux" ] ; then
-		sudo cp $TMPDIR/parity /usr/bin
+	    sudo cp $TMPDIR/parity /usr/bin
 		sudo chmod +x /usr/bin/parity
+	fi
+
+        if [ "$PKG" = "centos" ] ; then
+	    NAME=$(basename $DOWNLOAD_FILE)
+	    sudo rpm -i $TMPDIR/$NAME
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
