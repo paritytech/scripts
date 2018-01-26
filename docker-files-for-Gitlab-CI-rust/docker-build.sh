@@ -10,6 +10,10 @@ docker login -u $1 -p $2
 cd rustup
 make image&&make push
 cd ..
+#make and push libp2p-js-echo-server image
+cd libp2p-js-echo-server
+make image&&make push
+cd ..
 #make and push rust TOOLCHAIN images
 cd rust
 make images&&make push
