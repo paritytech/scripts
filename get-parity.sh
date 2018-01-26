@@ -78,22 +78,22 @@ get_package() {
 	fi
 
 	if [ "$PKG" = "debian" ] ; then
-        MD=$(curl ${LOOKUP_URL} | grep amd64 | grep deb )
+        MD=$(curl -Ss ${LOOKUP_URL} | grep amd64 | grep deb )
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
 	if [ "$PKG" = "linux" ] ; then
-        MD=$(curl ${LOOKUP_URL} | grep "\[parity\]")
+        MD=$(curl -Ss ${LOOKUP_URL} | grep "\[parity\]")
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
 	if [ "$PKG" = "centos" ] ; then
-        MD=$(curl ${LOOKUP_URL} | grep "rpm")
+        MD=$(curl -Ss ${LOOKUP_URL} | grep "rpm")
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
-		MD=$(curl ${LOOKUP_URL} | grep pkg )
+		MD=$(curl -Ss ${LOOKUP_URL} | grep pkg )
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 }
@@ -107,7 +107,7 @@ check_upgrade() {
 	fi
 
 	if [ "$PKG" = "linux" ] ; then
-		FILE=$(curl $LOOKUP_URL | grep amd | cut -d "(" -f2 | cut -d ")" -f1)
+		FILE=$(curl -Ss $LOOKUP_URL | grep amd | cut -d "(" -f2 | cut -d ")" -f1)
 		NEW_VERSION=$(basename $FILE | cut -d_ -f2)
 	fi
 
@@ -141,7 +141,7 @@ install() {
 
     TMPDIR=$(mktemp -d)
     cd $TMPDIR
-	$(curl -O $DOWNLOAD_FILE)
+	$(curl -Ss -O $DOWNLOAD_FILE)
 
 	if [ "$PKG" = "debian" ] ; then
 		NAME=$(basename $DOWNLOAD_FILE)
