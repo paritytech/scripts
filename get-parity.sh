@@ -1,6 +1,5 @@
 #!/bin/bash
 # Copyright 2017 Parity Technologies (UK) Ltd.
-set -x
 RELEASE="beta"
 ARCH=$(uname -m)
 VANITY_SERVICE_URL="https://vanity-service.parity.io/parity-binaries?architecture=$ARCH&format=markdown"
@@ -48,7 +47,7 @@ check_os() {
 
 		if [ "$DISTRO" = "jessie" ] || [ "$DISTRO" = "wheezy" ] || [ "$DISTRO" = "stretch" ] ; then
 			PKG="debian"
-		elif [ "$DISTRO" = "xenial" ] || [ "$DISTRO" = "trusty" ]  || [ "$DISTRO" = "precise" ] ; then
+		elif [ "$DISTRO" = "xenial" ] || [ "$DISTRO" = "trusty" ] || [ "$DISTRO" = "precise" ] || [ "$DISTRO" = "artful" ] || [ "$DISTRO" = "bionic" ] ; then
 			PKG="linux"
 		fi
 	      fi
