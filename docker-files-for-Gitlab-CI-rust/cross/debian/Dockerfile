@@ -3,10 +3,10 @@ MAINTAINER Parity Technologies <devops@parity.io>
 
 # install build dependencies
 RUN apt-get -y update && \
-    apt-get install -y --force-yes --no-install-recommends \
+    apt-get install -y --allow --no-install-recommends \
         g++ gcc libc6 libc6-dev \
         python binutils curl git make file ca-certificates zip dpkg-dev rhash \
-	openssl \
+	openssl software-properties-common gnupg\
 	build-essential \
 	pkg-config libssl-dev libudev-dev
 
