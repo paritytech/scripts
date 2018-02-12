@@ -125,7 +125,7 @@ install() {
 
         if [ "$PKG" = "centos" ] ; then
 	    NAME=$(basename $DOWNLOAD_FILE)
-	    sudo rpm -i $TMPDIR/$NAME
+	    sudo rpm -U $TMPDIR/$NAME
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
