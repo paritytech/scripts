@@ -3,58 +3,19 @@
 RELEASE="beta"
 ARCH=$(uname -m)
 VANITY_SERVICE_URL="https://vanity-service.parity.io/parity-binaries?architecture=$ARCH&format=markdown"
-DISTRO=$(lsb_release -c -s)
-
-check_alt() {
-    if [ "X${DISTRO}" == "X${2}" ]; then
-        echo
-        echo "## You seem to be using ${1} version ${DISTRO}."
-        echo "## This maps to ${3} \"${4}\"... Adjusting for you..."
-        DISTRO="${4}"
-    fi
-}
+LIBSSL="undef"
 
 check_os() {
 
 	if [ "$(uname)" = "Linux" ] ; then
+	PKG=linux   # linux is my default 
 
-	if [ -f /usr/bin/dpkg ] ; then
+	if  (cat /proc/version | grep -Piq '(debian|ubuntu)')  ; then
+	  LIBSSL=10
+      grep -qi 'stretch' /etc/*release && PKG=debian 
+	fi
 
-		check_alt "Kali"          "sana"     "Debian" "jessie"
-		check_alt "Kali"          "kali-rolling" "Debian" "jessie"
-		check_alt "Sparky Linux"  "Nibiru"   "Debian" "jessie"
-		check_alt "Linux Mint"    "maya"     "Ubuntu" "precise"
-		check_alt "Linux Mint"    "qiana"    "Ubuntu" "trusty"
-		check_alt "Linux Mint"    "rafaela"  "Ubuntu" "trusty"
-		check_alt "Linux Mint"    "rebecca"  "Ubuntu" "trusty"
-		check_alt "Linux Mint"    "rosa"     "Ubuntu" "trusty"
-		check_alt "Linux Mint"    "sarah"    "Ubuntu" "xenial"
-		check_alt "Linux Mint"    "serena"   "Ubuntu" "xenial"
-		check_alt "Linux Mint"    "sonya"    "Ubuntu" "xenial"
-		check_alt "Linux Mint"    "sylvia"   "Ubuntu" "xenial"
-		check_alt "LMDE"          "betsy"    "Debian" "jessie"
-		check_alt "elementaryOS"  "luna"     "Ubuntu" "precise"
-		check_alt "elementaryOS"  "freya"    "Ubuntu" "trusty"
-		check_alt "elementaryOS"  "loki"     "Ubuntu" "xenial"
-		check_alt "Trisquel"      "toutatis" "Ubuntu" "precise"
-		check_alt "Trisquel"      "belenos"  "Ubuntu" "trusty"
-		check_alt "Trisquel"      "flidas"   "Ubuntu" "xenial"
-		check_alt "BOSS"          "anokha"   "Debian" "wheezy"
-		check_alt "bunsenlabs"    "bunsen-hydrogen" "Debian" "jessie"
-		check_alt "Tanglu"        "chromodoris" "Debian" "jessie"
-		check_alt "Strech"        "strech" "Debian" "stretch"
-
-
-		if [ "$DISTRO" = "jessie" ] || [ "$DISTRO" = "wheezy" ] || [ "$DISTRO" = "stretch" ] ; then
-			PKG="debian"
-		elif [ "$DISTRO" = "xenial" ] || [ "$DISTRO" = "trusty" ] || [ "$DISTRO" = "precise" ] || [ "$DISTRO" = "artful" ] || [ "$DISTRO" = "bionic" ] ; then
-			PKG="linux"
-		fi
-	      fi
-
-	        if [ -f /bin/rpm ] || [ -f /usr/bin/rpm ] ; then
-                     PKG="centos"
-	        fi
+	cat /proc/version | grep -iPq '(redhat|centos)' && PKG=centos 
 
 	elif [ "$(uname)" = "Darwin" ] ; then
 		PKG="darwin"
@@ -81,8 +42,13 @@ get_package() {
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
-	if [ "$PKG" = "linux" ] ; then
-        MD=$(curl -Ss ${LOOKUP_URL} | grep "\[parity\]")
+	if [ "$PKG" = "linux" -a "$LIBSSL" = "10" ]; then
+        MD=$(curl -Ss ${LOOKUP_URL} | grep deb)
+		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
+	fi
+
+	if [ "$PKG" = "linux" -a "$LIBSSL" = "undef" ]; then
+	MD=$(curl -Ss ${LOOKUP_URL} | grep "\[parity\]")
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
@@ -147,14 +113,19 @@ install() {
 		sudo dpkg -i $TMPDIR/$NAME
 	fi
 
-	if [ "$PKG" = "linux" ] ; then
+	if [ "$PKG" = "linux" -a $LIBSSL = "10" ] ; then
+		NAME=$(basename $DOWNLOAD_FILE)
+		sudo dpkg -i $TMPDIR/$NAME
+	fi
+
+	if [ "$PKG" = "linux" -a $LIBSSL = "undef" ] ; then
 	    sudo cp $TMPDIR/parity /usr/bin
 		sudo chmod +x /usr/bin/parity
 	fi
 
         if [ "$PKG" = "centos" ] ; then
 	    NAME=$(basename $DOWNLOAD_FILE)
-	    sudo rpm -i $TMPDIR/$NAME
+	    sudo rpm -U $TMPDIR/$NAME
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
@@ -177,6 +148,12 @@ help() {
 
 }
 
+# curl installed? 
+which curl &> /dev/null 
+if [[ $? -ne 0 ]] ; then
+    echo '"curl" binary not found, please install and retry'
+    exit 1
+fi
 
 while [ "$1" != "" ]; do
 	case $1 in
