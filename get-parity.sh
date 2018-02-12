@@ -33,6 +33,8 @@ check_os() {
 get_package() {
 	if [ "$RELEASE" = "beta" ]; then
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=beta-release"
+	elif [ "$RELEASE" = "stable" ]; then
+		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=stable-release"
 	else
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$RELEASE"
 	fi
