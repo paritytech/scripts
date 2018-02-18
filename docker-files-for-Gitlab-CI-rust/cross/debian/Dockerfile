@@ -1,22 +1,22 @@
 FROM debian:stretch
 MAINTAINER Parity Technologies <devops@parity.io>
 
-# install build dependencies
-RUN apt-get -y update && \
-  apt-get install -y --allow --no-install-recommends \
-  g++ gcc libc6 libc6-dev make build-essential \
-  curl git ca-certificates file python zip dpkg-dev rhash expect \
-	nodejs openssl snapcraft \
-	pkg-config libudev-dev libudev-dev:arm64
+WORKDIR /build
+
+# install tools and dependencies
+RUN apt -y update && \
+  apt install -y --no-install-recommends \
+	software-properties-common curl git file binutils binutils-dev \
+	make ca-certificates g++ zip dpkg-dev python rhash nodejs openssl \
+  build-essential pkg-config libssl-dev libudev-dev
 
 #install nodejs
 RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - && \
-	  apt-get install -y nodejs
+  apt-get install -y nodejs
 
 # install AWS CLI
 RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
-    python get-pip.py && \
-    pip install awscli
+    python get-pip.py && pip install awscli
 
 # install rustup
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y

@@ -5,7 +5,7 @@ MAINTAINER Parity Technologies <devops@parity.io>
 RUN dpkg --add-architecture i386
 RUN apt update && \
   apt install -y --no-install-recommends \
-  g++ gcc gcc-multilib g++-multilib make build-essential \
+  g++ gcc gcc-multilib g++-multilib make build-essential binutils libc6-dev\
   curl git ca-certificates file python zip dpkg-dev rhash expect \
 	nodejs openssl snapcraft \
 	pkg-config libudev-dev libudev-dev:i386

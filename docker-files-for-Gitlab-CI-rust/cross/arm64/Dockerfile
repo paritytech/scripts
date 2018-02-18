@@ -1,6 +1,8 @@
 FROM ubuntu:xenial
 MAINTAINER Parity Technologies <devops@parity.io>
 
+WORKDIR /build
+
 # install aarch64(armv8) dependencies and tools
 RUN dpkg --add-architecture arm64
 RUN echo '# source urls for arm64 \n\
