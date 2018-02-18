@@ -5,7 +5,9 @@ WORKDIR /build
 
 # install tools and dependencies
 RUN yum install -y epel-release &&yum-config-manager --enable epel-testing && yum -y update --enablerepo=epel-testing&&\
-    yum install -y rpm-build ruby rubygems git wget curl file make automake autoconf curl-devel zlib-devel ruby-devel binutils gcc-c++ gcc python zip rhash openssl-devel build-essential pkg-config libudev-devel --enablerepo=epel-testing
+    yum install -y rpm-build ruby rubygems git wget curl file make automake autoconf libtool \
+    curl-devel zlib-devel ruby-devel binutils gcc-c++ gcc python zip rhash openssl-devel \
+    build-essential pkg-config libudev-devel --enablerepo=epel-testing
 RUN yum -y update glibc
 
 # install nodejs & npm

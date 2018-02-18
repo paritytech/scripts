@@ -1,6 +1,8 @@
 FROM ubuntu:xenial
 MAINTAINER Parity Technologies <devops@parity.io>
 
+WORKDIR /build
+
 # install armv7 dependencies and tools
 RUN dpkg --add-architecture armhf
 RUN	echo '# source urls for armhf \n\
@@ -10,9 +12,9 @@ RUN	echo '# source urls for armhf \n\
 	deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main \n\
 	deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n\
 	deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n # end armhf section' >> /etc/apt/sources.list &&\
-	sed -r 's/deb h/deb \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list && \
+	sed -r 's/deb h/deb \[arch=armhf\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list && \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list&& \
-	sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list&&cat /etc/apt/sources.list &&\
+	sed -r 's/deb-src h/deb-src \[arch=armhf\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list&&cat /etc/apt/sources.list &&\
 	cp /tmp/sources-tmp.list /etc/apt/sources.list&& echo "next"&&cat /etc/apt/sources.list
 RUN	apt update&& \
   apt install -y --no-install-recommends \
