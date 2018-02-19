@@ -132,7 +132,8 @@ install() {
 
 	if [ "$PKG" = "darwin" ] ; then
 		NAME=$(basename $DOWNLOAD_FILE)
-		sudo /usr/sbin/installer -pkg $TMPDIR/$NAME -target /
+		sudo /usr/sbin/installer -pkg $TMPDIR/$NAME -target / && \
+		sudo ln -sF /Applications/Parity\ Ethereum.app/Contents/MacOS/parity /usr/local/bin/parity
 	fi
 
 }
