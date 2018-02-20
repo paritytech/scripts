@@ -1,6 +1,5 @@
 #!/bin/bash
 # Copyright 2017 Parity Technologies (UK) Ltd.
-set -x
 RELEASE="beta"
 ARCH=$(uname -m)
 VANITY_SERVICE_URL="https://vanity-service.parity.io/parity-binaries?architecture=$ARCH&format=markdown"
