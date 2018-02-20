@@ -40,22 +40,22 @@ get_package() {
 	fi
 
 	if [ "$PKG" = "debian" ] ; then
-        MD=$(curl -Ss ${LOOKUP_URL} | grep amd64 | grep deb )
+        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep amd64 | grep deb )
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
 	if [ "$PKG" = "linux" -a "$LIBSSL" = "10" ]; then
-        MD=$(curl -Ss ${LOOKUP_URL} | grep deb)
+        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep deb)
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
 	if [ "$PKG" = "linux" -a "$LIBSSL" = "undef" ]; then
-	MD=$(curl -Ss ${LOOKUP_URL} | grep "\[parity\]")
+	MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep "\[parity\]")
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
 	if [ "$PKG" = "centos" ] ; then
-        MD=$(curl -Ss ${LOOKUP_URL} | grep "rpm")
+        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep "rpm")
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
