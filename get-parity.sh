@@ -60,7 +60,7 @@ get_package() {
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
-		MD=$(curl -Ss ${LOOKUP_URL} | grep pkg )
+		MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep pkg )
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 }
