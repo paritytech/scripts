@@ -3,8 +3,8 @@ MAINTAINER Parity Technologies <devops@parity.io>
 
 WORKDIR /build
 
-# install arm dependencies
-RUN dpkg --add-architecture armhf &&echo "foreign-architecture armhf" >> /etc/dpkg/dpkg.cfg.d/architectures
+# install arm dependencies and tools
+RUN dpkg --add-architecture armhf
 RUN	echo '# source urls for armhf \n\
 	deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial main \n\
 	deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial main \n\

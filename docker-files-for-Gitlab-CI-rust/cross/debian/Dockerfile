@@ -11,7 +11,7 @@ RUN apt -y update && \
   build-essential pkg-config libssl-dev libudev-dev
 
 #install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - && \
+RUN curl -sL https://deb.nodesource.com/setup_8.x | -E bash - && \
   apt-get install -y nodejs
 
 # install AWS CLI
