@@ -49,7 +49,7 @@ ENV HOME /root
 RUN curl -O https://www.openssl.org/source/openssl-1.0.2n.tar.gz && \
   tar xf openssl-1.0.2n.tar.gz && cd openssl-1.0.2n && \
   ./Configure --prefix=${HOME}/openssl ${OS_COMPILER} -fPIC && \
-  &&make && make install && \
+  make && make install && \
   cd .. &&rm -rf openssl-*
 # set cross compile ENV
 ENV OPENSSL_DIR "/root/openssl"

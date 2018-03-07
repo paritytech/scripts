@@ -8,7 +8,7 @@ RUN apt -y update && \
   apt install -y --no-install-recommends \
 	software-properties-common curl git file binutils binutils-dev \
 	make ca-certificates g++ zip dpkg-dev python rhash nodejs openssl \
-  build-essential pkg-config libssl-dev libudev-dev
+  build-essential pkg-config libssl-dev libudev-dev gnupg
 
 #install nodejs
 RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
