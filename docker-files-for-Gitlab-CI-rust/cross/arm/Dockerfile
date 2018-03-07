@@ -41,6 +41,9 @@ ENV PATH /root/.cargo/bin:$PATH
 ENV RUST_TARGETS arm-unknown-linux-gnueabihf
 ENV TARGET arm-unknown-linux-gnueabihf
 
+# install arm toolchain
+RUN rustup target add armv-unknown-linux-gnueabihf
+
 # install openssl
 ENV OS_COMPILER linux-armv4
 ENV AR arm-linux-gnueabihf-ar
