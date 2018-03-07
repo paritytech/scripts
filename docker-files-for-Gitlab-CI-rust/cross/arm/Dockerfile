@@ -42,7 +42,7 @@ ENV RUST_TARGETS arm-unknown-linux-gnueabihf
 ENV TARGET arm-unknown-linux-gnueabihf
 
 # install arm toolchain
-RUN rustup target add armv-unknown-linux-gnueabihf
+RUN rustup target add arm-unknown-linux-gnueabihf
 
 # install openssl
 ENV OS_COMPILER linux-armv4
