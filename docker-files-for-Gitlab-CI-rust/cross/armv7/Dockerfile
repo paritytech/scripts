@@ -62,8 +62,8 @@ ENV OPENSSL_DIR "/root/openssl"
 ENV CPPFLAGS "-I/usr/include"
 ENV LDFLAGS "-L/usr/lib/arm-linix-gnueabihf"
 RUN ln -sf /usr/bin/arm-linux-gnueabihf-strip /usr/bin/strip
-RUN HOST_CC gcc
-RUN HOST_CXX g++
+ENV HOST_CC gcc
+ENV HOST_CXX g++
 
 # show backtraces
 ENV RUST_BACKTRACE 1
