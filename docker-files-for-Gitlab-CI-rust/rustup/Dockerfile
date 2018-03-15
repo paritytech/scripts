@@ -7,7 +7,7 @@ WORKDIR /build
 RUN apt -y update && \
   apt install -y --no-install-recommends \
 	software-properties-common curl git file binutils binutils-dev snapcraft \
-	make ca-certificates g++ zip dpkg-dev python rhash nodejs openssl \
+	make ca-certificates g++ zip dpkg-dev python rhash openssl \
   build-essential pkg-config libssl-dev libudev-dev ruby-dev
 
 #install nodejs
@@ -24,7 +24,7 @@ RUN apt install -y oracle-java8-installer
 RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
     python get-pip.py && pip install awscli
 
-# install FPM 
+# install FPM
 RUN gem install fpm
 
 # install rustup
@@ -39,9 +39,6 @@ RUN rustup install nightly
 
 # setup default stable channel
 RUN rustup default stable
-
-#rustup show
-RUN rustup show
 
 # show backtraces
 ENV RUST_BACKTRACE 1

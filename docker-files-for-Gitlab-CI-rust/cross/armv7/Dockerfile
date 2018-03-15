@@ -56,11 +56,14 @@ RUN curl -O https://www.openssl.org/source/openssl-1.0.2n.tar.gz && \
   ./Configure --prefix=${HOME}/openssl ${OS_COMPILER} -fPIC && \
   make && make install && \
   cd .. &&rm -rf openssl-*
+
 # set cross compile ENV
 ENV OPENSSL_DIR "/root/openssl"
 ENV CPPFLAGS "-I/usr/include"
 ENV LDFLAGS "-L/usr/lib/arm-linix-gnueabihf"
 RUN ln -sf /usr/bin/arm-linux-gnueabihf-strip /usr/bin/strip
+RUN HOST_CC gcc
+RUN HOST_CXX g++
 
 # show backtraces
 ENV RUST_BACKTRACE 1
