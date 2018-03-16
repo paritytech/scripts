@@ -7,7 +7,7 @@ WORKDIR /build
 RUN apt -y update && \
   apt install -y --no-install-recommends \
 	software-properties-common curl git file binutils binutils-dev snapcraft \
-	make ca-certificates g++ zip dpkg-dev python rhash rpm openssl \
+	make ca-certificates g++ zip dpkg-dev python rhash rpm openssl gettext\
   build-essential pkg-config libssl-dev libudev-dev ruby-dev
 
 #install nodejs
