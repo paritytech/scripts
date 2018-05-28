@@ -63,6 +63,11 @@ RUN ln -sf /usr/bin/aarch64-linux-gnu-strip /usr/bin/strip
 ENV HOST_CC gcc
 ENV HOST_CXX g++
 
+# Rust-related configuration
+RUN echo '[target.aarch64-unknown-linux-gnu] \n\
+    linker = "aarch64-linux-gnu-gcc" \n\
+    ar = "aarch64-linux-gnu-ar" \n' >> /root/.cargo/config
+
 # show backtraces
 ENV RUST_BACKTRACE 1
 

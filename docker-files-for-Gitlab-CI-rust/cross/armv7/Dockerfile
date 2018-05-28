@@ -65,6 +65,11 @@ RUN ln -sf /usr/bin/arm-linux-gnueabihf-strip /usr/bin/strip
 ENV HOST_CC gcc
 ENV HOST_CXX g++
 
+# Rust-related configuration
+RUN echo '[target.armv7-unknown-linux-gnueabihf] \n\
+    linker = "arm-linux-gnueabihf-gcc" \n\
+    ar = "arm-linux-gnueabihf-ar" \n' >> /root/.cargo/config
+
 # show backtraces
 ENV RUST_BACKTRACE 1
 
