@@ -62,13 +62,14 @@ RUN cd /root/eudev && \
 RUN rm -rf /root/eudev
 RUN rm /root/libudev.patch
 
-#ENV ARM_LINUX_ANDROIDEABI_OPENSSL_DIR /opt/ndk-standalone/sysroot/usr
+# set cross compile ENV
 ENV ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR /opt/ndk-standalone/sysroot/usr
 ENV CC_armv7_linux_androideabi arm-linux-androideabi-clang
 ENV CXX_armv7_linux_androideabi arm-linux-androideabi-clang++
 ENV AR_armv7_linux_androideabi arm-linux-androideabi-ar
 ENV CFLAGS_armv7_linux_androideabi -std=gnu11 -fPIC -D OS_ANDROID
 ENV CXXFLAGS_armv7_linux_androideabi -std=gnu++11 -fPIC -fexceptions -frtti -static-libstdc++ -D OS_ANDROID
+RUN ln -sf /opt/ndk-standalone/bin/arm-linux-androideabi-strip /usr/bin/strip
 ENV HOST_CC gcc
 ENV HOST_CXX g++
 
