@@ -27,6 +27,10 @@ ENV PATH /root/.cargo/bin:$PATH
 # show backtraces
 ENV RUST_BACKTRACE 1
 
+#compiler ENV
+ENV CC gcc
+ENV CXX g++
+
 # cleanup
 RUN apt autoremove -y
 RUN apt clean -y

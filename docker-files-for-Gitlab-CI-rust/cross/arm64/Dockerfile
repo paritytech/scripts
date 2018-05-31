@@ -38,8 +38,8 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
 ENV PATH /root/.cargo/bin:$PATH
 
 # set cargo target
-ENV RUST_TARGETS aarch64-unknown-linux-gnueabihf
-ENV TARGET aarch64-unknown-linux-gnueabihf
+ENV RUST_TARGETS aarch64-unknown-linux-gnu
+ENV TARGET aarch64-unknown-linux-gnu
 
 # install aarch64 toolchain
 RUN rustup target add aarch64-unknown-linux-gnu
@@ -48,6 +48,9 @@ RUN rustup target add aarch64-unknown-linux-gnu
 ENV OS_COMPILER linux-aarch64
 ENV AR aarch64-linux-gnu-ar
 ENV CC aarch64-linux-gnu-gcc
+ENV CXX aarch64-linux-gnu-g++
+ENV HOST_CC gcc
+ENV HOST_CXX g++
 ENV HOME /root
 RUN curl -O https://www.openssl.org/source/openssl-1.0.2n.tar.gz && \
  tar xf openssl-1.0.2n.tar.gz && cd openssl-1.0.2n && \
@@ -60,13 +63,7 @@ ENV OPENSSL_DIR "/root/openssl"
 ENV CPPFLAGS "-I/usr/include"
 ENV LDFLAGS "-L/usr/lib/arm-linix-aarch64"
 RUN ln -sf /usr/bin/aarch64-linux-gnu-strip /usr/bin/strip
-ENV HOST_CC gcc
-ENV HOST_CXX g++
 
-# Rust-related configuration
-RUN echo '[target.aarch64-unknown-linux-gnu] \n\
-    linker = "aarch64-linux-gnu-gcc" \n\
-    ar = "aarch64-linux-gnu-ar" \n' >> /root/.cargo/config
 
 # show backtraces
 ENV RUST_BACKTRACE 1

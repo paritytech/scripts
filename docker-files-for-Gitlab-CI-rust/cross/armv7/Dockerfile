@@ -50,6 +50,9 @@ RUN rustup target add armv7-unknown-linux-gnueabihf
 ENV OS_COMPILER linux-armv4
 ENV AR arm-linux-gnueabihf-ar
 ENV CC arm-linux-gnueabihf-gcc
+ENV CXX arm-linux-gnueabihf-g++
+ENV HOST_CC gcc
+ENV HOST_CXX g++
 ENV HOME /root
 RUN curl -O https://www.openssl.org/source/openssl-1.0.2n.tar.gz && \
   tar xf openssl-1.0.2n.tar.gz && cd openssl-1.0.2n && \
@@ -62,13 +65,6 @@ ENV OPENSSL_DIR "/root/openssl"
 ENV CPPFLAGS "-I/usr/include"
 ENV LDFLAGS "-L/usr/lib/arm-linix-gnueabihf"
 RUN ln -sf /usr/bin/arm-linux-gnueabihf-strip /usr/bin/strip
-ENV HOST_CC gcc
-ENV HOST_CXX g++
-
-# Rust-related configuration
-RUN echo '[target.armv7-unknown-linux-gnueabihf] \n\
-    linker = "arm-linux-gnueabihf-gcc" \n\
-    ar = "arm-linux-gnueabihf-ar" \n' >> /root/.cargo/config
 
 # show backtraces
 ENV RUST_BACKTRACE 1

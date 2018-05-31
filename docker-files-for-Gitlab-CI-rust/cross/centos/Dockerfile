@@ -30,5 +30,9 @@ RUN curl -sSf https://static.rust-lang.org/rustup.sh -o rustup.sh &&\
 # show backtraces
 ENV RUST_BACKTRACE 1
 
+#compiler ENV
+ENV CC gcc
+ENV CXX g++
+
 # cleanup
 RUN rm -rf /tmp/* /var/tmp/*

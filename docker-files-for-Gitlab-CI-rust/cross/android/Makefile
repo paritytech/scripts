@@ -7,7 +7,7 @@ TAG=latest
 IMAGE=${USER}/${NAME}:${TAG}
 
 help:
-	@echo "Build rustup arm64 image."
+	@echo "Build rustup android image."
 	@echo
 	@echo "Usage:"
 	@echo "  make [help]        - display this message"

@@ -48,6 +48,10 @@ RUN apt autoremove -y
 RUN apt clean -y
 RUN rm -rf /tmp/* /var/tmp/*
 
+#compiler ENV
+ENV CC gcc
+ENV CXX g++
+
 #snapcraft ENV
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
