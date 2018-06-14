@@ -3,19 +3,11 @@
 RELEASE="beta"
 ARCH=$(uname -m)
 VANITY_SERVICE_URL="https://vanity-service.parity.io/parity-binaries?architecture=$ARCH&format=markdown"
-LIBSSL="undef"
 
 check_os() {
 
 	if [ "$(uname)" = "Linux" ] ; then
-	PKG=linux   # linux is my default 
-
-	if  (cat /proc/version | grep -Piq '(debian|ubuntu)')  ; then
-	  LIBSSL=10
-      grep -qi 'stretch' /etc/*release && PKG=debian 
-	fi
-
-	cat /proc/version | grep -iPq '(redhat|centos)' && PKG=centos 
+	PKG="linux"   # linux is my default 
 
 	elif [ "$(uname)" = "Darwin" ] ; then
 		PKG="darwin"
@@ -23,8 +15,8 @@ check_os() {
 	else
 		echo "Unknown operating system"
 		echo "Please select your operating system"
-		echo "Choices: debian - Ubuntu / Debian"
-		echo "	     linux - Other linux distro"
+		echo "Choices:"
+		echo "	     linux - any linux distro"
 		echo "	     darwin - MacOS"
 		read PKG
 	fi
@@ -39,56 +31,31 @@ get_package() {
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$RELEASE"
 	fi
 
-	if [ "$PKG" = "debian" ] ; then
-        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep amd64 | grep deb )
-		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
-	fi
-
-	if [ "$PKG" = "linux" -a "$LIBSSL" = "10" ]; then
-        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep deb)
-		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
-	fi
-
-	if [ "$PKG" = "linux" -a "$LIBSSL" = "undef" ]; then
-	MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep "\[parity\]")
-		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
-	fi
-
-	if [ "$PKG" = "centos" ] ; then
-        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep "rpm")
-		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
+	if [ "$PKG" = "linux" ]; then
+	MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep " \[parity\]")
+		DOWNLOAD_FILE=$(echo $MD | grep -oP 'https://[^)]+')
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
-		MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep pkg )
-		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
+		MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep '\.pkg' )
+		DOWNLOAD_FILE=$(echo $MD | grep -oP 'https://[^)]+')
 	fi
 }
 
 check_upgrade() {
 
-	if [ -f /usr/bin/parity ] ; then
-		OLD_VERSION=$(parity --version | grep version|  cut -d/ -f2  | cut -d- -f1 | sed 's/v//g')
+	if [ -x /usr/bin/parity ] ; then
+		OLD_VERSION=$(parity --version | grep -Po 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')
 	else
 		OLD_VERSION="0.0.0"
 	fi
 
 	if [ "$PKG" = "linux" ] ; then
-		FILE=$(curl -Ss $LOOKUP_URL | grep amd | cut -d "(" -f2 | cut -d ")" -f1)
-		NEW_VERSION=$(basename $FILE | cut -d_ -f2)
-	fi
-
-	if [ "$PKG" = "debian" ] ; then
-		NEW_VERSION=$(basename $DOWNLOAD_FILE  |  cut -d_ -f2)
-	fi
-
-	if [ "$PKG" = "centos" ] ; then
-	    NEW_VERSION=$(basename $DOWNLOAD_FILE  |  cut -d_ -f2)
-
+		NEW_VERSION=$(curl -Ss $LOOKUP_URL | grep -oP '_[0-9]+\.[0-9]+\.[0-9]+_' | tr -d '_' | tail -n1)
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
-		NEW_VERSION=$(basename $DOWNLOAD_FILE | cut -d- -f2)
+		NEW_VERSION=$(echo $DOWNLOAD_FILE | grep -oP '_[0-9]+\.[0-9]+\.[0-9]+_' | tr -d '_' | tail -n1)
 	fi
 
 	if [ "$NEW_VERSION" = "$OLD_VERSION" ] ; then
@@ -105,29 +72,12 @@ check_upgrade() {
 
 
 install() {
+  TMPDIR=$(mktemp -d) && cd $TMPDIR
+	curl -Ss -O $DOWNLOAD_FILE
 
-    TMPDIR=$(mktemp -d)
-    cd $TMPDIR
-	$(curl -Ss -O $DOWNLOAD_FILE)
-
-	if [ "$PKG" = "debian" ] ; then
-		NAME=$(basename $DOWNLOAD_FILE)
-		sudo dpkg -i $TMPDIR/$NAME
-	fi
-
-	if [ "$PKG" = "linux" -a $LIBSSL = "10" ] ; then
-		NAME=$(basename $DOWNLOAD_FILE)
-		sudo dpkg -i $TMPDIR/$NAME
-	fi
-
-	if [ "$PKG" = "linux" -a $LIBSSL = "undef" ] ; then
+	if [ "$PKG" = "linux" ] ; then
 	    sudo cp $TMPDIR/parity /usr/bin
 		sudo chmod +x /usr/bin/parity
-	fi
-
-        if [ "$PKG" = "centos" ] ; then
-	    NAME=$(basename $DOWNLOAD_FILE)
-	    sudo rpm -U $TMPDIR/$NAME
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
@@ -142,7 +92,6 @@ install() {
 version_gt() {
 	test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1";
 }
-
 
 
 help() {
