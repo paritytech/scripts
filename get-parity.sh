@@ -33,29 +33,29 @@ get_package() {
 
 	if [ "$PKG" = "linux" ]; then
 	MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep " \[parity\]")
-		DOWNLOAD_FILE=$(echo $MD | grep -oP 'https://[^)]+')
+		DOWNLOAD_FILE=$(echo $MD | grep -oE 'https://[^)]+')
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
 		MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep '\.pkg' )
-		DOWNLOAD_FILE=$(echo $MD | grep -oP 'https://[^)]+')
+		DOWNLOAD_FILE=$(echo $MD | grep -oE 'https://[^)]+')
 	fi
 }
 
 check_upgrade() {
 
 	if [ -x /usr/bin/parity ] ; then
-		OLD_VERSION=$(parity --version | grep -Po 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')
+		OLD_VERSION=$(parity --version | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')
 	else
 		OLD_VERSION="0.0.0"
 	fi
 
 	if [ "$PKG" = "linux" ] ; then
-		NEW_VERSION=$(curl -Ss $LOOKUP_URL | grep -oP '_[0-9]+\.[0-9]+\.[0-9]+_' | tr -d '_' | tail -n1)
+		NEW_VERSION=$(curl -Ss $LOOKUP_URL | grep -oE '_[0-9]+\.[0-9]+\.[0-9]+_' | tr -d '_' | tail -n1)
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
-		NEW_VERSION=$(echo $DOWNLOAD_FILE | grep -oP '_[0-9]+\.[0-9]+\.[0-9]+_' | tr -d '_' | tail -n1)
+		NEW_VERSION=$(echo $DOWNLOAD_FILE | grep -oE '_[0-9]+\.[0-9]+\.[0-9]+_' | tr -d '_' | tail -n1)
 	fi
 
 	if [ "$NEW_VERSION" = "$OLD_VERSION" ] ; then
