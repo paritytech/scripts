@@ -40,7 +40,7 @@ get_package() {
 	fi
 
 	if [ "$PKG" = "debian" ] ; then
-        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep amd64 | grep deb )
+        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep -v md5 | grep amd64 | grep deb )
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
