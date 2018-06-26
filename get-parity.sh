@@ -45,7 +45,7 @@ get_package() {
 	fi
 
 	if [ "$PKG" = "linux" -a "$LIBSSL" = "10" ]; then
-        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | | grep -v md5 | grep deb)
+        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep -v md5 | grep deb)
 		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
 	fi
 
