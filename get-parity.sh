@@ -4,7 +4,6 @@ RELEASE="beta"
 ARCH=$(uname -m)
 VANITY_SERVICE_URL="https://vanity-service.parity.io/parity-binaries?architecture=$ARCH&format=markdown"
 LIBSSL="undef"
-RELEASE_URL="releases.parity.io"
 
 check_os() {
 
