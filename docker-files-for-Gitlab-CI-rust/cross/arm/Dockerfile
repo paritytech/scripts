@@ -3,7 +3,7 @@ MAINTAINER Parity Technologies <devops@parity.io>
 
 WORKDIR /build
 
-# install armv7 dependencies and tools
+# install arm dependencies and tools
 RUN dpkg --add-architecture armhf
 RUN	echo '# source urls for armhf \n\
 	deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial main \n\
@@ -19,52 +19,45 @@ RUN	echo '# source urls for armhf \n\
 RUN	apt update&& \
   apt install -y --no-install-recommends \
   g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf g++ make build-essential \
-  curl git ca-certificates file python zip dpkg-dev rhash expect \
-	nodejs openssl snapcraft ruby-dev cmake\
+  curl git ca-certificates file python zip dpkg-dev rhash expect cmake\
+	nodejs openssl snapcraft \
 	pkg-config libudev-dev libudev-dev:armhf
 
-#install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - && \
+# install nodejs
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - && \
   apt-get install -y nodejs
 
 # install AWS CLI
 RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
   python get-pip.py && pip install awscli
 
-# install FPM
-RUN gem install fpm
-
 # install rustup
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
 # rustup directory
 ENV PATH /root/.cargo/bin:$PATH
 
-# set cargo target
-ENV RUST_TARGETS armv7-unknown-linux-gnueabihf
-ENV TARGET armv7-unknown-linux-gnueabihf
+# setup cargo target
+ENV RUST_TARGETS arm-unknown-linux-gnueabihf
+ENV TARGET arm-unknown-linux-gnueabihf
 
-# install armv7 toolchain
-RUN rustup target add armv7-unknown-linux-gnueabihf
+# install arm toolchain
+RUN rustup target add arm-unknown-linux-gnueabihf
 
 # install openssl
 ENV OS_COMPILER linux-armv4
 ENV AR arm-linux-gnueabihf-ar
 ENV CC arm-linux-gnueabihf-gcc
-ENV CXX arm-linux-gnueabihf-g++
-ENV HOST_CC gcc
-ENV HOST_CXX g++
 ENV HOME /root
 RUN curl -O https://www.openssl.org/source/openssl-1.0.2n.tar.gz && \
   tar xf openssl-1.0.2n.tar.gz && cd openssl-1.0.2n && \
   ./Configure --prefix=${HOME}/openssl ${OS_COMPILER} -fPIC && \
   make && make install && \
   cd .. &&rm -rf openssl-*
-
 # set cross compile ENV
 ENV OPENSSL_DIR "/root/openssl"
 ENV CPPFLAGS "-I/usr/include"
 ENV LDFLAGS "-L/usr/lib/arm-linix-gnueabihf"
-RUN ln -sf /usr/bin/arm-linux-gnueabihf-strip /usr/bin/strip
 
 # show backtraces
 ENV RUST_BACKTRACE 1
