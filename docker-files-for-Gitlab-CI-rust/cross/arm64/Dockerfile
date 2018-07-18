@@ -19,7 +19,7 @@ RUN echo '# source urls for arm64 \n\
 RUN apt update&& \
   apt install -y --no-install-recommends \
   g++-aarch64-linux-gnu gcc-aarch64-linux-gnu g++ make build-essential \
-	curl git ca-certificates file python zip dpkg-dev rhash expect \
+	curl git ca-certificates file python zip dpkg-dev rhash expect cmake \
 	nodejs openssl snapcraft \
 	pkg-config libudev-dev libudev-dev:arm64
 

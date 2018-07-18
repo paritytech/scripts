@@ -37,8 +37,8 @@ get_package() {
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$RELEASE"
 	fi
 
-	MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep " \[parity\]")
-	DOWNLOAD_FILE=$(echo $MD | grep -oE 'https://[^)]+')
+  MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep " \[parity\]")
+  DOWNLOAD_FILE=$(echo $MD | grep -oE 'https://[^)]+')
 }
 
 check_upgrade() {
