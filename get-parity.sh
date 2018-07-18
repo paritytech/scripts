@@ -109,6 +109,10 @@ check_sha256() {
     SHA256_CHECK="$SHA256_CHECK --sha256"
   fi
 
+  if [ "$PKG" = "darwin" ] ; then
+    SHA256_CHECK="shasum -a 256"
+  fi
+
   # see if we can call the binary to calculate sha256 sums
   if ! ($SHA256_CHECK --version &> /dev/null) then
     echo "Unable to check SHA256 checksum, please install sha256sum or rhash binary"
