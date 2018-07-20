@@ -126,7 +126,7 @@ check_sha256() {
   # debug # echo -e "is checksum:\t $IS_CHECKSUM"
   # debug # echo -e "must checksum:\t $MUST_CHECKSUM"
   if [[ $IS_CHECKSUM != $MUST_CHECKSUM ]]; then
-    echo "SHA256 Checksum missmatch, abording installation"
+    echo "SHA256 Checksum missmatch, aboarding installation"
     cleanup
     exit 1 
   fi
