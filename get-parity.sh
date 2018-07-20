@@ -1,21 +1,19 @@
 #!/bin/bash
 # Copyright 2017 Parity Technologies (UK) Ltd.
+
+## Update this with any new relase!
+VERSION_STABLE="1.11.7"
+VERSION_BETA="2.0.0"
+##
+
 RELEASE="beta"
 ARCH=$(uname -m)
 VANITY_SERVICE_URL="https://vanity-service.parity.io/parity-binaries?architecture=$ARCH&format=markdown"
-LIBSSL="undef"
 
 check_os() {
 
 	if [ "$(uname)" = "Linux" ] ; then
-	PKG=linux   # linux is my default 
-
-	if  (cat /proc/version | grep -Piq '(debian|ubuntu)')  ; then
-	  LIBSSL=10
-      grep -qi 'stretch' /etc/*release && PKG=debian 
-	fi
-
-	cat /proc/version | grep -iPq '(redhat|centos)' && PKG=centos 
+	PKG="linux"   # linux is my default 
 
 	elif [ "$(uname)" = "Darwin" ] ; then
 		PKG="darwin"
@@ -23,8 +21,8 @@ check_os() {
 	else
 		echo "Unknown operating system"
 		echo "Please select your operating system"
-		echo "Choices: debian - Ubuntu / Debian"
-		echo "	     linux - Other linux distro"
+		echo "Choices:"
+		echo "	     linux - any linux distro"
 		echo "	     darwin - MacOS"
 		read PKG
 	fi
@@ -39,63 +37,37 @@ get_package() {
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$RELEASE"
 	fi
 
-	if [ "$PKG" = "debian" ] ; then
-        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep -v md5 | grep amd64.deb )
-		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
-	fi
-
-	if [ "$PKG" = "linux" -a "$LIBSSL" = "10" ]; then
-        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep -v md5 | grep amd64.deb)
-		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
-	fi
-
-	if [ "$PKG" = "linux" -a "$LIBSSL" = "undef" ]; then
-	MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep -v md5 | grep "\[parity\]")
-		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
-	fi
-
-	if [ "$PKG" = "centos" ] ; then
-        MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep -v md5 | grep "rpm")
-		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
-	fi
-
-	if [ "$PKG" = "darwin" ] ; then
-		MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep -v md5 | grep pkg )
-		DOWNLOAD_FILE=$(echo $MD | cut -d "(" -f2 | cut -d ")" -f1)
-	fi
+  MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep " \[parity\]")
+  DOWNLOAD_FILE=$(echo $MD | grep -oE 'https://[^)]+')
 }
 
 check_upgrade() {
 
-	if [ -f /usr/bin/parity ] ; then
-		OLD_VERSION=$(parity --version | grep version|  cut -d/ -f2  | cut -d- -f1 | sed 's/v//g')
-	else
+  # Determin new Version 
+  case "$RELEASE" in
+    "beta")  NEW_VERSION=$VERSION_BETA
+        ;;
+    "stable") NEW_VERSION=$VERSION_STABLE
+        ;;
+    *) NEW_VERSION=$(echo $DOWNLOAD_FILE | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')   
+        ;;
+  esac
+
+  # Determin old (installed) Version 
+  parity_bin=$(which parity)
+
+	if [ -z $parity_bin ] ; then
 		OLD_VERSION="0.0.0"
-	fi
-
-	if [ "$PKG" = "linux" ] ; then
-		FILE=$(curl -Ss $LOOKUP_URL | grep amd | cut -d "(" -f2 | cut -d ")" -f1)
-		NEW_VERSION=$(basename $FILE | cut -d_ -f2)
-	fi
-
-	if [ "$PKG" = "debian" ] ; then
-		NEW_VERSION=$(basename $DOWNLOAD_FILE  |  cut -d_ -f2)
-	fi
-
-	if [ "$PKG" = "centos" ] ; then
-	    NEW_VERSION=$(basename $DOWNLOAD_FILE  |  cut -d_ -f2)
-
-	fi
-
-	if [ "$PKG" = "darwin" ] ; then
-		NEW_VERSION=$(basename $DOWNLOAD_FILE | cut -d- -f2)
+	else
+		OLD_VERSION=$(parity --version | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')
 	fi
 
 	if [ "$NEW_VERSION" = "$OLD_VERSION" ] ; then
 		echo "Parity $NEW_VERSION already installed"
 		exit 1
 	fi
-	if  version_gt "$NEW_VERSION" "$OLD_VERSION"  ; then
+
+  if  version_gt "$NEW_VERSION" "$OLD_VERSION"  ; then
 		echo "Upgrading parity from $OLD_VERSION to $NEW_VERSION"
 	else
 		echo "Existing version of parity: $OLD_VERSION is newer than the version you attempting to install: $NEW_VERSION"
@@ -103,39 +75,18 @@ check_upgrade() {
 	fi
 }
 
-
 install() {
+  TMPDIR=$(mktemp -d) && cd $TMPDIR
+	curl -Ss -O $DOWNLOAD_FILE
+  check_sha256
 
-    TMPDIR=$(mktemp -d)
-    cd $TMPDIR
-	$(curl -Ss -O $DOWNLOAD_FILE)
-
-	if [ "$PKG" = "debian" ] ; then
-		NAME=$(basename $DOWNLOAD_FILE)
-		sudo dpkg -i $TMPDIR/$NAME
-	fi
-
-	if [ "$PKG" = "linux" -a $LIBSSL = "10" ] ; then
-		NAME=$(basename $DOWNLOAD_FILE)
-		sudo dpkg -i $TMPDIR/$NAME
-	fi
-
-	if [ "$PKG" = "linux" -a $LIBSSL = "undef" ] ; then
-	    sudo cp $TMPDIR/parity /usr/bin
-		sudo chmod +x /usr/bin/parity
-	fi
-
-        if [ "$PKG" = "centos" ] ; then
-	    NAME=$(basename $DOWNLOAD_FILE)
-	    sudo rpm -U $TMPDIR/$NAME
+	if [ "$PKG" = "linux" ] ; then
+	  sudo cp $TMPDIR/parity /usr/bin && sudo chmod +x /usr/bin/parity
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
-		NAME=$(basename $DOWNLOAD_FILE)
-		sudo /usr/sbin/installer -pkg $TMPDIR/$NAME -target / && \
-		sudo ln -sF /Applications/Parity\ Ethereum.app/Contents/MacOS/parity /usr/local/bin/parity
+	  sudo cp $TMPDIR/parity /usr/local/bin && sudo chmod +x /usr/local/bin/parity
 	fi
-
 }
 
 
@@ -144,19 +95,57 @@ version_gt() {
 }
 
 
-
 help() {
-
 	echo "Usage is: -r --release [ stable / beta / nightly ]"
-
 }
 
-# curl installed? 
+
+check_sha256() {
+  # how to check for sha256?
+  SHA256_CHECK=$(which sha256sum 2> /dev/null)
+  if [[ -z $SHA256_CHECK ]] ; then
+    # no sha256sum? try with rhash ...
+    SHA256_CHECK=$(which rhash 2> /dev/null)
+    SHA256_CHECK="$SHA256_CHECK --sha256"
+  fi
+
+  if [ "$PKG" = "darwin" ] ; then
+    SHA256_CHECK="shasum -a 256"
+  fi
+
+  # see if we can call the binary to calculate sha256 sums
+  if ! ($SHA256_CHECK --version &> /dev/null) then
+    echo "Unable to check SHA256 checksum, please install sha256sum or rhash binary"
+    cleanup
+    exit 1
+  fi
+
+  # $SHA256_CHECK $TMPDIR/$DOWNLOAD_FILE 
+  IS_CHECKSUM=$($SHA256_CHECK $TMPDIR/parity | awk '{print $1}')
+  MUST_CHECKSUM=$(curl -sS $LOOKUP_URL | grep ' \[parity\]' | awk '{print $NF'})
+  # debug # echo -e "is checksum:\t $IS_CHECKSUM"
+  # debug # echo -e "must checksum:\t $MUST_CHECKSUM"
+  if [[ $IS_CHECKSUM != $MUST_CHECKSUM ]]; then
+    echo "SHA256 Checksum missmatch, aboarding installation"
+    cleanup
+    exit 1 
+  fi
+}
+
+cleanup() {
+  rm $TMPDIR/*
+  rmdir $TMPDIR
+}
+
+## MAIN ##
+
+## curl installed? 
 which curl &> /dev/null 
 if [[ $? -ne 0 ]] ; then
     echo '"curl" binary not found, please install and retry'
     exit 1
 fi
+##
 
 while [ "$1" != "" ]; do
 	case $1 in
@@ -169,7 +158,6 @@ while [ "$1" != "" ]; do
 	shift
 	done
 
-
 	echo "Release selected is: $RELEASE"
 
 check_os
@@ -178,3 +166,4 @@ if [ "$RELEASE" != "nightly" ] ; then
 	check_upgrade
 fi
 install
+cleanup
