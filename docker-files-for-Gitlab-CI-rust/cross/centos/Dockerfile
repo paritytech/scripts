@@ -5,11 +5,11 @@ WORKDIR /build
 
 # install tools and dependencies
 RUN yum install -y epel-release &&yum-config-manager --enable epel-testing && yum -y update --enablerepo=epel-testing&&\
-    yum install -y rpm-build ruby rubygems git wget curl file make automake autoconf libtool \
+    yum install -y rpm-build ruby rubygems git wget curl file make cmake3 automake autoconf libtool \
     curl-devel zlib-devel ruby-devel binutils gcc-c++ gcc python zip rhash openssl-devel \
-    build-essential pkg-config libudev-devel --enablerepo=epel-testing cmake
+    build-essential pkg-config libudev-devel --enablerepo=epel-testing
 RUN yum -y update glibc
-
+RUN ln -sf /usr/bin/cmake3 /usr/bin/cmake&&cmake --version
 # install nodejs & npm
 RUN curl --silent --location https://rpm.nodesource.com/setup_8.x | bash - &&\
     yum -y install nodejs
