@@ -1,14 +1,13 @@
-FROM ubuntu:latest
+FROM ubuntu:16.04
 MAINTAINER Parity Technologies <devops@parity.io>
 WORKDIR /build
 # install tools and dependencies
 RUN apt-get update && \
-        apt-get dist-upgrade --yes && \
-	apt-get install --yes --no-install-recommends \
-        snapcraft git snapd ca-certificates file python zip curl expect nodejs \
-	&& \ 
-	apt-get autoclean --yes && \ 
-	apt-get clean --yes
+    apt-get dist-upgrade --yes && \
+	  apt-get install --yes --no-install-recommends \
+    snapcraft git snapd ca-certificates file python zip curl expect nodejs && \
+	  apt-get autoclean --yes && \
+	  apt-get clean --yes
 # install AWS CLI
 RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
     python get-pip.py && \
