@@ -34,6 +34,10 @@ RUN rustup target add i686-unknown-linux-gnu
 # install openssl
 ENV OS_COMPILER linux-elf
 ENV HOME /root
+ENV CC gcc
+ENV CXX g++
+ENV HOST_CC gcc
+ENV HOST_CXX g++
 RUN curl -O https://www.openssl.org/source/openssl-1.0.2n.tar.gz && \
   tar xf openssl-1.0.2n.tar.gz && cd openssl-1.0.2n && \
   ./Configure --prefix=${HOME}/openssl ${OS_COMPILER} -fPIC -m32 && \
