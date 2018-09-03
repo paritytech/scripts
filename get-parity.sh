@@ -1,9 +1,9 @@
 #!/bin/bash
-# Copyright 2017 Parity Technologies (UK) Ltd.
+# Copyright 2015-2018 Parity Technologies (UK) Ltd.
 
 ## Update this with any new relase!
 VERSION_STABLE="1.11.10"
-VERSION_BETA="2.0.1"
+VERSION_BETA="2.0.3"
 ##
 
 RELEASE="beta"
