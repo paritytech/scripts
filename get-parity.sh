@@ -32,7 +32,7 @@ get_package() {
 	if [ "$RELEASE" = "beta" ]; then
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$VERSION_BETA"
 	elif [ "$RELEASE" = "stable" ]; then
-		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=VERSION_STABLE"
+		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$VERSION_STABLE"
 	else
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$RELEASE"
 	fi
