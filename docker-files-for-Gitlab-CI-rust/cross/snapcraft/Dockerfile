@@ -15,7 +15,8 @@ RUN apt-get update && \
       zip \
       curl \
       expect \
-      nodejs && \
+      nodejs \
+      rhash && \
     apt-get clean
 # install AWS CLI
 RUN pip install awscli
