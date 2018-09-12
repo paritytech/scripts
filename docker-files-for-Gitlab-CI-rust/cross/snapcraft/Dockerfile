@@ -16,9 +16,8 @@ RUN apt-get update && \
       curl \
       expect \
       nodejs \
-      rhash && \
+      rhash \
+			awscli && \
     apt-get clean
-# install AWS CLI
-RUN pip install awscli
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
