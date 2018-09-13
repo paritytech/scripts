@@ -7,7 +7,7 @@ RUN apt update&& \
   apt install -y --no-install-recommends \
   curl ca-certificates file build-essential wget git g++ cmake pkg-config bison flex rhash\
   unzip lib32stdc++6 lib32z1 python autotools-dev automake autoconf libtool \
-  gperf xsltproc docbook-xsl
+  gperf xsltproc docbook-xsl time
 
 # install rustup
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
