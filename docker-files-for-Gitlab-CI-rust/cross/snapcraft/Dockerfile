@@ -17,7 +17,7 @@ RUN apt-get update && \
       expect \
       nodejs \
       rhash \
-			awscli && \
+      awscli && \
     apt-get clean
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
