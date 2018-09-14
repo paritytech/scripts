@@ -1,9 +1,9 @@
 #!/bin/bash
-# Copyright 2017 Parity Technologies (UK) Ltd.
+# Copyright 2015-2018 Parity Technologies (UK) Ltd.
 
 ## Update this with any new relase!
-VERSION_STABLE="1.11.8"
-VERSION_BETA="2.0.1"
+VERSION_STABLE="1.11.11"
+VERSION_BETA="2.0.4"
 ##
 
 RELEASE="beta"
@@ -30,9 +30,9 @@ check_os() {
 
 get_package() {
 	if [ "$RELEASE" = "beta" ]; then
-		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=beta-release"
+		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=v$VERSION_BETA"
 	elif [ "$RELEASE" = "stable" ]; then
-		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=stable-release"
+		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=v$VERSION_STABLE"
 	else
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$RELEASE"
 	fi
