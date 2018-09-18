@@ -19,6 +19,7 @@ RUN apt-get update && \
         gettext-base \
         nodejs \
         cmake \
+				rhash \
         wget && \
 	wget http://security.ubuntu.com/ubuntu/pool/universe/s/snapcraft/snapcraft_2.43.1_all.deb &&\
 	dpkg -i snapcraft_2.43.1_all.deb &&\

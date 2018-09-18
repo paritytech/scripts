@@ -1,0 +1,37 @@
+image: docker:stable
+
+
+variables:
+  # CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
+  DOCKER_HOST: tcp://docker:2375
+  DOCKER_DRIVER: overlay2
+
+services:
+  - docker:dind
+
+before_script:
+  - docker login -u $Docker_Hub_User_Parity -p $Docker_Hub_Pass_Parity
+  - docker info
+
+
+.build: &docker:build
+  stage: build
+  script:
+    - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
+    - cd $DOCKERFILE_DIR
+    - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+    - docker push $CONTAINER_IMAGE:$CI_BUILD_REF
+    - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
+  only:
+    - schedules
+    - web
+
+build:rust:nightly:
+  <<: *docker:build
+  variables:
+    CONTAINER_IMAGE: parity/rust
+    CONTAINER_TAG:   nightly
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/rustup
+
+
+# vim: expandtab sts=2
