@@ -22,7 +22,6 @@ RUN apt-get update && \
         wget && \
 	wget http://security.ubuntu.com/ubuntu/pool/universe/s/snapcraft/snapcraft_2.43.1_all.deb &&\
 	dpkg -i snapcraft_2.43.1_all.deb &&\
-	apt-get autoclean --yes && \
 	apt-get clean
 
 ENV LC_ALL=C.UTF-8
