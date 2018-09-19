@@ -2,9 +2,30 @@ FROM ubuntu:xenial
 LABEL maintainer="Parity Technologies <devops@parity.io>"
 
 RUN apt-get update && \
-    apt-get install -yq sudo curl file build-essential wget git g++ cmake pkg-config bison flex \
-                        unzip lib32stdc++6 lib32z1 python autotools-dev automake autoconf libtool \
-                        gperf xsltproc docbook-xsl
+    apt-get install --no-install-recommends -y \
+    sudo \
+    curl \
+    file \
+    build-essential \
+    wget \
+    git \
+    g++ \
+    cmake \
+    pkg-config \
+    bison \
+    flex \
+    unzip \
+    lib32stdc++6 \
+    lib32z1 \
+    python \
+    autotools-dev \
+    automake \
+    autoconf \
+    libtool \
+    gperf \
+    xsltproc \
+    docbook-xsl \
+    time
 
 # Rust & Cargo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
