@@ -1,13 +1,15 @@
 image: docker:stable
 
 
+services:
+  - docker:dind
+
+
 variables:
   # CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
   DOCKER_HOST: tcp://docker:2375
   DOCKER_DRIVER: overlay2
 
-services:
-  - docker:dind
 
 before_script:
   - docker login -u $Docker_Hub_User_Parity -p $Docker_Hub_Pass_Parity
@@ -26,7 +28,7 @@ before_script:
     refs:
       - schedules
       - web
-    kubernetes: active
+    # kubernetes: active
   tags:
     - kubernetes
 
