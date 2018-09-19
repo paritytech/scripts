@@ -5,6 +5,7 @@ RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     sudo \
     curl \
+		ca-certificates \
     file \
     build-essential \
     wget \
