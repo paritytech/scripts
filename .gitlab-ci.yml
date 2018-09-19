@@ -25,6 +25,8 @@ before_script:
   only:
     - schedules
     - web
+  tags:
+    - run-in-docker
 
 build:rust:nightly:
   <<: *docker_build
