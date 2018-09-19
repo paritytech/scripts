@@ -23,10 +23,12 @@ before_script:
     - docker push $CONTAINER_IMAGE:$CI_BUILD_REF
     - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
   only:
-    - schedules
-    - web
+    refs:
+      - schedules
+      - web
+    kubernetes: active
   tags:
-    - run-in-docker
+    - kubernetes
 
 build:rust:nightly:
   <<: *docker_build
