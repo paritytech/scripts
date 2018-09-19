@@ -14,7 +14,7 @@ before_script:
   - docker info
 
 
-.build: &docker:build
+.build: &docker_build
   stage: build
   script:
     - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
@@ -27,7 +27,7 @@ before_script:
     - web
 
 build:rust:nightly:
-  <<: *docker:build
+  <<: *docker_build
   variables:
     CONTAINER_IMAGE: parity/rust
     CONTAINER_TAG:   nightly
