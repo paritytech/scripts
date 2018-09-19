@@ -23,6 +23,16 @@ Download, verify and install
  - snapcraft
 
 
+## GitLab CI for building docker images
 
+Pipelines can only be triggered manually for now. For that go to the projects 
+CI/CD -> Pipelines menu and click "Run Pipeline". Variables have to be given 
+to select the image to build. E.g.
 
+```
+DOCKERIMAGE="rust"
+DOCKERTAG="nightly"
+```
+
+Docker image parity/rust:nightly is set up to be rebuild every night.
 

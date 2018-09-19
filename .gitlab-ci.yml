@@ -13,6 +13,8 @@ variables:
 
 
 before_script:
+  - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
+  - test -z "$DOCKERTAG" && echo "DOCKERTAG must also be defined" && exit 1
   - docker login -u $Docker_Hub_User_Parity -p $Docker_Hub_Pass_Parity
   - docker info
 
@@ -29,9 +31,11 @@ before_script:
     refs:
       - schedules
       - web
-    # kubernetes: active
+    kubernetes: active
   tags:
     - kubernetes
+
+
 
 build:rust:nightly:
   <<: *docker_build
@@ -39,6 +43,24 @@ build:rust:nightly:
     CONTAINER_IMAGE: parity/rust
     CONTAINER_TAG:   nightly
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/rustup
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/rust"
+      - $DOCKERTAG   == "nightly"
+
+
+build:rust-android:gitlab-ci:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/rust-android
+    CONTAINER_TAG:   gitlab-ci
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/android
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/rust-android"
+      - $DOCKERTAG   == "gitlab-ci"
+
+
 
 
 # vim: expandtab sts=2
