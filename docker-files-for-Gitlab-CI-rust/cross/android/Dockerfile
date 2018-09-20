@@ -2,7 +2,7 @@ FROM ubuntu:xenial
 LABEL maintainer="Parity Technologies <devops@parity.io>"
 
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y \
+    apt-get install -y \
     sudo \
     curl \
 		ca-certificates \
@@ -81,12 +81,9 @@ ENV CXXFLAGS_arm_linux_androideabi -std=gnu++11 -fPIC -fexceptions -frtti -stati
 ENV CXXFLAGS_armv7_linux_androideabi -std=gnu++11 -fPIC -fexceptions -frtti -static-libstdc++ -D OS_ANDROID
 ENV CXXSTDLIB_arm_linux_androideabi ""
 ENV CXXSTDLIB_armv7_linux_androideabi ""
-RUN ln -sf /opt/ndk-standalone/bin/arm-linux-androideabi-strip /usr/bin/strip
-ENV CC arm-linux-androideabi-clang
-ENV CXX arm-linux-androideabi-clang++
-ENV HOST_CC gcc
-ENV HOST_CXX g++
-ENV RUSTFLAGS -C link-arg=-lc++_static -C link-arg=-lc++abi -C link-arg=-landroid_support
+
+ENV CC gcc
+ENV CXX g++
 
 
 # show backtraces
