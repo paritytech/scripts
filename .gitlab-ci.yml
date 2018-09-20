@@ -22,9 +22,10 @@ before_script:
 .build: &docker_build
   stage: build
   script:
-    - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
     - cd $DOCKERFILE_DIR
-    - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+    # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
+    # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+    - docker build --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
     - docker push $CONTAINER_IMAGE:$CI_BUILD_REF
     - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
   only:
