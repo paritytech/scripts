@@ -26,6 +26,7 @@ RUN apt-get update && \
     gperf \
     xsltproc \
     docbook-xsl \
+		libudev-dev \
     time
 
 # Rust & Cargo
