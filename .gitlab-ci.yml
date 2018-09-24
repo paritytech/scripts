@@ -25,8 +25,9 @@ before_script:
     - cd $DOCKERFILE_DIR
     # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
     # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
-    - docker build --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
-    - docker push $CONTAINER_IMAGE:$CI_BUILD_REF
+    - CONTAINER_DATE_TAG="$CONTAINER_TAG-$(date +%Y%m%d)"
+    - docker build --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+    - docker push $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
     - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
   only:
     refs:

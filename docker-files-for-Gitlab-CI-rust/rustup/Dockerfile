@@ -37,6 +37,12 @@ ENV PATH /root/.cargo/bin:$PATH
 RUN rustup install beta
 RUN rustup install nightly
 
+# install wasm toolchain for polkadot
+RUN rustup target add wasm32-unknown-unknown --toolchain nightly
+# Install wasm-gc. It's useful for stripping slimming down wasm binaries. 
+# (polkadot)
+RUN cargo +nightly install --git https://github.com/alexcrichton/wasm-gc
+
 # setup default stable channel
 RUN rustup default stable
 
