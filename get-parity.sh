@@ -43,7 +43,7 @@ get_package() {
 
 check_upgrade() {
 
-  # Determin new Version 
+  # Determine new Version 
   case "$RELEASE" in
     "beta")  NEW_VERSION=$VERSION_BETA
         ;;
@@ -53,7 +53,7 @@ check_upgrade() {
         ;;
   esac
 
-  # Determin old (installed) Version 
+  # Determine old (installed) Version 
   parity_bin=$(which parity)
 
 	if [ -z $parity_bin ] ; then
