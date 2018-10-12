@@ -1,6 +1,8 @@
 #!/bin/bash
 # Copyright 2015-2018 Parity Technologies (UK) Ltd.
 
+set -e  # Stop on all errors
+
 ## Update this with any new relase!
 VERSION_STABLE="2.1.9"
 VERSION_BETA="2.2.4"
@@ -53,13 +55,11 @@ check_upgrade() {
         ;;
   esac
 
-  # Determine old (installed) Version 
-  parity_bin=$(which parity)
-
-	if [ -z $parity_bin ] ; then
-		OLD_VERSION="0.0.0"
-	else
+  # Determin old (installed) Version 
+  if [[ $(type -P "parity") ]] ; then
 		OLD_VERSION=$(parity --version | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')
+  else
+		OLD_VERSION="0.0.0" # No version of Parity found.
 	fi
 
 	if [ "$NEW_VERSION" = "$OLD_VERSION" ] ; then
@@ -101,30 +101,35 @@ help() {
 
 
 check_sha256() {
-  # how to check for sha256?
-  SHA256_CHECK=$(which sha256sum 2> /dev/null)
-  if [[ -z $SHA256_CHECK ]] ; then
-    # no sha256sum? try with rhash ...
-    SHA256_CHECK=$(which rhash 2> /dev/null)
-    SHA256_CHECK="$SHA256_CHECK --sha256"
-  fi
 
-  if [ "$PKG" = "darwin" ] ; then
-    SHA256_CHECK="shasum -a 256"
-  fi
+  SHA256_CHECK=""
+  for binary in rhash sha256sum shasum ; do
+    echo "debug: check for $binary"
+    [[ $(type -P ${binary}) ]] && SHA256_CHECK=${binary}
+  done
 
-  # see if we can call the binary to calculate sha256 sums
-  if ! ($SHA256_CHECK --version &> /dev/null) then
-    echo "Unable to check SHA256 checksum, please install sha256sum or rhash binary"
-    cleanup
-    exit 1
-  fi
+  case ${SHA256_CHECK} in
+    "rhash" )
+      SHA256_CHECK="$SHA256_CHECK --sha256"
+      #echo "debug: rhash"
+      ;;
+    "sha256sum" )
+      #echo "debug: sha256sum"
+      ;;
+    "shasum" )
+      SHA256_CHECK="shasum -a 256"
+      # echo "debug: shasum"
+      ;;
+    * )
+      echo "Unable to check SHA256 checksum, please install sha256sum or rhash binary"
+      cleanup
+      exit 1
+      ;;
+  esac
 
   # $SHA256_CHECK $TMPDIR/$DOWNLOAD_FILE 
   IS_CHECKSUM=$($SHA256_CHECK $TMPDIR/parity | awk '{print $1}')
   MUST_CHECKSUM=$(curl -sS $LOOKUP_URL | grep ' \[parity\]' | awk '{print $NF'})
-  # debug # echo -e "is checksum:\t $IS_CHECKSUM"
-  # debug # echo -e "must checksum:\t $MUST_CHECKSUM"
   if [[ $IS_CHECKSUM != $MUST_CHECKSUM ]]; then
     echo "SHA256 Checksum missmatch, aboarding installation"
     cleanup
@@ -139,13 +144,8 @@ cleanup() {
 
 ## MAIN ##
 
-## curl installed? 
-which curl &> /dev/null 
-if [[ $? -ne 0 ]] ; then
-    echo '"curl" binary not found, please install and retry'
-    exit 1
-fi
-##
+# is curl?
+[[ $(type -P "curl") ]] || { echo '"curl" binary not found, please install and retry' 1>&2; exit 1; }
 
 while [ "$1" != "" ]; do
 	case $1 in
