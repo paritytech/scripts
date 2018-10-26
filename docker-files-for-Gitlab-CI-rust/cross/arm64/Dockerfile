@@ -61,7 +61,7 @@ RUN curl -O https://www.openssl.org/source/openssl-1.0.2n.tar.gz && \
 # set cross compile ENV
 ENV OPENSSL_DIR "/root/openssl"
 ENV CPPFLAGS "-I/usr/include"
-ENV LDFLAGS "-L/usr/lib/arm-linix-aarch64"
+ENV LDFLAGS "-L/usr/lib/arm-linux-aarch64"
 RUN ln -sf /usr/bin/aarch64-linux-gnu-strip /usr/bin/strip
 
 
