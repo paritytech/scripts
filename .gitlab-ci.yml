@@ -62,7 +62,16 @@ build:rust-android:gitlab-ci:
       - $DOCKERIMAGE == "parity/rust-android"
       - $DOCKERTAG   == "gitlab-ci"
 
-
+build:substrate:nightly:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/substrate
+    CONTAINER_TAG:   nightly
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/substrate
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/substrate"
+      - $DOCKERTAG   == "nightly"
 
 
 # vim: expandtab sts=2
