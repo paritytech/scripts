@@ -5,7 +5,7 @@ RUN apt-get update && \
     apt-get install -y \
     sudo \
     curl \
-		ca-certificates \
+    ca-certificates \
     file \
     build-essential \
     wget \
@@ -26,8 +26,9 @@ RUN apt-get update && \
     gperf \
     xsltproc \
     docbook-xsl \
-		libudev-dev \
-    time
+    libudev-dev \
+    time \
+    rhash
 
 # Rust & Cargo
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
@@ -39,9 +40,9 @@ RUN rustup target add --toolchain stable armv7-linux-androideabi
 # Android NDK and toolchain
 RUN cd /usr/local && \
     wget -q https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip && \
-		echo "> finished downloading" && \
+    echo "> finished downloading" && \
     unzip -qo android-ndk-r16b-linux-x86_64.zip && \
-		echo "> finished unzipping" && \
+    echo "> finished unzipping" && \
     rm -f android-ndk-r16b-linux-x86_64.zip
 ENV NDK_HOME /usr/local/android-ndk-r16b
 RUN /usr/local/android-ndk-r16b/build/tools/make-standalone-toolchain.sh \
