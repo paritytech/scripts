@@ -2,8 +2,8 @@
 # Copyright 2015-2018 Parity Technologies (UK) Ltd.
 
 ## Update this with any new relase!
-VERSION_STABLE="2.1.7"
-VERSION_BETA="2.2.2"
+VERSION_STABLE="2.1.8"
+VERSION_BETA="2.2.3"
 ##
 
 RELEASE="beta"
