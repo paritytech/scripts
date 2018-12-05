@@ -8,7 +8,7 @@ RUN apt -y update && \
   apt install -y --no-install-recommends \
 	software-properties-common curl git file binutils binutils-dev snapcraft \
 	make cmake ca-certificates g++ zip dpkg-dev python rhash rpm openssl gettext\
-  build-essential pkg-config libssl-dev libudev-dev ruby-dev time
+  	build-essential clang libclang-dev pkg-config libssl-dev libudev-dev ruby-dev time
 
 #install nodejs
 RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - && \
