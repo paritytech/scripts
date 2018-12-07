@@ -131,7 +131,7 @@ check_sha256() {
   IS_CHECKSUM=$($SHA256_CHECK $TMPDIR/parity | awk '{print $1}')
   MUST_CHECKSUM=$(curl -sS $LOOKUP_URL | grep ' \[parity\]' | awk '{print $NF'})
   if [[ $IS_CHECKSUM != $MUST_CHECKSUM ]]; then
-    echo "SHA256 Checksum missmatch, aboarding installation"
+    echo "SHA256 Checksum missmatch, aborting installation"
     cleanup
     exit 1 
   fi
