@@ -62,16 +62,18 @@ build:rust-android:gitlab-ci:
       - $DOCKERIMAGE == "parity/rust-android"
       - $DOCKERTAG   == "gitlab-ci"
 
-build:substrate:nightly:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE: parity/substrate
-    CONTAINER_TAG:   nightly
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/substrate
-  only:
-    variables:
-      - $DOCKERIMAGE == "parity/substrate"
-      - $DOCKERTAG   == "nightly"
+# disable nightly builds here as they are images build now directly from the 
+# ci of substrate and can be scheduled there if really needed.
+# build:substrate:nightly:
+#   <<: *docker_build
+#   variables:
+#     CONTAINER_IMAGE: parity/substrate
+#     CONTAINER_TAG:   nightly
+#     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/substrate
+#   only:
+#     variables:
+#       - $DOCKERIMAGE == "parity/substrate"
+#       - $DOCKERTAG   == "nightly"
 
 build:awscli:
   <<: *docker_build
