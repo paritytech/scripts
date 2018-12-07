@@ -73,5 +73,16 @@ build:substrate:nightly:
       - $DOCKERIMAGE == "parity/substrate"
       - $DOCKERTAG   == "nightly"
 
+build:awscli:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/awscli
+    CONTAINER_TAG:   latest
+    DOCKERFILE_DIR:  awscli
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/awscli"
+      - $DOCKERTAG   == "latest"
+
 
 # vim: expandtab sts=2
