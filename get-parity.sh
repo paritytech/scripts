@@ -44,7 +44,6 @@ get_package() {
 }
 
 check_upgrade() {
-
   # Determine new Version 
   case "$RELEASE" in
     "beta")  NEW_VERSION=$VERSION_BETA
@@ -55,7 +54,7 @@ check_upgrade() {
         ;;
   esac
 
-  # Determin old (installed) Version 
+  # Determine old (installed) Version 
   if [[ $(type -P "parity") ]] ; then
 		OLD_VERSION=$(parity --version | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')
   else
