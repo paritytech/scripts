@@ -55,8 +55,8 @@ if ! which rustup >/dev/null 2>&1; then
 else
 	rustup update
 fi
-cargo install --git https://github.com/paritytech/substrate subkey
-cargo install --git https://github.com/paritytech/substrate substrate
+cargo install --force --git https://github.com/paritytech/substrate subkey
+cargo install --force --git https://github.com/paritytech/substrate substrate
 
 f=`mktemp -d`
 git clone https://github.com/paritytech/substrate-up $f
