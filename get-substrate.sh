@@ -44,53 +44,120 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 	echo "Mac OS (Darwin) detected."
 
-	if brew 2>&1 | grep "command not found"; then
-		echo "Installing Homebrew ..."
-		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+	APP="Xcode Command Line Tools"
+	if xcode-select --install 2>&1 | grep "installed"; then
+		echo -e "Skipping, $APP already installed";
 	else
-		echo "Updating Homebrew ..."
+		echo -e "Installing $APP ...";
+		xcode-select --install;
+	fi
+
+	APP="Homebrew"
+	if brew 2>&1 | grep "command not found"; then
+		echo "Installing $APP ..."
+		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+		echo -e 'export PATH="/usr/local/bin:/usr/local/sbin:~/bin:$PATH"' >> ~/.bash_profile;
+		source ~/.bash_profile;
+	else
+		echo "Updating $APP ..."
 		brew doctor --verbose;
 		brew update --verbose;
 	fi
 
+	APP="RBenv"
+	if ! rbenv 2>&1 | grep "command not found"; then
+		echo -e "Skipping, $APP already installed";
+	else
+		echo -e "Installing $APP ...";
+		brew install rbenv;
+		rbenv init;
+		echo -e 'if which rbenv > /dev/null; then eval "$(rbenv init -)"; fi' >> ~/.bash_profile;
+		source ~/.bash_profile;
+		echo -e "Installing Ruby latest version: $(rbenv install -l | grep -v - | tail -1)"
+		rbenv install $(rbenv install -l | grep -v - | tail -1);
+		echo -e "Switching to use Ruby latest version";
+		rbenv global $(rbenv install -l | grep -v - | tail -1);
+	fi
+
+	APP="Node Version Manager (NVM)"
+	if ! nvm 2>&1 | grep "command not found"; then
+		echo -e "Skipping, $APP already installed";
+	else
+		echo -e "Installing $APP ...";
+		curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash;
+		export NVM_DIR="$HOME/.nvm"
+		[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+		[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+		echo -e "Installing Node.js latest LTS version";
+		nvm install --lts
+		echo -e "Switching to use Node.js latest LTS version";
+		nvm use --lts;
+	fi
+
+	APP="Yarn"
+	if ! yarn 2>&1 | grep "command not found"; then
+		echo -e "Skipping, $APP already installed";
+	else
+		echo -e "Installing $APP latest version ...";
+		brew install yarn --without-node;
+	fi
+
+	APP="Git"
 	if ! git 2>&1 | grep "command not found"; then
 		HAD_GIT=true
-		echo "Upgrading Git ..."
+		echo "Upgrading $APP ..."
 		brew upgrade git --verbose
 	else
-		echo "Installing Git ..."
+		echo "Installing $APP ..."
 		brew install git --verbose
 	fi
 
+	APP="Docker"
+	if ! docker 2>&1 | grep "command not found"; then
+		echo -e "Skipping, $APP already installed";
+	else
+		echo -e "Installing Homebrew Cask";
+		brew tap caskroom/cask;
+		echo -e "Installing $APP latest version ...";
+		CASKS=(
+			docker
+		);
+		brew cask install --appdir="/Applications" ${CASKS[@]}
+	fi
+
+	APP="Cmake"
 	if ! cmake 2>&1 | grep "command not found"; then
-		echo "Upgrading Cmake ..."
+		echo "Upgrading $APP ..."
 		brew install cmake --verbose
 	else
-		echo "Installing Cmake ..."
+		echo "Installing $APP ..."
 		brew upgrade cmake --verbose
 	fi
 
+	APP="LLVM"
 	if ! llvm 2>&1 | grep "command not found"; then
-		echo "Upgrading LLVM ..."
+		echo "Upgrading $APP ..."
 		brew install llvm --verbose
 	else
-		echo "Installing LLVM ..."
+		echo "Installing $APP ..."
 		brew upgrade llvm --verbose
 	fi
 
+	APP="OpenSSL"
 	if ! openssl 2>&1 | grep "command not found"; then
-		echo "Upgrading OpenSSL ..."
+		echo "Upgrading $APP ..."
 		brew install openssl --verbose
 	else
-		echo "Installing OpenSSL ..."
+		echo "Installing $APP ..."
 		brew upgrade openssl --verbose
 	fi
 
+	APP="pkg-config"
 	if ! pkg-config 2>&1 | grep "command not found"; then
-		echo "Upgrading pkg-config ..."
+		echo "Upgrading $APP ..."
 		brew install pkg-config --verbose
 	else
-		echo "Installing pkg-config ..."
+		echo "Installing $APP ..."
 		brew upgrade pkg-config --verbose
 	fi
 elif [[ "$OSTYPE" == "freebsd"* ]]; then
@@ -103,9 +170,9 @@ else
 	echo "Please refer to https://github.com/paritytech/substrate for setup information."
 fi
 
+APP="Git"
 if ! $HAD_GIT; then
-	echo "Configuring Git"
-	APP="Git"
+	echo "Configuring $APP"
 	git config --global color.ui auto;
 	echo -e "  Please enter your username for $APP Config:";
 	read -p "    Username > " uservar
@@ -117,16 +184,16 @@ if ! $HAD_GIT; then
 	echo -e "  $APP Config updated with your credentials";
 fi
 
+APP="Rust"
 if rustup 2>&1 | grep "command not found"; then
-	echo "Installing Rust ..."
+	echo "Installing $APP ..."
 	curl https://sh.rustup.rs -sSf | sh -s -- -y
 	source ~/.cargo/env
 else
-	echo "Updating Rust ..."
+	echo "Updating $APP ..."
 	rustup update
 fi
-
-echo "Switching to Rust Stable";
+echo "Switching to $APP Stable";
 rustup default stable;
 
 echo "Installing WASM dependencies"
