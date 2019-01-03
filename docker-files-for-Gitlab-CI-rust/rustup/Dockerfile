@@ -8,11 +8,14 @@ RUN apt-get -y update && \
   apt-get install -y --no-install-recommends \
 	software-properties-common curl git file binutils binutils-dev snapcraft \
   make cmake ca-certificates g++ zip dpkg-dev python rhash rpm openssl gettext \
-  build-essential clang libclang-dev pkg-config libssl-dev libudev-dev ruby-dev time yarn
+  build-essential clang libclang-dev pkg-config libssl-dev libudev-dev ruby-dev time
 
-#install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - && \
-  apt-get install -y nodejs
+#install nodejs and yarn
+RUN curl -sL https://deb.nodesource.com/setup_8.x | bash - 
+RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
+RUN apt-get -y update && apt-get install -y --no-install-recommends \ 
+  nodejs yarn
 
 # install java8
 RUN add-apt-repository -y ppa:webupd8team/java
