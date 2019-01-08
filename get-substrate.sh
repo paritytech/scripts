@@ -128,37 +128,37 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 	APP="Cmake"
 	if ! cmake 2>&1 | grep "command not found"; then
 		echo "Upgrading $APP ..."
-		brew install cmake --verbose
+		brew upgrade cmake --verbose
 	else
 		echo "Installing $APP ..."
-		brew upgrade cmake --verbose
+		brew install cmake --verbose
 	fi
 
 	APP="LLVM"
 	if ! llvm 2>&1 | grep "command not found"; then
 		echo "Upgrading $APP ..."
-		brew install llvm --verbose
+		brew upgrade llvm --verbose
 	else
 		echo "Installing $APP ..."
-		brew upgrade llvm --verbose
+		brew install llvm --verbose
 	fi
 
 	APP="OpenSSL"
 	if ! openssl 2>&1 | grep "command not found"; then
 		echo "Upgrading $APP ..."
-		brew install openssl --verbose
+		brew upgrade openssl --verbose
 	else
 		echo "Installing $APP ..."
-		brew upgrade openssl --verbose
+		brew install openssl --verbose
 	fi
 
 	APP="pkg-config"
 	if ! pkg-config 2>&1 | grep "command not found"; then
 		echo "Upgrading $APP ..."
-		brew install pkg-config --verbose
+		brew upgrade pkg-config --verbose
 	else
 		echo "Installing $APP ..."
-		brew upgrade pkg-config --verbose
+		brew install pkg-config --verbose
 	fi
 elif [[ "$OSTYPE" == "freebsd"* ]]; then
 	echo "FreeBSD detected."
