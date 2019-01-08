@@ -44,18 +44,6 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 		xcode-select --install;
 	fi
 
-	APP="Homebrew"
-	if brew 2>&1 | grep "command not found"; then
-		echo "Installing $APP ..."
-		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-		echo -e 'export PATH="/usr/local/bin:/usr/local/sbin:~/bin:$PATH"' >> ~/.bash_profile;
-		source ~/.bash_profile;
-	else
-		echo "Updating $APP ..."
-		brew doctor --verbose;
-		brew update --verbose;
-	fi
-
 	APP="RBenv"
 	if ! rbenv 2>&1 | grep "command not found"; then
 		echo -e "Skipping, $APP already installed";
@@ -69,6 +57,18 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 		rbenv install $(rbenv install -l | grep -v - | tail -1);
 		echo -e "Switching to use Ruby latest version";
 		rbenv global $(rbenv install -l | grep -v - | tail -1);
+	fi
+
+	APP="Homebrew"
+	if brew 2>&1 | grep "command not found"; then
+		echo "Installing $APP ..."
+		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+		echo -e 'export PATH="/usr/local/bin:/usr/local/sbin:~/bin:$PATH"' >> ~/.bash_profile;
+		source ~/.bash_profile;
+	else
+		echo "Updating $APP ..."
+		brew doctor --verbose;
+		brew update --verbose;
 	fi
 
 	APP="Node Version Manager (NVM)"
