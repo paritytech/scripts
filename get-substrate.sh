@@ -164,13 +164,13 @@ else
 fi
 
 APP="Rust"
-if rustup 2>&1 | grep "command not found"; then
-	echo "Installing $APP ..."
-	curl https://sh.rustup.rs -sSf | sh -s -- -y
-	source ~/.cargo/env
-else
+if ! rustup 2>&1 | grep "command not found"; then
 	echo "Updating $APP ..."
 	rustup update
+else
+	echo "Installing $APP ..."
+	curl https://sh.rustup.rs -sSf | sh -s -- -y;
+	source ~/.cargo/env
 fi
 echo "Switching to $APP Stable";
 rustup default stable;
