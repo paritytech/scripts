@@ -26,8 +26,6 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		echo "Ubuntu/Debian Linux detected."
 		echo "Updating database of available packages ..."
 		$MAKE_ME_ROOT apt update
-		echo "Upgrading installed packages to newer versions ..."
-		$MAKE_ME_ROOT apt upgrade
 		echo "Installing clang, CMake, build-essential, GCC, Git, libclang-dev, libssl-dev, pkg-config ..."
 		$MAKE_ME_ROOT apt install -y clang cmake build-essential gcc git libclang-dev libssl-dev pkg-config
 	else
