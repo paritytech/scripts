@@ -1,14 +1,8 @@
-HAD_GIT=false
-
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 	if [[ `whoami` == "root" ]]; then
 		MAKE_ME_ROOT=
 	else
 		MAKE_ME_ROOT=sudo
-	fi
-
-	if ! git 2>&1 | grep "command not found"; then
-		HAD_GIT=true
 	fi
 
 	if [ -f /etc/redhat-release ]; then
@@ -104,7 +98,6 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 
 	APP="Git"
 	if ! git 2>&1 | grep "command not found"; then
-		HAD_GIT=true
 		echo "Upgrading $APP ..."
 		brew upgrade git --verbose
 	else
@@ -168,20 +161,6 @@ else
 	echo "Unknown operating system."
 	echo "This OS is not supported with this script at present. Sorry."
 	echo "Please refer to https://github.com/paritytech/substrate for setup information."
-fi
-
-APP="Git"
-if ! $HAD_GIT; then
-	echo "Configuring $APP"
-	git config --global color.ui auto;
-	echo -e "  Please enter your username for $APP Config:";
-	read -p "    Username > " uservar
-	echo -e "  Please enter your email for $APP Config:";
-	read -p "    Email >" emailvar
-	git config --global user.name "$uservar";
-	git config --global user.email "$emailvar";
-	echo
-	echo -e "  $APP Config updated with your credentials";
 fi
 
 APP="Rust"
