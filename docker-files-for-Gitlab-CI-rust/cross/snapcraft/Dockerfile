@@ -1,8 +1,5 @@
 FROM ubuntu:18.04
 MAINTAINER Parity Technologies <devops@parity.io>
-WORKDIR /build
-# Enable multiverse as snapcraft cleanbuild does.
-#RUN sed -i 's/ universe/ universe multiverse/' /etc/apt/sources.list
 # install tools and dependencies
 ENV TZ=Europe/Berlin
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
