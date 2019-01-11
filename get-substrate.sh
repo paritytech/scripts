@@ -18,6 +18,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		$MAKE_ME_ROOT pacman -Sy cmake gcc openssl-1.0 pkgconf git clang
 		export OPENSSL_LIB_DIR="/usr/lib/openssl-1.0";
 		export OPENSSL_INCLUDE_DIR="/usr/include/openssl-1.0"
+    echo "Hallo2"
 	elif [ -f /etc/mandrake-release ]; then
 		echo "Mandrake Linux detected."
 		echo "This OS is not supported with this script at present. Sorry."
@@ -31,29 +32,16 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		echo "This OS is not supported with this script at present. Sorry."
 		echo "Please refer to https://github.com/paritytech/substrate for setup information."
 	fi
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-	echo "Mac OS (Darwin) detected."
-
-	if ! which brew >/dev/null 2>&1; then
-		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-	fi
-
-	brew install openssl cmake llvm
-elif [[ "$OSTYPE" == "freebsd"* ]]; then
-	echo "FreeBSD detected."
-	echo "This OS is not supported with this script at present. Sorry."
-	echo "Please refer to https://github.com/paritytech/substrate for setup information."
-else
-	echo "Unknown operating system."
-	echo "This OS is not supported with this script at present. Sorry."
-	echo "Please refer to https://github.com/paritytech/substrate for setup information."
+  echo "Hallo3"
 fi
 
-if ! which rustup >/dev/null 2>&1; then
+echo "Hallo"
+echo "Hallo"
+if command -v rustup; then
+	rustup update
+else
 	curl https://sh.rustup.rs -sSf | sh -s -- -y
 	source ~/.cargo/env
-else
-	rustup update
 fi
 cargo install --force --git https://github.com/paritytech/substrate subkey
 cargo install --force --git https://github.com/paritytech/substrate substrate
