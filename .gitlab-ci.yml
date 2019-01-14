@@ -14,7 +14,6 @@ variables:
 
 before_script:
   - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-  - test -z "$DOCKERTAG" && echo "DOCKERTAG must also be defined" && exit 1
   - docker login -u $Docker_Hub_User_Parity -p $Docker_Hub_Pass_Parity
   - docker info
 
