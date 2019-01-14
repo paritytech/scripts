@@ -14,7 +14,6 @@ variables:
 
 before_script:
   - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-  - test -z "$DOCKERTAG" && echo "DOCKERTAG must also be defined" && exit 1
   - docker login -u $Docker_Hub_User_Parity -p $Docker_Hub_Pass_Parity
   - docker info
 
@@ -46,9 +45,12 @@ build:rust:nightly:
     CONTAINER_TAG:   nightly
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/rustup
   only:
+    refs:
+      - triggers
+      - schedules
+      - web
     variables:
       - $DOCKERIMAGE == "parity/rust"
-      - $DOCKERTAG   == "nightly"
 
 
 build:rust-android:gitlab-ci:
@@ -58,9 +60,12 @@ build:rust-android:gitlab-ci:
     CONTAINER_TAG:   gitlab-ci
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/android
   only:
+    refs:
+      - triggers
+      - schedules
+      - web
     variables:
       - $DOCKERIMAGE == "parity/rust-android"
-      - $DOCKERTAG   == "gitlab-ci"
 
 build:substrate:nightly:
   <<: *docker_build
@@ -69,9 +74,12 @@ build:substrate:nightly:
     CONTAINER_TAG:   nightly
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/substrate
   only:
+    refs:
+      - triggers
+      - schedules
+      - web
     variables:
       - $DOCKERIMAGE == "parity/substrate"
-      - $DOCKERTAG   == "nightly"
 
 build:awscli:
   <<: *docker_build
@@ -80,9 +88,12 @@ build:awscli:
     CONTAINER_TAG:   latest
     DOCKERFILE_DIR:  awscli
   only:
+    refs:
+      - triggers
+      - schedules
+      - web
     variables:
       - $DOCKERIMAGE == "parity/awscli"
-      - $DOCKERTAG   == "latest"
 
 
 # vim: expandtab sts=2
