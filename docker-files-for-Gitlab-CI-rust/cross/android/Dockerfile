@@ -1,41 +1,23 @@
-FROM ubuntu:xenial
+FROM rust:stretch AS base
 LABEL maintainer="Parity Technologies <devops@parity.io>"
 
-RUN apt-get update && \
-    apt-get install -y \
-    sudo \
-    curl \
-    ca-certificates \
-    file \
-    build-essential \
-    wget \
-    git \
-    g++ \
-    cmake \
-    pkg-config \
-    bison \
-    flex \
-    unzip \
-    lib32stdc++6 \
-    lib32z1 \
-    python \
-    autotools-dev \
-    automake \
-    autoconf \
-    libtool \
-    gperf \
-    xsltproc \
-    docbook-xsl \
-    libudev-dev \
-    time \
-    rhash
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends \
+    curl git \
+    cmake ca-certificates g++ rhash \
+    libudev-dev time \
+    unzip wget xsltproc gperf
+# removed:
+# sudo file build-essential bison flex lib32stdc++6 lib32z1 python
+# autotools-dev automake autoconf libtool docbook-xsl
+
+WORKDIR /build
 
 # Rust & Cargo
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-ENV PATH /root/.cargo/bin:$PATH
-RUN rustup toolchain install stable
-RUN rustup target add --toolchain stable arm-linux-androideabi
-RUN rustup target add --toolchain stable armv7-linux-androideabi
+# RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+# RUN rustup toolchain install stable
+RUN rustup target add arm-linux-androideabi
+RUN rustup target add armv7-linux-androideabi
 
 # Android NDK and toolchain
 RUN cd /usr/local && \
@@ -94,6 +76,6 @@ ENV CXX g++
 ENV RUST_BACKTRACE 1
 
 # cleanup
-RUN apt autoremove -y
-RUN apt clean -y
+RUN apt-get autoremove -y
+RUN apt-get clean -y
 RUN rm -rf /tmp/* /var/tmp/*
