@@ -53,7 +53,7 @@ RUN rm -rf /root/eudev
 RUN rm /root/libudev.patch
 
 # Rust-related configuration
-ADD cargo-config.toml /usr/local/cargo/config
+ADD config /usr/local/cargo
 ENV ARM_LINUX_ANDROIDEABI_OPENSSL_DIR /opt/ndk-standalone/sysroot/usr
 ENV ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR /opt/ndk-standalone/sysroot/usr
 ENV CC_arm_linux_androideabi arm-linux-androideabi-clang
