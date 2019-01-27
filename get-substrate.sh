@@ -170,6 +170,7 @@ else
 	echo "Updating $APP ..."
 	rustup update
 fi
+rustup install nightly
 echo "Switching to $APP Stable";
 rustup default stable;
 
