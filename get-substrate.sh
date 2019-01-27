@@ -27,7 +27,6 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		echo "Updating database of available packages ..."
 		$MAKE_ME_ROOT apt update
 		echo "Installing apt-utils, clang, CMake, CMake-data, build-essential, GCC, Git, libclang-dev, libclang-3.8-dev libssl-dev, pkg-config ..."
-		$MAKE_ME_ROOT apt-get -f install
 		$MAKE_ME_ROOT apt install -y apt-utils clang cmake cmake-data build-essential gcc git libclang-dev libclang-3.8-dev libssl-dev pkg-config
 		echo "Instaling cURL, Node.js"
 		$MAKE_ME_ROOT apt install -y curl nodejs
