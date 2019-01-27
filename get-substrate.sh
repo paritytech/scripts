@@ -214,7 +214,7 @@ choose_version () {
 				return 1
 				;;
 			* )
-				if [[ $SUBSTRATE_TAGS =~ (^|,)"$CHOICE"(,|$) ]]; then
+				if [[ -n "$CHOICE" ]] && [[ $SUBSTRATE_TAGS =~ (^|,)"$CHOICE"(,|$) ]]; then
 					echo -e "Updating to specific Substrate version $CHOICE ...";
 					cargo install --force --git https://github.com/paritytech/substrate --tag $CHOICE substrate
 
