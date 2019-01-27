@@ -37,29 +37,27 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 	echo "Mac OS (Darwin) detected."
 
 	APP="Xcode Command Line Tools"
-	if ! [ command -v xcode-select --install >/dev/null 2>&1 ]; then
-		echo -e "Skipping, $APP already installed";
-	else
+	if ! [ -x "$(command -v xcode-select --install)" ]; then
 		echo -e "Installing $APP ...";
 		xcode-select --install;
+	else
+		echo -e "Skipping, $APP already installed";
 	fi
 
 	APP="Homebrew"
-	if ! [ command -v brew >/dev/null 2>&1 ]; then
-		echo "Updating $APP ..."
-		brew doctor --verbose;
-		brew update --verbose;
-	else
+	if ! [ -x "$(command -v brew)" ]; then
 		echo "Installing $APP ..."
 		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 		echo -e 'export PATH="/usr/local/bin:/usr/local/sbin:~/bin:$PATH"' >> ~/.bash_profile;
 		source ~/.bash_profile;
+	else
+		echo "Updating $APP ..."
+		brew doctor --verbose;
+		brew update --verbose;
 	fi
 
 	APP="RBenv"
-	if ! [ command -v rbenv >/dev/null 2>&1 ]; then
-		echo -e "Skipping, $APP already installed";
-	else
+	if ! [ -x "$(command -v rbenv)" ]; then
 		echo -e "Installing $APP ...";
 		brew install rbenv;
 		rbenv init;
@@ -69,12 +67,12 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 		rbenv install $(rbenv install -l | grep -v - | tail -1);
 		echo -e "Switching to use Ruby latest version";
 		rbenv global $(rbenv install -l | grep -v - | tail -1);
+	else
+		echo -e "Skipping, $APP already installed";
 	fi
 
 	APP="Node Version Manager (NVM)"
-	if ! [ command -v nvm >/dev/null 2>&1 ]; then
-		echo -e "Skipping, $APP already installed";
-	else
+	if ! [ -x "$(command -v nvm)" ]; then
 		echo -e "Installing $APP ...";
 		curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash;
 		export NVM_DIR="$HOME/.nvm"
@@ -84,29 +82,29 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 		nvm install --lts
 		echo -e "Switching to use Node.js latest LTS version";
 		nvm use --lts;
+	else
+		echo -e "Skipping, $APP already installed";
 	fi
 
 	APP="Yarn"
-	if ! [ command -v yarn >/dev/null 2>&1 ]; then
-		echo -e "Skipping, $APP already installed";
-	else
+	if ! [ -x "$(command -v yarn)" ]; then
 		echo -e "Installing $APP latest version ...";
 		brew install yarn --without-node;
+	else
+		echo -e "Skipping, $APP already installed";
 	fi
 
 	APP="Git"
-	if ! [ command -v git >/dev/null 2>&1 ]; then
-		echo "Upgrading $APP ..."
-		brew upgrade git --verbose
-	else
+	if ! [ -x "$(command -v git)" ]; then
 		echo "Installing $APP ..."
 		brew install git --verbose
+	else
+		echo "Upgrading $APP ..."
+		brew upgrade git --verbose
 	fi
 
 	APP="Docker"
-	if ! [ command -v docker >/dev/null 2>&1 ]; then
-		echo -e "Skipping, $APP already installed";
-	else
+	if ! [ -x "$(command -v docker)" ]; then
 		echo -e "Installing Homebrew Cask";
 		brew tap caskroom/cask;
 		echo -e "Installing $APP latest version ...";
@@ -114,42 +112,44 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 			docker
 		);
 		brew cask install --appdir="/Applications" ${CASKS[@]}
+	else
+		echo -e "Skipping, $APP already installed";
 	fi
 
 	APP="Cmake"
-	if ! [ command -v cmake >/dev/null 2>&1 ]; then
-		echo "Upgrading $APP ..."
-		brew upgrade cmake --verbose
-	else
+	if ! [ -x "$(command -v cmake)" ]; then
 		echo "Installing $APP ..."
 		brew install cmake --verbose
+	else
+		echo "Upgrading $APP ..."
+		brew upgrade cmake --verbose
 	fi
 
 	APP="LLVM"
-	if ! [ command -v llvm >/dev/null 2>&1 ]; then
-		echo "Upgrading $APP ..."
-		brew upgrade llvm --verbose
-	else
+	if ! [ -x "$(command -v llvm)" ]; then
 		echo "Installing $APP ..."
 		brew install llvm --verbose
+	else
+		echo "Upgrading $APP ..."
+		brew upgrade llvm --verbose
 	fi
 
 	APP="OpenSSL"
-	if ! [ command -v openssl >/dev/null 2>&1 ]; then
-		echo "Upgrading $APP ..."
-		brew upgrade openssl --verbose
-	else
+	if ! [ -x "$(command -v openssl)" ]; then
 		echo "Installing $APP ..."
 		brew install openssl --verbose
+	else
+		echo "Upgrading $APP ..."
+		brew upgrade openssl --verbose
 	fi
 
 	APP="pkg-config"
-	if ! [ command -v pkg-config >/dev/null 2>&1 ]; then
-		echo "Upgrading $APP ..."
-		brew upgrade pkg-config --verbose
-	else
+	if ! [ -x "$(command -v pkg-config)" ]; then
 		echo "Installing $APP ..."
 		brew install pkg-config --verbose
+	else
+		echo "Upgrading $APP ..."
+		brew upgrade pkg-config --verbose
 	fi
 elif [[ "$OSTYPE" == "freebsd"* ]]; then
 	echo "FreeBSD detected."
@@ -162,13 +162,13 @@ else
 fi
 
 APP="Rust"
-if ! [ command -v rustup >/dev/null 2>&1 ]; then
-	echo "Updating $APP ..."
-	rustup update
-else
+if ! [ -x "$(command -v rustup)" ]; then
 	echo "Installing $APP ..."
 	curl https://sh.rustup.rs -sSf | sh -s -- -y;
 	source ~/.cargo/env
+else
+	echo "Updating $APP ..."
+	rustup update
 fi
 echo "Switching to $APP Stable";
 rustup default stable;
@@ -178,7 +178,7 @@ rustup target add wasm32-unknown-unknown --toolchain nightly;
 cargo install --force --git https://github.com/alexcrichton/wasm-gc;
 cargo install --force --git https://github.com/pepyakin/wasm-export-table.git;
 
-if ! [ command -v substrate >/dev/null 2>&1 ]; then
+if [ -x "$(command -v substrate)" ]; then
 	EXISTING_SUBSTRATE_VERSION=$(substrate --version)
 	echo -e "Substrate version $EXISTING_SUBSTRATE_VERSION detected on host machine"
 fi
