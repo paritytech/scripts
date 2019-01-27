@@ -37,15 +37,27 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 	echo "Mac OS (Darwin) detected."
 
 	APP="Xcode Command Line Tools"
-	if xcode-select --install 2>&1 | grep "installed"; then
+	if ! [ command -v xcode-select --install >/dev/null 2>&1 ]; then
 		echo -e "Skipping, $APP already installed";
 	else
 		echo -e "Installing $APP ...";
 		xcode-select --install;
 	fi
 
+	APP="Homebrew"
+	if ! [ command -v brew >/dev/null 2>&1 ]; then
+		echo "Updating $APP ..."
+		brew doctor --verbose;
+		brew update --verbose;
+	else
+		echo "Installing $APP ..."
+		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+		echo -e 'export PATH="/usr/local/bin:/usr/local/sbin:~/bin:$PATH"' >> ~/.bash_profile;
+		source ~/.bash_profile;
+	fi
+
 	APP="RBenv"
-	if ! rbenv 2>&1 | grep "command not found"; then
+	if ! [ command -v rbenv >/dev/null 2>&1 ]; then
 		echo -e "Skipping, $APP already installed";
 	else
 		echo -e "Installing $APP ...";
@@ -59,20 +71,8 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 		rbenv global $(rbenv install -l | grep -v - | tail -1);
 	fi
 
-	APP="Homebrew"
-	if brew 2>&1 | grep "command not found"; then
-		echo "Installing $APP ..."
-		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-		echo -e 'export PATH="/usr/local/bin:/usr/local/sbin:~/bin:$PATH"' >> ~/.bash_profile;
-		source ~/.bash_profile;
-	else
-		echo "Updating $APP ..."
-		brew doctor --verbose;
-		brew update --verbose;
-	fi
-
 	APP="Node Version Manager (NVM)"
-	if ! nvm 2>&1 | grep "command not found"; then
+	if ! [ command -v nvm >/dev/null 2>&1 ]; then
 		echo -e "Skipping, $APP already installed";
 	else
 		echo -e "Installing $APP ...";
@@ -87,7 +87,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 	fi
 
 	APP="Yarn"
-	if ! yarn 2>&1 | grep "command not found"; then
+	if ! [ command -v yarn >/dev/null 2>&1 ]; then
 		echo -e "Skipping, $APP already installed";
 	else
 		echo -e "Installing $APP latest version ...";
@@ -95,7 +95,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 	fi
 
 	APP="Git"
-	if ! git 2>&1 | grep "command not found"; then
+	if ! [ command -v git >/dev/null 2>&1 ]; then
 		echo "Upgrading $APP ..."
 		brew upgrade git --verbose
 	else
@@ -104,7 +104,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 	fi
 
 	APP="Docker"
-	if ! docker 2>&1 | grep "command not found"; then
+	if ! [ command -v docker >/dev/null 2>&1 ]; then
 		echo -e "Skipping, $APP already installed";
 	else
 		echo -e "Installing Homebrew Cask";
@@ -117,7 +117,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 	fi
 
 	APP="Cmake"
-	if ! cmake 2>&1 | grep "command not found"; then
+	if ! [ command -v cmake >/dev/null 2>&1 ]; then
 		echo "Upgrading $APP ..."
 		brew upgrade cmake --verbose
 	else
@@ -126,7 +126,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 	fi
 
 	APP="LLVM"
-	if ! llvm 2>&1 | grep "command not found"; then
+	if ! [ command -v llvm >/dev/null 2>&1 ]; then
 		echo "Upgrading $APP ..."
 		brew upgrade llvm --verbose
 	else
@@ -135,7 +135,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 	fi
 
 	APP="OpenSSL"
-	if ! openssl 2>&1 | grep "command not found"; then
+	if ! [ command -v openssl >/dev/null 2>&1 ]; then
 		echo "Upgrading $APP ..."
 		brew upgrade openssl --verbose
 	else
@@ -144,7 +144,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 	fi
 
 	APP="pkg-config"
-	if ! pkg-config 2>&1 | grep "command not found"; then
+	if ! [ command -v pkg-config >/dev/null 2>&1 ]; then
 		echo "Upgrading $APP ..."
 		brew upgrade pkg-config --verbose
 	else
@@ -162,7 +162,7 @@ else
 fi
 
 APP="Rust"
-if ! rustup 2>&1 | grep "command not found"; then
+if ! [ command -v rustup >/dev/null 2>&1 ]; then
 	echo "Updating $APP ..."
 	rustup update
 else
@@ -178,35 +178,67 @@ rustup target add wasm32-unknown-unknown --toolchain nightly;
 cargo install --force --git https://github.com/alexcrichton/wasm-gc;
 cargo install --force --git https://github.com/pepyakin/wasm-export-table.git;
 
-if which substrate 2>&1 | grep ".cargo/bin/substrate"; then
+if ! [ command -v substrate >/dev/null 2>&1 ]; then
 	EXISTING_SUBSTRATE_VERSION=$(substrate --version)
 	echo -e "Substrate version $EXISTING_SUBSTRATE_VERSION detected on host machine"
 fi
 
 f=`mktemp -d`
-git clone https://github.com/paritytech/substrate-node-template $f
-# fetch new tags from remote repo
+echo -e "Cloning the Substrate repository into a temporary directory"
+cd $f
+git clone https://github.com/paritytech/substrate
+cd substrate
+# Fetch all new tags from the Substrate remote repo
 git fetch --tags
-# get latest tag on git repo across all branches
+# Get just the latest tag from the Substrate git repo across all branches
 LATEST_SUBSTRATE_TAG=$(git describe --tags `git rev-list --tags --max-count=1`)
+SUBSTRATE_TAGS=",$(git tag | tr '\n' ',' | sed 's/.$//')"
+echo -e "Substrate versions currently available: \n\n"
+git tag
+REQUEST="Press 'y' to update to the latest Substrate version $LATEST_SUBSTRATE_TAG
+or specify a version number (i.e. 'v0.x.x') > "
 
-read -p "Press 'y' to update to the latest Substrate version $LATEST_SUBSTRATE_TAG >" choice
-case $choice in
-	[Yy]* )
-		echo -e "Updating to the latest Substrate version ...";
-		cargo install --force --git https://github.com/paritytech/substrate --tag $LATEST_SUBSTRATE_TAG substrate
-		;;
-	* )
-		;;
-esac
+choose_version () {
+  while true; do
+		echo
+		read -p "$REQUEST" CHOICE
 
-echo "Installing latest Subkey version ..."
-cargo install --force --git https://github.com/paritytech/substrate --tag $LATEST_SUBSTRATE_TAG subkey
+		case $CHOICE in
+			[Yy]* )
+				echo -e "Updating to the latest Substrate version $LATEST_SUBSTRATE_TAG ...";
+				cargo install --force --git https://github.com/paritytech/substrate --tag $LATEST_SUBSTRATE_TAG substrate
 
+				echo -e "Installing Subkey ..."
+				cargo install --force --git https://github.com/paritytech/substrate subkey
+
+				return 1
+				;;
+			* )
+				if [[ $SUBSTRATE_TAGS =~ (^|,)"$CHOICE"(,|$) ]]; then
+					echo -e "Updating to specific Substrate version $CHOICE ...";
+					cargo install --force --git https://github.com/paritytech/substrate --tag $CHOICE substrate
+
+					echo -e "Installing Subkey ..."
+					cargo install --force --git https://github.com/paritytech/substrate subkey
+
+					return 1
+				fi
+
+				echo
+				echo -e "Try again. Invalid input"
+				;;
+		esac
+
+  done
+}
+
+choose_version
 
 echo "Installing binary executables from https://github.com/paritytech/substrate-up"
 f=`mktemp -d`
 git clone https://github.com/paritytech/substrate-up $f
 cp -a $f/substrate-* ~/.cargo/bin
 
-echo "Run source ~/.cargo/env now to update environment"
+NEW_SUBSTRATE_VERSION=$(substrate --version)
+echo -e "Finished installing Substrate version: $NEW_SUBSTRATE_VERSION\n"
+echo "Run \`source ~/.cargo/env\` now to update environment"
