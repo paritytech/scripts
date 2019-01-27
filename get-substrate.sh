@@ -29,6 +29,16 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		echo "Installing apt-utils, clang, CMake, CMake-data, build-essential, GCC, Git, libclang-dev, libclang-3.8-dev libssl-dev, pkg-config ..."
 		$MAKE_ME_ROOT apt-get -f install
 		$MAKE_ME_ROOT apt install -y apt-utils clang cmake cmake-data build-essential gcc git libclang-dev libclang-3.8-dev libssl-dev pkg-config
+		echo "Instaling cURL, Node.js"
+		$MAKE_ME_ROOT apt install -y curl nodejs
+		curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
+		sudo apt-get install -y nodejs
+		sudo ln -s /usr/bin/nodejs /usr/bin/node;
+		echo "Instaling Yarn"
+		curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -;
+		echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list;
+		sudo apt-get update && sudo apt-get install yarn;
+		sudo ln -s /usr/bin/yarn /usr/local/bin/yarn;
 	else
 		echo "Unknown Linux distribution."
 		echo "This OS is not supported with this script at present. Sorry."
