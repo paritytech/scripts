@@ -27,9 +27,9 @@ if [[ "$OSTYPE" == "linux"* ]]; then
 		echo "Ubuntu/Debian Linux detected."
 		echo "Updating database of available packages ..."
 		$MAKE_ME_ROOT apt update
-		echo "Installing apt-utils, clang, CMake, CMake-data, build-essential, GCC, Git, libclang-dev, libclang-3.8-dev libssl-dev, pkg-config ..."
-		$MAKE_ME_ROOT apt install -y apt-utils clang cmake cmake-data build-essential gcc git libclang-dev libclang-3.8-dev libssl-dev pkg-config
-		echo "Instaling cURL, Node.js"
+		echo "Installing clang, CMake, build-essential, GCC, Git, libclang-dev, libssl-dev, pkg-config ..."
+		$MAKE_ME_ROOT apt install -y clang cmake build-essential gcc git libclang-dev libssl-dev pkg-config
+		echo "Installing cURL, Node.js"
 		$MAKE_ME_ROOT apt install -y curl nodejs
 		curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 		sudo apt-get install -y nodejs
