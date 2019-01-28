@@ -1,4 +1,5 @@
-if [[ "$OSTYPE" == "linux-gnu" ]]; then
+if [[ "$OSTYPE" == "linux"* ]]; then
+	echo "Linux / WSL detected."
 	if [[ `whoami` == "root" ]]; then
 		MAKE_ME_ROOT=
 	else
@@ -33,7 +34,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		curl -sL https://deb.nodesource.com/setup_10.x | sudo -E bash -
 		sudo apt-get install -y nodejs
 		sudo ln -s /usr/bin/nodejs /usr/bin/node;
-		echo "Instaling Yarn"
+		echo "Installing Yarn"
 		curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -;
 		echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list;
 		sudo apt-get update && sudo apt-get install yarn;
@@ -163,6 +164,18 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 	fi
 elif [[ "$OSTYPE" == "freebsd"* ]]; then
 	echo "FreeBSD detected."
+	echo "This OS is not supported with this script at present. Sorry."
+	echo "Please refer to https://github.com/paritytech/substrate for setup information."
+elif [[ "$OSTYPE" == "solaris"* ]]; then
+	echo "Solaris detected."
+	echo "This OS is not supported with this script at present. Sorry."
+	echo "Please refer to https://github.com/paritytech/substrate for setup information."
+elif [[ "$OSTYPE" == "msys"* ]]; then
+	echo "MS Windows (MSYS / MinGW / Git Bash) detected."
+	echo "This OS is not supported with this script at present. Sorry."
+	echo "Please refer to https://github.com/paritytech/substrate for setup information."
+elif [[ "$OSTYPE" == "cygwin"* ]]; then
+	echo "MS Windows (Cygwin) detected."
 	echo "This OS is not supported with this script at present. Sorry."
 	echo "Please refer to https://github.com/paritytech/substrate for setup information."
 else
