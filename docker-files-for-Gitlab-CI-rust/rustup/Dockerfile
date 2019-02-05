@@ -1,66 +1,46 @@
-FROM ubuntu:xenial
-MAINTAINER Parity Technologies <devops@parity.io>
-
-WORKDIR /build
+FROM rust:stretch
+LABEL maintainer="Parity Technologies <devops-team@parity.io>"
 
 # install tools and dependencies
 RUN apt-get -y update && \
-  apt-get install -y --no-install-recommends \
-	software-properties-common curl git file binutils binutils-dev snapcraft \
-  make cmake ca-certificates g++ zip dpkg-dev python rhash rpm openssl gettext \
-  build-essential clang libclang-dev pkg-config libssl-dev libudev-dev ruby-dev time
+	apt-get install -y --no-install-recommends \
+	software-properties-common curl git \
+	make cmake ca-certificates g++ rhash \
+	gcc pkg-config libudev-dev time
+
+# removed:
+# binutils binutils-dev snapcraft gettext file python build-essential zip dpkg-dev rpm libssl-dev openssl ruby-dev
 
 #install nodejs and yarn
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - 
-RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
-RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get -y update && apt-get install -y --no-install-recommends \ 
-  nodejs yarn
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
+	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
+	echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
+	apt-get -y update && apt-get install -y --no-install-recommends \
+	nodejs yarn
 
-# install java8
-RUN add-apt-repository -y ppa:webupd8team/java
-RUN apt update
-RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-RUN apt install -y oracle-java8-installer
+RUN mkdir /parity-ethereum
+WORKDIR /parity-ethereum
 
-# install AWS CLI
-RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
-    python get-pip.py && pip install awscli
+RUN cargo install cargo-audit sccache
 
-# install FPM
-RUN gem install fpm
+# cleanup
+RUN echo cleanup && \
+	apt-get autoremove -y && \
+	apt-get clean -y && \
+	rm -rf /tmp/* /var/tmp/*
 
-# install rustup
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-
-# rustup directory
-ENV PATH /root/.cargo/bin:$PATH
-
-# setup rust beta and nightly channel's
-RUN rustup install beta
-RUN rustup install nightly
-
-# install wasm toolchain for polkadot
-RUN rustup target add wasm32-unknown-unknown --toolchain nightly
-# Install wasm-gc. It's useful for stripping slimming down wasm binaries. 
-# (polkadot)
-RUN cargo +nightly install --git https://github.com/alexcrichton/wasm-gc
-
-# setup default stable channel
-RUN rustup default stable
-
+# compiler ENV
+ENV CC gcc
+ENV CXX g++
+ENV CARGO_TARGET x86_64-unknown-linux-gnu
+ENV CARGO_HOME /parity-ethereum/.cargo/
+# cache handler
+ENV RUSTC_WRAPPER sccache
 # show backtraces
 ENV RUST_BACKTRACE 1
 
-# cleanup
-RUN apt autoremove -y
-RUN apt clean -y
-RUN rm -rf /tmp/* /var/tmp/*
+# pre-download repositories
+RUN git clone https://github.com/paritytech/parity-ethereum.git . && \
+		git submodule update --init --recursive
 
-#compiler ENV
-ENV CC gcc
-ENV CXX g++
-
-#snapcraft ENV
-ENV LC_ALL=C.UTF-8
-ENV LANG=C.UTF-8
+VOLUME /parity-ethereum/target $CARGO_HOME
