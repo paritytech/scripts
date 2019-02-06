@@ -1,8 +1,8 @@
-#IMAGE for build rustup
-#Created by Parity Technologies <devops@parity.io>
+# IMAGE for build rustup
+# Created by Parity Technologies <devops-team@parity.io>
 USER=parity
-NAME=rustup
-TAG=gitlab-ci
+NAME=rust-linux
+TAG=stretch
 
 IMAGE=${USER}/${NAME}:${TAG}
 
