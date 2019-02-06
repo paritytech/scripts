@@ -12,7 +12,7 @@ help:
 	@echo "Usage:"
 	@echo "  make [help]        - display this message"
 	@echo "  make image         - build rustup image"
-	@echo "  make push          - push build image to the regitry"
+	@echo "  make push          - push build image to the registry"
 
 image:
 	docker build --tag ${IMAGE} .
