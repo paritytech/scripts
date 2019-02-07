@@ -1,5 +1,6 @@
 FROM rust:stretch
 LABEL maintainer="Parity Technologies <devops-team@parity.io>"
+LABEL description="This is for CI build stage for Parity Ethereum linux binary."
 
 # install tools and dependencies
 RUN apt-get -y update && \
@@ -30,6 +31,7 @@ ENV CARGO_TARGET x86_64-unknown-linux-gnu
 ENV CARGO_HOME /parity-ethereum/.cargo/
 # cache handler
 ENV RUSTC_WRAPPER sccache
+ENV SCCACHE_DIR $CARGO_HOME/sccache
 # show backtraces
 ENV RUST_BACKTRACE 1
 
@@ -37,4 +39,4 @@ ENV RUST_BACKTRACE 1
 RUN git clone https://github.com/paritytech/parity-ethereum.git . && \
 	git submodule update --init --recursive
 
-VOLUME /parity-ethereum/target $CARGO_HOME
+VOLUME /parity-ethereum/artifacts $CARGO_HOME
