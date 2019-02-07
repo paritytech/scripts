@@ -1,7 +1,7 @@
 # IMAGE for build rustup
 # Created by Parity Technologies <devops-team@parity.io>
 USER=parity
-NAME=rust-linux
+NAME=rust-parity-ethereum-build
 TAG=stretch
 
 IMAGE=${USER}/${NAME}:${TAG}
