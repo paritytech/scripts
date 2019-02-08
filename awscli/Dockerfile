@@ -3,18 +3,18 @@ MAINTAINER devops-team@parity.io
 
 RUN pip install awscli
 
-RUN /bin/sh -c "
-cat > /etc/aws.config <<EOC
-[default]                                                                                                                                       
-s3 =                                                                                                                                            
-  max_concurrent_requests = 20                                                                                                                  
-  max_queue_size = 10000                                                                                                                        
-  multipart_threshold = 64MB                                                                                                                    
-  multipart_chunksize = 16MB                                                                                                                    
-  max_bandwidth = 50MB/s                                                                                                                        
-  use_accelerate_endpoint = false                                                                                                               
-  addressing_style = path
-EOC
+RUN /bin/sh -c "\
+cat > /etc/aws.config <<EOC\
+[default]\
+s3 =\
+  max_concurrent_requests = 20\
+  max_queue_size = 10000\
+  multipart_threshold = 64MB\
+  multipart_chunksize = 16MB\
+  max_bandwidth = 50MB/s\
+  use_accelerate_endpoint = false\
+  addressing_style = path\
+EOC\
 "
 
 ENV AWS_CONFIG_FILE /etc/aws.config
