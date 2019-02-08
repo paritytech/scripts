@@ -4,7 +4,7 @@ MAINTAINER devops-team@parity.io
 RUN pip install awscli
 
 RUN <<EOR
-cat > /etc/aws.config <<EOC
+/bin/cat > /etc/aws.config <<EOC
 [default]                                                                                                                                       
 s3 =                                                                                                                                            
   max_concurrent_requests = 20                                                                                                                  
