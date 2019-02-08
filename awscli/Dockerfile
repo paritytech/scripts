@@ -3,8 +3,8 @@ MAINTAINER devops-team@parity.io
 
 RUN pip install awscli
 
-RUN <<EOR
-/bin/cat > /etc/aws.config <<EOC
+RUN /bin/sh -c "
+cat > /etc/aws.config <<EOC
 [default]                                                                                                                                       
 s3 =                                                                                                                                            
   max_concurrent_requests = 20                                                                                                                  
@@ -15,7 +15,7 @@ s3 =
   use_accelerate_endpoint = false                                                                                                               
   addressing_style = path
 EOC
-EOR
+"
 
 ENV AWS_CONFIG_FILE /etc/aws.config
 
