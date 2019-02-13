@@ -95,5 +95,21 @@ build:awscli:
     variables:
       - $DOCKERIMAGE == "parity/awscli"
 
+build:tools:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/tools
+    CONTAINER_TAG:   latest
+    DOCKERFILE_DIR:  tools
+  only:
+    refs:
+      - triggers
+      - schedules
+      - web
+    variables:
+      - $DOCKERIMAGE == "parity/tools"
+
+
+
 
 # vim: expandtab sts=2
