@@ -11,10 +11,10 @@ RUN apt-get -y update && \
   build-essential clang libclang-dev pkg-config libssl-dev libudev-dev ruby-dev time
 
 #install nodejs and yarn
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - 
+RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
 RUN curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list
-RUN apt-get -y update && apt-get install -y --no-install-recommends \ 
+RUN apt-get -y update && apt-get install -y --no-install-recommends \
   nodejs yarn
 
 # install java8
@@ -42,12 +42,15 @@ RUN rustup install nightly
 
 # install wasm toolchain for polkadot
 RUN rustup target add wasm32-unknown-unknown --toolchain nightly
-# Install wasm-gc. It's useful for stripping slimming down wasm binaries. 
+# Install wasm-gc. It's useful for stripping slimming down wasm binaries.
 # (polkadot)
 RUN cargo +nightly install --git https://github.com/alexcrichton/wasm-gc
 
 # setup default stable channel
 RUN rustup default stable
+
+# install cargo audit and sccache to fix CI
+RUN cargo install cargo-audit sccache
 
 # show backtraces
 ENV RUST_BACKTRACE 1
