@@ -28,30 +28,31 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
 	apt-get -y update && apt-get install -y --no-install-recommends \
 	nodejs yarn
 
-# install rustup
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y && \
-	cargo install \
-	cargo-audit \
-	sccache
-
 RUN mkdir /parity-ethereum
 WORKDIR /parity-ethereum
 
-# pre-download repositories
-RUN git clone https://github.com/paritytech/parity-ethereum.git . && \
-	git submodule update --init --recursive
 
-	# rustup directory
-ENV PATH=/root/.cargo/bin:$PATH \
-	# compiler ENV
-	CC=gcc \
+# install rustup
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+# rustup directory
+ENV PATH=/root/.cargo/bin:$PATH
+
+RUN cargo install cargo-audit sccache
+
+# compiler ENV
+ENV CC=gcc \
 	CXX=g++ \
 	CARGO_TARGET=x86_64-unknown-linux-gnu \
 	CARGO_HOME=/parity-ethereum/.cargo/ \
-	# cache handler
+# cache handler
 	RUSTC_WRAPPER=sccache \
 	SCCACHE_DIR=$CARGO_HOME/sccache \
-	# show backtraces
+# show backtraces
 	RUST_BACKTRACE=1
+
+# pre-download repositories
+RUN git clone https://github.com/paritytech/parity-ethereum.git . && \
+        git submodule update --init --recursive
 
 VOLUME /parity-ethereum/artifacts $CARGO_HOME
