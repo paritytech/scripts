@@ -7,9 +7,9 @@ FROM ubuntu:xenial as builder
 # metadata
 LABEL maintainer="devops-team@parity.io" \
 	vendor="Parity Technologies" \
-    name="parity/rust-parity-ethereum-build" \
-    description="This is for CI build stage for Parity Ethereum linux binary." \
-    vcs-url="https://gitlab.com/paritytech/scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci" \
+	name="parity/rust-parity-ethereum-build" \
+	description="This is for CI build stage for Parity Ethereum linux binary." \
+	vcs-url="https://gitlab.com/paritytech/scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci" \
 	url="https://gitlab.com/paritytech"
 
 # install tools and dependencies
