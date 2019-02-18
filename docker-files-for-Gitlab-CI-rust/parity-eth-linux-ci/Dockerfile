@@ -1,18 +1,27 @@
-FROM rust:stretch
-LABEL maintainer="Parity Technologies <devops-team@parity.io>"
-LABEL description="This is for CI build stage for Parity Ethereum linux binary."
+# triggers image autoupdate with the new Rust release
+FROM rust:slim as notifier
+
+# temporary support of 16.04 with its Clib
+FROM ubuntu:xenial as builder
+
+# metadata
+LABEL maintainer="devops-team@parity.io" \
+	vendor="Parity Technologies" \
+	name="parity/rust-parity-ethereum-build" \
+	description="This is for CI build stage for Parity Ethereum linux binary." \
+	vcs-url="https://gitlab.com/paritytech/scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci" \
+	url="https://gitlab.com/paritytech"
 
 # install tools and dependencies
 RUN apt-get -y update && \
 	apt-get install -y --no-install-recommends \
 	software-properties-common curl git \
 	make cmake ca-certificates g++ rhash \
-	gcc pkg-config libudev-dev time
+	gcc pkg-config libudev-dev time \
+	libssl-dev
+# libssl-dev won't be needed in rust:stretch
 
-# removed:
-# binutils binutils-dev snapcraft gettext file python build-essential zip dpkg-dev rpm libssl-dev openssl ruby-dev
-
-#install nodejs and yarn
+# install nodejs and yarn
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
 	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
 	echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
@@ -22,18 +31,24 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
 RUN mkdir /parity-ethereum
 WORKDIR /parity-ethereum
 
+# install rustup
+RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
+
+# rustup directory
+ENV PATH=/root/.cargo/bin:$PATH
+
 RUN cargo install cargo-audit sccache
 
 # compiler ENV
-ENV CC gcc
-ENV CXX g++
-ENV CARGO_TARGET x86_64-unknown-linux-gnu
-ENV CARGO_HOME /parity-ethereum/.cargo/
+ENV CC=gcc \
+	CXX=g++ \
+	CARGO_TARGET=x86_64-unknown-linux-gnu \
+	CARGO_HOME=/parity-ethereum/.cargo/ \
 # cache handler
-ENV RUSTC_WRAPPER sccache
-ENV SCCACHE_DIR $CARGO_HOME/sccache
+	RUSTC_WRAPPER=sccache \
+	SCCACHE_DIR=$CARGO_HOME/sccache \
 # show backtraces
-ENV RUST_BACKTRACE 1
+	RUST_BACKTRACE=1
 
 # pre-download repositories
 RUN git clone https://github.com/paritytech/parity-ethereum.git . && \
