@@ -28,20 +28,19 @@ RUN echo '# source urls for arm64 \n\
     cp /tmp/sources-tmp.list /etc/apt/sources.list&& \
     echo "next"&&cat /etc/apt/sources.list
 
+RUN apt -y update && \
+		apt install -y \
+		g++-aarch64-linux-gnu gcc-aarch64-linux-gnu libudev-dev libudev-dev:arm64
 
-		RUN apt -y update && \
-			apt install -y \
-			g++-aarch64-linux-gnu gcc-aarch64-linux-gnu libudev-dev libudev-dev:arm64
+# install aarch64 toolchain
+RUN rustup target add aarch64-unknown-linux-gnu
 
-		# install aarch64 toolchain
-		RUN rustup target add aarch64-unknown-linux-gnu
-
-		# compiler ENV
-		ENV CC=aarch64-linux-gnu-gcc \
-			CXX=aarch64-linux-gnu-g++ \
-			CARGO_TARGET=aarch64-unknown-linux-gnu \
-			CARGO_HOME=/parity-ethereum/.cargo/ \
-			HOST_CC=gcc \
-			HOST_CXX=g++ \
-			LDFLAGS="-L/usr/lib/arm-linux-aarch64" \
-			CPPFLAGS="-I/usr/include"
+# set cross-compiler ENV
+ENV CC=aarch64-linux-gnu-gcc \
+		CXX=aarch64-linux-gnu-g++ \
+		CARGO_TARGET=aarch64-unknown-linux-gnu \
+		CARGO_HOME=/parity-ethereum/.cargo/ \
+		HOST_CC=gcc \
+		HOST_CXX=g++ \
+		LDFLAGS="-L/usr/lib/arm-linux-aarch64" \
+		CPPFLAGS="-I/usr/include"

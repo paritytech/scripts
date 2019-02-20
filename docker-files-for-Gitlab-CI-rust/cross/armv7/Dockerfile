@@ -1,79 +1,46 @@
-FROM ubuntu:xenial
-MAINTAINER Parity Technologies <devops@parity.io>
+# triggers image autoupdate with the new Rust release
+FROM rust:slim as notifier
 
-WORKDIR /build
+# temporary support of 16.04 with its Clib
+FROM parity/rust-parity-ethereum-build:xenial as builder
 
-# install armv7 dependencies and tools
-RUN dpkg --add-architecture armhf
-RUN	echo '# source urls for armhf \n\
-	deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial main \n\
-	deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial main \n\
-	deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main \n\
-	deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main \n\
-	deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n\
-	deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n # end armhf section' >> /etc/apt/sources.list &&\
-	sed -r 's/deb h/deb \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list && \
-	cp /tmp/sources-tmp.list /etc/apt/sources.list&& \
-	sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list&&cat /etc/apt/sources.list &&\
-	cp /tmp/sources-tmp.list /etc/apt/sources.list&& echo "next"&&cat /etc/apt/sources.list
-RUN	apt update&& \
-  apt install -y --no-install-recommends \
-  g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf g++ make build-essential \
-  curl git ca-certificates file python zip dpkg-dev rhash expect \
-	nodejs openssl snapcraft ruby-dev cmake\
-	pkg-config libudev-dev libudev-dev:armhf
+# metadata
+LABEL maintainer="devops-team@parity.io" \
+	vendor="Parity Technologies" \
+	name="parity/rust-parity-ethereum-build" \
+	description="This is for CI build stage for Parity Ethereum linux binary." \
+	vcs-url="https://gitlab.com/paritytech/scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci" \
+	url="https://gitlab.com/paritytech"
 
-#install nodejs
-RUN curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash - && \
-  apt-get install -y nodejs
+	# install armv7 dependencies and tools
+	RUN dpkg --add-architecture armhf
+	RUN	echo '# source urls for armhf \n\
+		deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial main \n\
+		deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial main \n\
+		deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main \n\
+		deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main \n\
+		deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n\
+		deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n # end armhf section' >> /etc/apt/sources.list &&\
+		sed -r 's/deb h/deb \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list && \
+		cp /tmp/sources-tmp.list /etc/apt/sources.list&& \
+		sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list&& \
+		cat /etc/apt/sources.list && \
+	  cp /tmp/sources-tmp.list /etc/apt/sources.list&& \
+		echo "next"&&cat /etc/apt/sources.list
 
-# install AWS CLI
-RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
-  python get-pip.py && pip install awscli
-
-# install FPM
-RUN gem install fpm
-
-# install rustup
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-# rustup directory
-ENV PATH /root/.cargo/bin:$PATH
-
-# set cargo target
-ENV RUST_TARGETS armv7-unknown-linux-gnueabihf
-ENV TARGET armv7-unknown-linux-gnueabihf
+RUN apt -y update && \
+		apt install -y \
+		g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf libudev-dev libudev-dev:armhf
 
 # install armv7 toolchain
 RUN rustup target add armv7-unknown-linux-gnueabihf
 
-# install openssl
-ENV OS_COMPILER linux-armv4
-ENV AR arm-linux-gnueabihf-ar
-ENV CC arm-linux-gnueabihf-gcc
-ENV CXX arm-linux-gnueabihf-g++
-ENV HOST_CC gcc
-ENV HOST_CXX g++
-ENV HOME /root
-RUN curl -O https://www.openssl.org/source/openssl-1.0.2n.tar.gz && \
-  tar xf openssl-1.0.2n.tar.gz && cd openssl-1.0.2n && \
-  ./Configure --prefix=${HOME}/openssl ${OS_COMPILER} -fPIC && \
-  make && make install && \
-  cd .. &&rm -rf openssl-*
-
-# set cross compile ENV
-ENV OPENSSL_DIR "/root/openssl"
-ENV CPPFLAGS "-I/usr/include"
-ENV LDFLAGS "-L/usr/lib/arm-linix-gnueabihf"
-RUN ln -sf /usr/bin/arm-linux-gnueabihf-strip /usr/bin/strip
-
-# show backtraces
-ENV RUST_BACKTRACE 1
-
-# cleanup
-RUN apt autoremove -y
-RUN apt clean -y
-RUN rm -rf /tmp/* /var/tmp/*
-
-#snapcraft ENV
-ENV LC_ALL=C.UTF-8
-ENV LANG=C.UTF-8
+# set cross-compiler ENV
+ENV CC=arm-linux-gnueabihf-gcc \
+		CXX=arm-linux-gnueabihf-g++ \
+		CARGO_TARGET=armv7-unknown-linux-gnueabihf \
+		CARGO_HOME=/parity-ethereum/.cargo/ \
+		HOST_CC=gcc \
+		HOST_CXX=g++ \
+		LDFLAGS="-L/usr/lib/arm-linix-gnueabihf" \
+		CPPFLAGS="-I/usr/include"
