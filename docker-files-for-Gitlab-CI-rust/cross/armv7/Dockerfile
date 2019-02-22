@@ -36,6 +36,7 @@ RUN apt -y update && \
 RUN rustup target add armv7-unknown-linux-gnueabihf
 
 # set cross-compiler ENV
+ADD config /.cargo/config
 ENV CC=arm-linux-gnueabihf-gcc \
 		CXX=arm-linux-gnueabihf-g++ \
 		CARGO_TARGET=armv7-unknown-linux-gnueabihf \
