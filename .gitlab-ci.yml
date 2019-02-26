@@ -17,13 +17,19 @@ before_script:
   - docker login -u $Docker_Hub_User_Parity -p $Docker_Hub_Pass_Parity
   - docker info
 
+after_script:
+  - docker logout
+
+
+
+
 
 .build: &docker_build
   stage: build
   script:
     - cd $DOCKERFILE_DIR
-    # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
-    # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+      # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
+      # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
     - CONTAINER_DATE_TAG="$CONTAINER_TAG-$(date +%Y%m%d)"
     - docker build --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
     - docker push $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
@@ -32,9 +38,10 @@ before_script:
     refs:
       - schedules
       - web
+      - web
     kubernetes: active
   tags:
-    - kubernetes
+    - kubernetes-parity-build
 
 
 
@@ -45,10 +52,6 @@ build:rust:nightly:
     CONTAINER_TAG:   nightly
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/rustup
   only:
-    refs:
-      - triggers
-      - schedules
-      - web
     variables:
       - $DOCKERIMAGE == "parity/rust"
 
@@ -60,10 +63,6 @@ build:rust-android:gitlab-ci:
     CONTAINER_TAG:   gitlab-ci
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/android
   only:
-    refs:
-      - triggers
-      - schedules
-      - web
     variables:
       - $DOCKERIMAGE == "parity/rust-android"
 
@@ -74,10 +73,6 @@ build:substrate:nightly:
     CONTAINER_TAG:   nightly
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/substrate
   only:
-    refs:
-      - triggers
-      - schedules
-      - web
     variables:
       - $DOCKERIMAGE == "parity/substrate"
 
@@ -88,10 +83,6 @@ build:awscli:
     CONTAINER_TAG:   latest
     DOCKERFILE_DIR:  awscli
   only:
-    refs:
-      - triggers
-      - schedules
-      - web
     variables:
       - $DOCKERIMAGE == "parity/awscli"
 
@@ -102,12 +93,35 @@ build:tools:
     CONTAINER_TAG:   latest
     DOCKERFILE_DIR:  tools
   only:
-    refs:
-      - triggers
-      - schedules
-      - web
     variables:
       - $DOCKERIMAGE == "parity/tools"
+
+
+
+# special case as version tags are introduced
+build:kubectl-helm:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE:         parity/kubectl-helm
+    CONTAINER_TAG:           latest
+    DOCKERFILE_DIR:          kubectl-helm
+    # https://github.com/kubernetes/kubernetes/releases
+    KUBE_VERSION:            "1.13.2"
+    # https://github.com/kubernetes/helm/releases
+    HELM_VERSION:            "2.9.1"
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/kubectl-helm"
+  script:
+    - cd $DOCKERFILE_DIR
+    - docker build
+      --build-arg VCS_REF="$(git rev-parse --short HEAD)"
+      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --tag $CONTAINER_IMAGE:$CONTAINER_TAG
+      --tag $CONTAINER_IMAGE:$HELM_VERSION .
+    - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
+    - docker push $CONTAINER_IMAGE:$HELM_VERSION
+
 
 
 
