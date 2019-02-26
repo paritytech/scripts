@@ -9,7 +9,7 @@ ARG KUBE_VERSION
 LABEL org.label-schema.vcs-ref="${VCS_REF}" \
       org.label-schema.name="kubectl-helm" \
       org.label-schema.url="https://hub.docker.com/r/paritytech/kubectl-helm/" \
-			org.label-schema.vcs-url="https://github.com/paritytech/scripts/kubectl-helm"
+			org.label-schema.vcs-url="https://github.com/paritytech/scripts/kubectl-helm" \
       org.label-schema.build-date="${BUILD_DATE}"
 
 
