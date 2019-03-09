@@ -55,8 +55,16 @@ if ! which rustup >/dev/null 2>&1; then
 else
 	rustup update
 fi
-cargo install --force --git https://github.com/paritytech/substrate subkey
-cargo install --force --git https://github.com/paritytech/substrate substrate
+
+if [[ "$1" == "--fast" ]]; then
+	echo "Skipped cargo install of 'substrate' and 'subkey'"
+	echo "You can install manually with:"
+	echo "    cargo install --force --git https://github.com/paritytech/substrate subkey"
+	echo "    cargo install --force --git https://github.com/paritytech/substrate substrate"
+else 
+	cargo install --force --git https://github.com/paritytech/substrate subkey
+	cargo install --force --git https://github.com/paritytech/substrate substrate
+fi
 
 f=`mktemp -d`
 git clone https://github.com/paritytech/substrate-up $f
