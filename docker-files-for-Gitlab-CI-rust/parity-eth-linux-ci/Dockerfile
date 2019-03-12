@@ -46,7 +46,7 @@ ENV CC=gcc \
 	CARGO_HOME=/parity-ethereum/.cargo/ \
 # cache handler
 	RUSTC_WRAPPER=sccache \
-	SCCACHE_DIR=$CARGO_HOME/sccache \
+	SCCACHE_DIR=/sccache \
 # show backtraces
 	RUST_BACKTRACE=1
 
@@ -54,4 +54,5 @@ ENV CC=gcc \
 RUN git clone https://github.com/paritytech/parity-ethereum.git . && \
 	git submodule update --init --recursive
 
-VOLUME /parity-ethereum/artifacts $CARGO_HOME
+VOLUME ["/sccache"]
+
