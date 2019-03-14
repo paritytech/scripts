@@ -28,7 +28,7 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
 	apt-get -y update && apt-get install -y --no-install-recommends \
 	nodejs yarn
 
-WORKDIR /parity-ethereum
+WORKDIR /builds/parity/parity-ethereum/
 
 # install rustup
 RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
@@ -42,7 +42,7 @@ RUN cargo install cargo-audit sccache
 ENV CC=gcc \
 	CXX=g++ \
 	CARGO_TARGET=x86_64-unknown-linux-gnu \
-	CARGO_HOME=/parity-ethereum/.cargo/ \
+	CARGO_HOME=/cargo \
 # cache handler
 	RUSTC_WRAPPER=sccache \
 	SCCACHE_DIR=/sccache \
