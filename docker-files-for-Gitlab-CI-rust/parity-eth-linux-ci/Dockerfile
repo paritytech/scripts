@@ -45,7 +45,7 @@ ENV CC=gcc \
 	CARGO_HOME=/cargo \
 # cache handler
 	RUSTC_WRAPPER=sccache \
-	SCCACHE_DIR=/sccache \
+	SCCACHE_DIR=/cargo/sccache \
 # show backtraces
 	RUST_BACKTRACE=1
 
