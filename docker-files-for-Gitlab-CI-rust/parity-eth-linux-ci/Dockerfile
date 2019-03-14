@@ -28,7 +28,6 @@ RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
 	apt-get -y update && apt-get install -y --no-install-recommends \
 	nodejs yarn
 
-RUN mkdir /parity-ethereum
 WORKDIR /parity-ethereum
 
 # install rustup
@@ -53,6 +52,3 @@ ENV CC=gcc \
 # pre-download repositories
 RUN git clone https://github.com/paritytech/parity-ethereum.git . && \
 	git submodule update --init --recursive
-
-VOLUME ["/sccache"]
-
