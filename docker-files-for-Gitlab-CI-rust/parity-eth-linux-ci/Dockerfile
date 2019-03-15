@@ -51,5 +51,5 @@ ENV CC=gcc \
 
 # pre-download repositories
 # RUN git clone https://github.com/paritytech/parity-ethereum.git . && \
-RUN git clone https://gitlab.parity.io/parity/parity-ethereum.git/ . && \
-	git submodule update --init --recursive
+# RUN git clone https://gitlab.parity.io/parity/parity-ethereum.git/ . && \
+# 	git submodule update --init --recursive
