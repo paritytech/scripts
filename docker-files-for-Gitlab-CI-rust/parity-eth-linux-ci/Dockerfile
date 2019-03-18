@@ -48,8 +48,3 @@ ENV CC=gcc \
 	SCCACHE_DIR=/cargo/sccache \
 # show backtraces
 	RUST_BACKTRACE=1
-
-# pre-download repositories
-# RUN git clone https://github.com/paritytech/parity-ethereum.git . && \
-# RUN git clone https://gitlab.parity.io/parity/parity-ethereum.git/ . && \
-# 	git submodule update --init --recursive
