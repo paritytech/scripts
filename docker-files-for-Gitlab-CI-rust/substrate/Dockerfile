@@ -1,31 +1,36 @@
-FROM parity/rust:gitlab-ci as builder 
-MAINTAINER Parity Technologies <devops@parity.io>
+FROM parity/rust-parity-ethereum-build:xenial as builder
 
-WORKDIR /build
+# metadata
+# LABEL maintainer="devops-team@parity.io" \
+# 	vendor="Parity Technologies" \
+# 	name="parity/rust-parity-ethereum-build" \
+# 	description="This is for CI build stage for Parity Ethereum linux binary." \
+# 	vcs-url="https://gitlab.com/paritytech/scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci" \
+# 	url="https://gitlab.com/paritytech"
 
-# install tools and dependencies
+WORKDIR /build/parity/substrate
 
-RUN git clone https://github.com/paritytech/substrate.git
-RUN pwd
-RUN cd substrate && cargo build --release
-RUN pwd
-
-# cleanup
-RUN apt autoremove -y
-RUN apt clean -y
-RUN rm -rf /tmp/* /var/tmp/*
+# clone repo and build executable
+RUN git clone https://github.com/paritytech/substrate.git . \
+	cargo build --release
 
 FROM phusion/baseimage:0.10.0
-MAINTAINER Parity Technologies <devops@parity.io>
+# metadata
+# LABEL maintainer="devops-team@parity.io" \
+# 	vendor="Parity Technologies" \
+# 	name="parity/rust-parity-ethereum-build" \
+# 	description="This is for CI build stage for Parity Ethereum linux binary." \
+# 	vcs-url="https://gitlab.com/paritytech/scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci" \
+# 	url="https://gitlab.com/paritytech"
 ARG PROFILE=release
-COPY --from=builder /build/substrate/target/release/substrate /usr/local/bin
+COPY --from=builder /build/parity/substrate/target/release/substrate /usr/local/bin
 
 RUN mv /usr/share/ca* /tmp && \
-        rm -rf /usr/share/*  && \
-        mv /tmp/ca-certificates /usr/share/ && \
-        rm -rf /usr/lib/python* && \
-        mkdir -p /root/.local/share/Polkadot && \
-        ln -s /root/.local/share/Polkadot /data
+	rm -rf /usr/share/*  && \
+	mv /tmp/ca-certificates /usr/share/ && \
+	rm -rf /usr/lib/python* && \
+	mkdir -p /root/.local/share/Polkadot && \
+	ln -s /root/.local/share/Polkadot /data
 
 
 EXPOSE 30333 9933 9944
