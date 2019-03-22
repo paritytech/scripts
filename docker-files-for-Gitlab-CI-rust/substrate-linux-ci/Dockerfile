@@ -13,10 +13,11 @@ FROM rustlang/rust:nightly-slim
 RUN apt-get -y update && \
 	apt-get install -y --no-install-recommends \
 	software-properties-common curl git \
-	make cmake ca-certificates g++ rhash \
-	gcc pkg-config libudev-dev time \
+	make cmake g++ rhash \
+	pkg-config libudev-dev time \
 	libssl-dev
 
+# ca-certificates gcc
 WORKDIR /builds/parity/substrate/
 
 RUN cargo install cargo-audit sccache
@@ -27,18 +28,37 @@ RUN rustup target add wasm32-unknown-unknown --toolchain nightly
 # (polkadot)
 RUN cargo +nightly install --git https://github.com/alexcrichton/wasm-gc
 # setup default stable channel
-RUN rustup default stable
+#RUN rustup default stable
 
+# compiler ENV
+ENV CC=gcc \
+	CXX=g++ \
+# cache handlers
+	CARGO_HOME=/cargo/substrate/cargo \
+	RUSTC_WRAPPER=sccache \
+	SCCACHE_DIR=/cargo/substrate/sccache \
 # show backtraces
-ENV RUST_BACKTRACE 1
-#compiler ENV
-ENV CC gcc
-ENV CXX g++
+	RUST_BACKTRACE=1
 
 # #
 # git clone https://github.com/paritytech/substrate.git .
 # rustup target add wasm32-unknown-unknown --toolchain nightly
 # cargo +nightly install --git https://github.com/alexcrichton/wasm-gc
+# #
 # scripts/build.sh
 # #
-# time rustup default nightly
+# time cargo build --release --verbose;
+# mkdir -p ./artifacts;
+# mv ./target/release/substrate ./artifacts/.
+# echo -n "Substrate version = "
+# if [ "${CI_COMMIT_TAG}" ]; then
+#   echo "${CI_COMMIT_TAG}" | tee ./artifacts/VERSION;
+# else
+#   ./artifacts/substrate --version |
+#   sed -n -r 's/^substrate ([0-9.]+.*-[0-9a-f]{7,13})-.*$/\1/p' |
+#   tee ./artifacts/VERSION;
+# fi
+# sha256sum ./artifacts/substrate | tee ./artifacts/substrate.sha256
+# echo "\n# building node-template\n"
+# ./scripts/node-template-release.sh ./artifacts/substrate-node-template.tar.gz
+# cp -r scripts/docker/* ./artifacts
