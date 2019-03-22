@@ -9,6 +9,8 @@ FROM rustlang/rust:nightly-slim
 # 	vcs-url="https://gitlab.com/paritytech/scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci" \
 # 	url="https://gitlab.com/paritytech"
 
+WORKDIR /builds/parity/substrate/
+
 # install tools and dependencies
 RUN apt-get -y update && \
 	apt-get install -y --no-install-recommends \
@@ -16,19 +18,17 @@ RUN apt-get -y update && \
 	make cmake g++ rhash \
 	pkg-config libudev-dev time \
 	libssl-dev
-
 # ca-certificates gcc
-WORKDIR /builds/parity/substrate/
 
-RUN cargo install cargo-audit sccache
-
+RUN rustup install beta \
+# setup default stable channel
+	rustup default stable \
+	cargo install cargo-audit sccache \
 # install wasm toolchain for polkadot
-RUN rustup target add wasm32-unknown-unknown --toolchain nightly
+	rustup target add wasm32-unknown-unknown --toolchain nightly \
 # Install wasm-gc. It's useful for stripping slimming down wasm binaries.
 # (polkadot)
-RUN cargo +nightly install --git https://github.com/alexcrichton/wasm-gc
-# setup default stable channel
-#RUN rustup default stable
+	cargo +nightly install --git https://github.com/alexcrichton/wasm-gc
 
 # compiler ENV
 ENV CC=gcc \
@@ -42,8 +42,6 @@ ENV CC=gcc \
 
 # #
 # git clone https://github.com/paritytech/substrate.git .
-# rustup target add wasm32-unknown-unknown --toolchain nightly
-# cargo +nightly install --git https://github.com/alexcrichton/wasm-gc
 # #
 # scripts/build.sh
 # #
