@@ -20,12 +20,12 @@ RUN apt-get -y update && \
 	libssl-dev
 # ca-certificates gcc
 
-RUN rustup install beta \
+RUN rustup install beta && \
 # setup default stable channel
-	rustup default stable \
-	cargo install cargo-audit sccache \
+	rustup default stable && \
+	cargo install cargo-audit sccache && \
 # install wasm toolchain for polkadot
-	rustup target add wasm32-unknown-unknown --toolchain nightly \
+	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 # Install wasm-gc. It's useful for stripping slimming down wasm binaries.
 # (polkadot)
 	cargo +nightly install --git https://github.com/alexcrichton/wasm-gc
