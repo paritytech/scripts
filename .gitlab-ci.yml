@@ -38,7 +38,6 @@ after_script:
     refs:
       - schedules
       - web
-      - web
     kubernetes: active
   tags:
     - kubernetes-parity-build
