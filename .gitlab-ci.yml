@@ -103,7 +103,7 @@ build:kubetools:
   variables:
     CONTAINER_IMAGE:         parity/kubetools
     CONTAINER_TAG:           latest
-    DOCKERFILE_DIR:          kubectl-helm
+    DOCKERFILE_DIR:          kubetools
     # https://github.com/kubernetes/kubernetes/releases
     KUBE_VERSION:            "1.13.4"
     # https://github.com/kubernetes/helm/releases
