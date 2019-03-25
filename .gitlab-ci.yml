@@ -98,19 +98,19 @@ build:tools:
 
 
 # special case as version tags are introduced
-build:kubectl-helm:
+build:kubetools:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE:         parity/kubectl-helm
+    CONTAINER_IMAGE:         parity/kubetools
     CONTAINER_TAG:           latest
     DOCKERFILE_DIR:          kubectl-helm
     # https://github.com/kubernetes/kubernetes/releases
-    KUBE_VERSION:            "1.13.2"
+    KUBE_VERSION:            "1.13.4"
     # https://github.com/kubernetes/helm/releases
-    HELM_VERSION:            "2.9.1"
+    HELM_VERSION:            "v2.13.1"
   only:
     variables:
-      - $DOCKERIMAGE == "parity/kubectl-helm"
+      - $DOCKERIMAGE == "parity/kubetools"
   script:
     - cd $DOCKERFILE_DIR
     - docker build
