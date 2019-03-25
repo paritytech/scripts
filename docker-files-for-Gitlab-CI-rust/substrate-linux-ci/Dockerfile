@@ -19,8 +19,8 @@ RUN apt-get -y update; \
 		pkg-config libudev-dev time \
 		libssl-dev; \
 # apt clean up
-	apt-get remove -y --auto-remove \
-		wget; \
+	apt-get autoremove -y; \
+	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
 # setup default stable channel
 	rustup default stable; \
