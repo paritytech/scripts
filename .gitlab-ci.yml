@@ -125,6 +125,63 @@ build:kubetools:
 
 
 
+#
+# polkadot:sync jobs are set up via gitlab schedule on this repo with the idea 
+# to be notified when the chain isn't syncing properly on the latest build
+#
+
+.polkasync:                        &polkasync
+  image:                           parity/kubetools:latest
+  variables:
+    RELEASES_URL:                  https://releases.parity.io/polkadot/x86_64-ubuntu:xenial
+    KUBE_NAMESPACE:                polkasync
+  before_script:
+    - VERSION="$(wget -q -O - ${RELEASES_URL}/latest/VERSION)"
+    - echo "Polkadot version = ${VERSION}"
+    - kubectl get ns "${KUBE_NAMESPACE}"
+  only:
+    refs:
+      - schedules
+      - web
+    kubernetes: active
+  tags:
+    - kubernetes-parity-build
+
+
+
+polkadot:sync:start:
+  <<:                              *polkasync
+  only:
+    variables:
+      - $POLKASYNC == "start"
+  script:
+    - kubectl -n "${KUBE_NAMESPACE}" apply -f polkasync/deployment.yaml
+
+
+
+
+polkadot:sync:stop:
+  <<:                              *polkasync
+  only:
+    variables:
+      - $POLKASYNC == "stop"
+  script:
+    - PAYLOAD="{\"jsonrpc\":\"2.0\",\"method\":\"system_health\",\"params\":[],\"id\":0}"
+    - |
+      kubectl -n ${KUBE_NAMESPACE} port-forward svc/polkasync-rpc 9933:9933 &
+      for n in 1 2 3 4; do
+      curl --data "${PAYLOAD}" -H "Content-Type: application/json" -X POST \
+        localhost:9933 -o out.json;
+        jq -e .result.isSyncing out.json && touch FAILED && break
+        jq -e '.result.peers > 2' out.json && touch FAILED && break
+        sleep 30
+      done
+      rm -f out.json
+      kill %1
+    - kubectl -n "${KUBE_NAMESPACE}" delete -f polkasync/deployment.yaml
+    - test -f FAILED && echo FAILED || echo SUCCESS
+    - test -f FAILED && exit 1 # alert somebody
+
 
 
 # vim: expandtab sts=2
