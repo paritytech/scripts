@@ -25,7 +25,7 @@ spec:
     image: "parity/polkadot:0.3.19-37bf8b4"
     resources:
       requests:
-        memory: 1024Mi
+        memory: 1536Mi
         cpu: 2000m
     ports:
     - containerPort: 30333

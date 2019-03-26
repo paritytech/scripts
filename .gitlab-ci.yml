@@ -136,7 +136,8 @@ build:kubetools:
     RELEASES_URL:                  https://releases.parity.io/polkadot/x86_64-ubuntu:xenial
     KUBE_NAMESPACE:                polkasync
   before_script:
-    - VERSION="$(wget -q -O - ${RELEASES_URL}/latest/VERSION)"
+    - # VERSION="$(wget -q -O - ${RELEASES_URL}/latest/VERSION)"
+    - VERION="0.3.20-d854250"
     - echo "Polkadot version = ${VERSION}"
     - kubectl get ns "${KUBE_NAMESPACE}"
   only:
@@ -155,8 +156,8 @@ polkadot:sync:start:
     variables:
       - $POLKASYNC == "start"
   script:
-    - kubectl -n "${KUBE_NAMESPACE}" apply -f polkasync/deployment.yaml
-
+    - sed -r "s;^([[:space:]]+image: +\"parity/polkadot):.*\"$;\1:${VERSION}\";" 
+      polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" apply -f -
 
 
 
