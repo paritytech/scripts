@@ -1,0 +1,78 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: polkasync
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: ephemeral
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: polkasync
+  labels:
+    app: polkasync
+spec:
+  containers:
+  - name: polkasync
+    imagePullPolicy: Always
+    # image: "parity/polkadot:latest"
+    image: "parity/polkadot:0.3.19-37bf8b4"
+    resources:
+      requests:
+        memory: 1024Mi
+        cpu: 2000m
+    ports:
+    - containerPort: 30333
+      name: p2p
+    - containerPort: 9933
+      name: http-rpc
+    args:
+      - --base-path
+      - /polkadot
+      - --name
+      - polkasync
+      - --rpc-external
+      - --log
+      - sync=trace
+    volumeMounts:
+    - name: polkasyncdir
+      mountPath: /polkadot
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: http-rpc
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: http-rpc
+      initialDelaySeconds: 10
+      periodSeconds: 10
+  securityContext:
+    runAsUser: 1000
+    fsGroup: 1000
+  volumes:
+    - name: polkasyncdir
+      persistentVolumeClaim:
+        claimName: polkasync
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: polkasync-rpc
+spec:
+  ports:
+  - port: 9933
+    name: http-rpc
+  selector:
+    app: polkasync
+  sessionAffinity: None
+  type: ClusterIP
+  clusterIP: None
