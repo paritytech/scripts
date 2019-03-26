@@ -36,7 +36,7 @@ ENV CC=gcc \
 	CXX=g++ \
 # cache handlers
 	RUSTC_WRAPPER=sccache \
-	CARGO_HOME=/cargo/substrate/cargo \
-	SCCACHE_DIR=/cargo/substrate/sccache \
+	CARGO_HOME=/ci-cache/substrate/cargo \
+	SCCACHE_DIR=/ci-cache/substrate/sccache \
 # show backtraces
 	RUST_BACKTRACE=1
