@@ -8,7 +8,7 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 10Gi
+      storage: 15Gi
   storageClassName: ephemeral
 ---
 apiVersion: v1
@@ -26,7 +26,7 @@ spec:
     resources:
       requests:
         memory: 1536Mi
-        cpu: 2000m
+        cpu: 1500m
     ports:
     - containerPort: 30333
       name: p2p
