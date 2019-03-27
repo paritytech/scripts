@@ -173,6 +173,7 @@ polkadot:sync:stop:
   script:
     - PAYLOAD="{\"jsonrpc\":\"2.0\",\"method\":\"system_health\",\"params\":[],\"id\":0}"
     - |
+      set -x
       kubectl -n ${KUBE_NAMESPACE} port-forward svc/polkasync-rpc 9933:9933 &
       sleep 2
       for n in 1 2 3 4; do
@@ -187,6 +188,7 @@ polkadot:sync:stop:
       done
       rm -f out.json
       kill %1
+      set +x
     - kubectl -n "${KUBE_NAMESPACE}" delete -f polkasync/deployment.yaml
     - test -f FAILED && echo FAILED || echo SUCCESS
     - test -f FAILED && exit 1 # alert somebody
