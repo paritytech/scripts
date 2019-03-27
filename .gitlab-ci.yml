@@ -174,10 +174,11 @@ polkadot:sync:stop:
     - PAYLOAD="{\"jsonrpc\":\"2.0\",\"method\":\"system_health\",\"params\":[],\"id\":0}"
     - |
       kubectl -n ${KUBE_NAMESPACE} port-forward svc/polkasync-rpc 9933:9933 &
+      sleep 2
       for n in 1 2 3 4; do
-      curl --data "${PAYLOAD}" -H "Content-Type: application/json" -X POST \
-        localhost:9933 -o out.json;
-        jq -e .result.isSyncing out.json && touch FAILED && break
+      curl -sS --data "${PAYLOAD}" -H "Content-Type: application/json" \
+        -X POST localhost:9933 -o out.json
+        jq -e '.result.isSyncing' out.json && touch FAILED && break
         jq -e '.result.peers > 2' out.json && touch FAILED && break
         sleep 30
       done
