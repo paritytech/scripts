@@ -115,7 +115,7 @@ build:kubetools:
   script:
     - cd $DOCKERFILE_DIR
     - docker build
-      --build-arg VCS_REF="$(cut -c 1-7 refs/heads/master)"
+      --build-arg VCS_REF="$(cut -c 1-7 ${CI_PROJECT_DIR}/.git/refs/heads/master)"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg KUBE_VERSION="${KUBE_VERSION}"
       --build-arg HELM_VERSION="${HELM_VERSION}"
