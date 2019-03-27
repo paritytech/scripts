@@ -12,14 +12,6 @@ variables:
   DOCKER_DRIVER: overlay2
 
 
-before_script:
-  - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-  - docker login -u $Docker_Hub_User_Parity -p $Docker_Hub_Pass_Parity
-  - docker info
-
-after_script:
-  - docker logout
-
 
 
 
@@ -41,6 +33,13 @@ after_script:
     kubernetes: active
   tags:
     - kubernetes-parity-build
+  before_script:
+    - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
+    - docker login -u $Docker_Hub_User_Parity -p $Docker_Hub_Pass_Parity
+    - docker info
+  after_script:
+    - docker logout
+
 
 
 
