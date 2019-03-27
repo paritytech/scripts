@@ -146,6 +146,8 @@ build:kubetools:
     kubernetes: active
   tags:
     - kubernetes-parity-build
+  environment:
+    name: polkasync
 
 
 
