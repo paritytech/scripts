@@ -39,6 +39,8 @@ variables:
     - docker info
   after_script:
     - docker logout
+  environment:
+    name: parity-build
 
 
 
