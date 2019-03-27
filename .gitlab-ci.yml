@@ -174,6 +174,11 @@ polkadot:sync:stop:
     - PAYLOAD="{\"jsonrpc\":\"2.0\",\"method\":\"system_health\",\"params\":[],\"id\":0}"
     - |
       set -x
+      get_out () {
+        kubectl -n "${KUBE_NAMESPACE}" delete -f polkasync/deployment.yaml
+        test -f FAILED && exit 1 # alert somebody
+      }
+
       kubectl -n ${KUBE_NAMESPACE} port-forward svc/polkasync-rpc 9933:9933 &
       sleep 2
       for n in 1 2 3 4; do
@@ -181,17 +186,16 @@ polkadot:sync:stop:
           -H "Content-Type: application/json" \
           -X POST localhost:9933 -o out.json
         
-        grep -q -e isSyncing -e peers out.json || ( touch FAILED; break )
-        jq -e '.result.isSyncing == false' out.json || ( touch FAILED; break )
-        jq -e '.result.peers > 2' out.json || ( touch FAILED; break )
+        grep -q -e isSyncing -e peers out.json || get_out
+        jq -e '.result.isSyncing == false' out.json || get_out
+        jq -e '.result.peers > 2' out.json || get_out
         sleep 30
       done
       rm -f out.json
       kill %1
       set +x
-    - kubectl -n "${KUBE_NAMESPACE}" delete -f polkasync/deployment.yaml
     - test -f FAILED && echo FAILED || echo SUCCESS
-    - test -f FAILED && exit 1 # alert somebody
+    - get_out
 
 
 
