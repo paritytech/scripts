@@ -175,6 +175,7 @@ polkadot:sync:stop:
     - |
       set -x
       get_out () {
+        kill %1 # stop port-forwarding
         kubectl -n "${KUBE_NAMESPACE}" delete -f polkasync/deployment.yaml
         test -f FAILED && exit 1 # alert somebody
       }
@@ -192,7 +193,6 @@ polkadot:sync:stop:
         sleep 30
       done
       rm -f out.json
-      kill %1
       set +x
     - test -f FAILED && echo FAILED || echo SUCCESS
     - get_out
