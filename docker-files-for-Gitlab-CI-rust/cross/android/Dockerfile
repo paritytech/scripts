@@ -12,14 +12,19 @@ LABEL maintainer="devops-team@parity.io" \
 RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		git cmake ca-certificates g++ rhash \
-		libudev-dev time unzip xsltproc gperf; \
+		cmake rhash libudev-dev \
+		time xsltproc gperf; \
+# ca-certificates is already the newest version (20161130+nmu1+deb9u1).
+# g++ is already the newest version (4:6.3.0-4).
+# git is already the newest version (1:2.11.0-3+deb9u4).
+# unzip is already the newest version (6.0-21).
 # removed:
-# wget curl
+# wget curl ca-certificates g++ git unzip
 # sudo file build-essential bison flex lib32stdc++6 lib32z1 python
 # autotools-dev automake autoconf libtool docbook-xsl
 	rustup target add arm-linux-androideabi; \
 	rustup target add armv7-linux-androideabi; \
+	cargo install sccache; \
 # Android NDK and toolchain
 	cd /usr/local; \
     wget -q https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip; \
@@ -70,9 +75,20 @@ ENV ARM_LINUX_ANDROIDEABI_OPENSSL_DIR=/opt/ndk-standalone/sysroot/usr \
 	CXXFLAGS_armv7_linux_androideabi="-std=gnu++11 -fPIC -fexceptions -frtti -static-libstdc++ -D OS_ANDROID" \
 	CXXSTDLIB_arm_linux_androideabi="" \
 	CXXSTDLIB_armv7_linux_androideabi="" \
+# compiler ENV
 	CC=gcc \
 	CXX=g++ \
+# cache handlers
+	RUSTC_WRAPPER=sccache \
+	CARGO_HOME=/ci-cache/parity-ethereum/cargo \
+	SCCACHE_DIR=/ci-cache/parity-ethereum/sccache \
 # show backtraces
 	RUST_BACKTRACE=1
 
 WORKDIR /builds/parity/parity-ethereum/
+
+####
+ENV CARGO_TARGET=armv7-linux-androideabi \
+	CI_SERVER_NAME=1
+RUN git clone https://gitlab.parity.io/parity/parity-ethereum.git/ .
+
