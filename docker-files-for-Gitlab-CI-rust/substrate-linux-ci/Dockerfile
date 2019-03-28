@@ -12,7 +12,8 @@ LABEL maintainer="devops-team@parity.io" \
 WORKDIR /builds/parity/substrate/
 
 # install tools and dependencies
-RUN apt-get -y update; \
+RUN set -eux; \
+	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		software-properties-common curl git \
 		make cmake g++ clang rhash \

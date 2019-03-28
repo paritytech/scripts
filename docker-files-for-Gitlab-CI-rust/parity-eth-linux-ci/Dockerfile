@@ -1,6 +1,6 @@
 # triggers image autoupdate with the new Rust release
 # https://github.com/rust-lang-nursery/docker-rust-nightly/blob/master/nightly-slim/Dockerfile
-FROM rustlang/rust:nightly-slim
+FROM rustlang/rust:nightly-slim as notifier
 
 # temporary support of 16.04 with its Clib
 FROM ubuntu:xenial as builder
@@ -16,9 +16,38 @@ LABEL maintainer="devops-team@parity.io" \
 WORKDIR /builds/parity/parity-ethereum/
 
 # rustup directory
-ENV PATH=/root/.cargo/bin:$PATH \
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
+
+# install tools and dependencies
+RUN apt-get -y update; \
+	apt-get install -y --no-install-recommends \
+		software-properties-common curl git \
+		make cmake ca-certificates g++ rhash \
+		gcc pkg-config libudev-dev time \
+		libssl-dev libc6-dev wget; \
+# libssl-dev won't be needed in rust:stretch
+# install rustup
+    url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
+    wget "$url"; \
+    chmod +x rustup-init; \
+    ./rustup-init -y --no-modify-path --default-toolchain nightly; \
+    rm rustup-init; \
+    chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+    rustup --version; \
+    cargo --version; \
+    rustc --version; \
+	rustup install nightly beta; \
+	rustup default stable; \
+	cargo install cargo-audit sccache; \
+# apt clean up
+    apt-get remove -y --auto-remove \
+        wget; \
+	rm -rf /var/lib/apt/lists/*
+
 # compiler ENV
-	CC=gcc \
+RUN CC=gcc \
 	CXX=g++ \
 	CARGO_TARGET=x86_64-unknown-linux-gnu \
 # cache handler
@@ -27,20 +56,3 @@ ENV PATH=/root/.cargo/bin:$PATH \
 	SCCACHE_DIR=/ci-cache/parity-ethereum/sccache \
 # show backtraces
 	RUST_BACKTRACE=1
-
-# install tools and dependencies
-RUN apt-get -y update; \
-	apt-get install -y --no-install-recommends \
-		software-properties-common curl git \
-		make cmake ca-certificates g++ rhash \
-		gcc pkg-config libudev-dev time \
-		libssl-dev; \
-# libssl-dev won't be needed in rust:stretch
-# apt clean up
-	apt-get autoremove -y; \
-	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*; \
-# install rustup
-	curl https://sh.rustup.rs -sSf | sh -s -- -y; \
-	cargo install cargo-audit sccache; \
-	rustup install nightly beta
