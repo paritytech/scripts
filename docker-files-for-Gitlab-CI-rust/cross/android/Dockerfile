@@ -4,10 +4,10 @@ FROM rust:stretch
 # metadata
 LABEL maintainer="devops-team@parity.io" \
 	vendor="Parity Technologies" \
-	name="parity/rust-parity-ethereum-build" \
-	description="This is for CI build stage for Parity Ethereum linux binary." \
-	url="https://gitlab.com/paritytech/scripts" \
-	vcs-url="/scripts/docker-files-for-Gitlab-CI-rust/cross/android"
+	name="parity/rust-parity-ethereum-android-build" \
+	description="Image for CI build stage for Parity Ethereum Android binary." \
+	url="https://gitlab.com/paritytech/scripts/" \
+	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/cross/android"
 
 COPY libudev.patch /root/
 COPY config /.cargo/
