@@ -39,6 +39,10 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		cmake rhash libudev-dev \
 		time xsltproc gperf; \
+# apt clean up
+	apt-get autoremove -y; \
+	apt-get clean; \
+	rm -rf /var/lib/apt/lists/*; \
 # removed:
 # wget curl ca-certificates g++ git unzip
 # sudo file build-essential bison flex lib32stdc++6 lib32z1 python
