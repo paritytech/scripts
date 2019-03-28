@@ -9,6 +9,10 @@ LABEL maintainer="devops-team@parity.io" \
 	url="https://gitlab.com/paritytech/scripts" \
 	vcs-url="/scripts/docker-files-for-Gitlab-CI-rust/cross/andriod"
 
+ENV NDK_HOME=/usr/local/android-ndk-r16b \
+	ANDROID_NDK=/usr/local/android-ndk-r16b \
+	PATH=$PATH:/opt/ndk-standalone/bin
+
 RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
@@ -31,17 +35,13 @@ RUN set -eux; \
     echo "> finished downloading"; \
     unzip -qo android-ndk-r16b-linux-x86_64.zip; \
     echo "> finished unzipping"; \
-    rm -f android-ndk-r16b-linux-x86_64.zip
-ENV NDK_HOME=/usr/local/android-ndk-r16b \
-	ANDROID_NDK=/usr/local/android-ndk-r16b
-RUN /usr/local/android-ndk-r16b/build/tools/make-standalone-toolchain.sh \
-    --arch=arm --install-dir=/opt/ndk-standalone --stl=libc++ --platform=android-26
-ENV PATH=$PATH:/opt/ndk-standalone/bin
-
+    rm -f android-ndk-r16b-linux-x86_64.zip; \
+	/usr/local/android-ndk-r16b/build/tools/make-standalone-toolchain.sh \
+    	--arch=arm --install-dir=/opt/ndk-standalone --stl=libc++ --platform=android-26; \
 # Compiling libudev for Android
 # This is the most hacky part of the process, as we need to apply a patch and pass specific
 # options that the compiler environment doesn't define.
-RUN cd /root; \
+	cd /root; \
     git clone https://github.com/gentoo/eudev.git
 ADD libudev.patch /root
 RUN cd /root/eudev; \
