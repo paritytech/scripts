@@ -9,8 +9,8 @@ LABEL maintainer="devops-team@parity.io" \
 	url="https://gitlab.com/paritytech/scripts" \
 	vcs-url="/scripts/docker-files-for-Gitlab-CI-rust/cross/android"
 
-ADD config /.cargo/config \
-	libudev.patch /root/
+ADD ./config /.cargo/config \
+	./libudev.patch /root/
 
 # Android NDK configurations
 ENV NDK_HOME=/usr/local/android-ndk-r16b \
