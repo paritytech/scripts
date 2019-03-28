@@ -1,5 +1,6 @@
 # triggers image autoupdate with the new Rust release
-FROM rust:slim as notifier
+# https://github.com/rust-lang-nursery/docker-rust-nightly/blob/master/nightly-slim/Dockerfile
+FROM rustlang/rust:nightly-slim as notifier
 
 # temporary support of 16.04 with its Clib
 FROM ubuntu:xenial as builder
@@ -8,43 +9,46 @@ FROM ubuntu:xenial as builder
 LABEL maintainer="devops-team@parity.io" \
 	vendor="Parity Technologies" \
 	name="parity/rust-parity-ethereum-build" \
-	description="This is for CI build stage for Parity Ethereum linux binary." \
-	vcs-url="https://gitlab.com/paritytech/scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci" \
-	url="https://gitlab.com/paritytech"
-
-# install tools and dependencies
-RUN apt-get -y update && \
-	apt-get install -y --no-install-recommends \
-	software-properties-common curl git \
-	make cmake ca-certificates g++ rhash \
-	gcc pkg-config libudev-dev time \
-	libssl-dev
-# libssl-dev won't be needed in rust:stretch
-
-# install nodejs and yarn
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash - && \
-	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-	echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list && \
-	apt-get -y update && apt-get install -y --no-install-recommends \
-	nodejs yarn
+	description="Image for CI build stage for Parity Ethereum linux binary." \
+	url="https://gitlab.com/paritytech/scripts" \
+	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci"
 
 WORKDIR /builds/parity/parity-ethereum/
 
-# install rustup
-RUN curl https://sh.rustup.rs -sSf | sh -s -- -y
-
 # rustup directory
-ENV PATH=/root/.cargo/bin:$PATH
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
 
-RUN cargo install cargo-audit sccache
+# install tools and dependencies
+RUN apt-get -y update; \
+	apt-get install -y --no-install-recommends \
+		software-properties-common curl git \
+		make cmake ca-certificates g++ rhash \
+		gcc pkg-config libudev-dev time \
+		libssl-dev libc6-dev wget; \
+# libssl-dev won't be needed in rust:stretch
+# install rustup
+    url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
+    wget "$url"; \
+    chmod +x rustup-init; \
+    ./rustup-init -y --no-modify-path --default-toolchain stable; \
+    rm rustup-init; \
+    chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+	rustup install nightly beta; \
+	cargo install cargo-audit sccache; \
+# apt clean up
+    apt-get remove -y --auto-remove \
+        wget; \
+	rm -rf /var/lib/apt/lists/*
 
 # compiler ENV
 ENV CC=gcc \
 	CXX=g++ \
 	CARGO_TARGET=x86_64-unknown-linux-gnu \
-	CARGO_HOME=/cargo \
 # cache handler
 	RUSTC_WRAPPER=sccache \
-	SCCACHE_DIR=/cargo/sccache \
+	CARGO_HOME=/ci-cache/parity-ethereum/cargo \
+	SCCACHE_DIR=/ci-cache/parity-ethereum/sccache \
 # show backtraces
 	RUST_BACKTRACE=1
