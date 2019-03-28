@@ -7,13 +7,10 @@ LABEL maintainer="devops-team@parity.io" \
 	name="parity/rust-parity-ethereum-build" \
 	description="This is for CI build stage for Parity Ethereum linux binary." \
 	url="https://gitlab.com/paritytech/scripts" \
-	vcs-url="/scripts/docker-files-for-Gitlab-CI-rust/cross/andriod"
+	vcs-url="/scripts/docker-files-for-Gitlab-CI-rust/cross/android"
 
-ADD libudev.patch /root/
-ADD config /.cargo/
-
-# ADD libudev.patch /root
-# ADD config /.cargo/config
+COPY libudev.patch /root/
+COPY config /.cargo/
 
 # Android NDK configurations
 ENV NDK_HOME=/usr/local/android-ndk-r16b \
@@ -42,10 +39,6 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		cmake rhash libudev-dev \
 		time xsltproc gperf; \
-# ca-certificates is already the newest version (20161130+nmu1+deb9u1).
-# g++ is already the newest version (4:6.3.0-4).
-# git is already the newest version (1:2.11.0-3+deb9u4).
-# unzip is already the newest version (6.0-21).
 # removed:
 # wget curl ca-certificates g++ git unzip
 # sudo file build-essential bison flex lib32stdc++6 lib32z1 python
@@ -63,8 +56,8 @@ RUN set -eux; \
 	/usr/local/android-ndk-r16b/build/tools/make-standalone-toolchain.sh \
     	--arch=arm --install-dir=/opt/ndk-standalone --stl=libc++ --platform=android-26; \
 # Compiling libudev for Android
-# This is the most hacky part of the process, as we need to apply a patch and pass specific
-# options that the compiler environment doesn't define.
+# This is the most hacky part of the process, as we need to apply a patch and
+# pass specific options that the compiler environment doesn't define.
 	cd /root; \
     git clone https://github.com/gentoo/eudev.git; \
 # ADD libudev.patch /root
@@ -91,9 +84,3 @@ ENV	RUSTC_WRAPPER=sccache \
 	RUST_BACKTRACE=1
 
 WORKDIR /builds/parity/parity-ethereum/
-
-####
-ENV CARGO_TARGET=armv7-linux-androideabi \
-	CI_SERVER_NAME=1
-RUN git clone https://gitlab.parity.io/parity/parity-ethereum.git/ .
-
