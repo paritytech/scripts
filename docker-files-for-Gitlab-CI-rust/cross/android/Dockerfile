@@ -37,7 +37,7 @@ ENV NDK_HOME=/usr/local/android-ndk-r16b \
 	CC=gcc \
 	CXX=g++ \
 # cache handlers
-	RUSTC_WRAPPER=sccache \
+	# RUSTC_WRAPPER=sccache \
 	CARGO_HOME=/ci-cache/parity-ethereum/cargo \
 	SCCACHE_DIR=/ci-cache/parity-ethereum/sccache \
 # show backtraces
