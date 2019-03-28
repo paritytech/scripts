@@ -13,7 +13,7 @@ WORKDIR /builds/parity/parity-ethereum/
 # install tools and dependencies
 RUN apt-get -y update; \
     apt-get install -y --no-install-recommends \
-		curl ca-certificates; \
+		curl ca-certificates git; \
 # install nodejs and yarn
 	curl -sL https://deb.nodesource.com/setup_10.x | bash -; \
 	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -; \
