@@ -15,34 +15,6 @@ ADD config /.cargo/
 # ADD libudev.patch /root
 # ADD config /.cargo/config
 
-# Android NDK configurations
-ENV NDK_HOME=/usr/local/android-ndk-r16b \
-	ANDROID_NDK=/usr/local/android-ndk-r16b \
-	PATH=$PATH:/opt/ndk-standalone/bin \
-# compiler ENV
-	ARM_LINUX_ANDROIDEABI_OPENSSL_DIR=/opt/ndk-standalone/sysroot/usr \
-	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR=/opt/ndk-standalone/sysroot/usr \
-	CC_arm_linux_androideabi=arm-linux-androideabi-clang \
-	CC_armv7_linux_androideabi=arm-linux-androideabi-clang \
-	CXX_arm_linux_androideabi=arm-linux-androideabi-clang++ \
-	CXX_armv7_linux_androideabi=arm-linux-androideabi-clang++ \
-	AR_arm_linux_androideabi=arm-linux-androideabi-ar \
-	AR_armv7_linux_androideabi=arm-linux-androideabi-ar \
-	CFLAGS_arm_linux_androideabi="-std=gnu11 -fPIC -D OS_ANDROID" \
-	CFLAGS_armv7_linux_androideabi="-std=gnu11 -fPIC -D OS_ANDROID" \
-	CXXFLAGS_arm_linux_androideabi="-std=gnu++11 -fPIC -fexceptions -frtti -static-libstdc++ -D OS_ANDROID" \
-	CXXFLAGS_armv7_linux_androideabi="-std=gnu++11 -fPIC -fexceptions -frtti -static-libstdc++ -D OS_ANDROID" \
-	CXXSTDLIB_arm_linux_androideabi="" \
-	CXXSTDLIB_armv7_linux_androideabi="" \
-	CC=gcc \
-	CXX=g++ \
-# cache handlers
-	# RUSTC_WRAPPER=sccache \
-	CARGO_HOME=/ci-cache/parity-ethereum/cargo \
-	SCCACHE_DIR=/ci-cache/parity-ethereum/sccache \
-# show backtraces
-	RUST_BACKTRACE=1
-
 RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
@@ -88,6 +60,34 @@ RUN set -eux; \
     make install; \
 	rm -rf /root/eudev; \
 	rm /root/libudev.patch
+
+# Android NDK configurations
+ENV NDK_HOME=/usr/local/android-ndk-r16b \
+	ANDROID_NDK=/usr/local/android-ndk-r16b \
+	PATH=$PATH:/opt/ndk-standalone/bin \
+# compiler ENV
+	ARM_LINUX_ANDROIDEABI_OPENSSL_DIR=/opt/ndk-standalone/sysroot/usr \
+	ARMV7_LINUX_ANDROIDEABI_OPENSSL_DIR=/opt/ndk-standalone/sysroot/usr \
+	CC_arm_linux_androideabi=arm-linux-androideabi-clang \
+	CC_armv7_linux_androideabi=arm-linux-androideabi-clang \
+	CXX_arm_linux_androideabi=arm-linux-androideabi-clang++ \
+	CXX_armv7_linux_androideabi=arm-linux-androideabi-clang++ \
+	AR_arm_linux_androideabi=arm-linux-androideabi-ar \
+	AR_armv7_linux_androideabi=arm-linux-androideabi-ar \
+	CFLAGS_arm_linux_androideabi="-std=gnu11 -fPIC -D OS_ANDROID" \
+	CFLAGS_armv7_linux_androideabi="-std=gnu11 -fPIC -D OS_ANDROID" \
+	CXXFLAGS_arm_linux_androideabi="-std=gnu++11 -fPIC -fexceptions -frtti -static-libstdc++ -D OS_ANDROID" \
+	CXXFLAGS_armv7_linux_androideabi="-std=gnu++11 -fPIC -fexceptions -frtti -static-libstdc++ -D OS_ANDROID" \
+	CXXSTDLIB_arm_linux_androideabi="" \
+	CXXSTDLIB_armv7_linux_androideabi="" \
+	CC=gcc \
+	CXX=g++ \
+# cache handlers
+	RUSTC_WRAPPER=sccache \
+	CARGO_HOME=/ci-cache/parity-ethereum/cargo \
+	SCCACHE_DIR=/ci-cache/parity-ethereum/sccache \
+# show backtraces
+	RUST_BACKTRACE=1
 
 WORKDIR /builds/parity/parity-ethereum/
 
