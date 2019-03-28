@@ -10,11 +10,15 @@ LABEL maintainer="devops-team@parity.io" \
 
 WORKDIR /builds/parity/parity-ethereum/
 
+# install tools and dependencies
+RUN apt-get -y update; \
+    apt-get install -y --no-install-recommends \
+        curl ca-certificates; \
 # install nodejs and yarn
-RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -; \
+	curl -sL https://deb.nodesource.com/setup_10.x | bash -; \
 	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -; \
 	echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list; \
-	apt-get -y update && apt-get install -y --no-install-recommends \
+	apt-get install -y --no-install-recommends \
 		nodejs yarn; \
 	# apt clean up
 	apt-get autoremove -y; \
