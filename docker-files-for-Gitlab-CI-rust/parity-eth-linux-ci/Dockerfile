@@ -32,14 +32,10 @@ RUN apt-get -y update; \
     url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
     wget "$url"; \
     chmod +x rustup-init; \
-    ./rustup-init -y --no-modify-path --default-toolchain nightly; \
+    ./rustup-init -y --no-modify-path --default-toolchain stable; \
     rm rustup-init; \
     chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
-    rustup --version; \
-    cargo --version; \
-    rustc --version; \
 	rustup install nightly beta; \
-	rustup default stable; \
 	cargo install cargo-audit sccache; \
 # apt clean up
     apt-get remove -y --auto-remove \
