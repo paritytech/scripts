@@ -49,8 +49,8 @@ RUN set -eux; \
 		cmake rhash libudev-dev \
 		time xsltproc gperf; \
 # apt clean up
-	apt-get autoremove -y; \
-	apt-get clean; \
+	# apt-get autoremove -y; \
+	# apt-get clean; \
 	# rm -rf /var/lib/apt/lists/*; \
 # removed:
 # wget curl ca-certificates g++ git unzip
