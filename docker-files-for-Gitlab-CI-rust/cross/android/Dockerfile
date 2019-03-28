@@ -9,8 +9,8 @@ LABEL maintainer="devops-team@parity.io" \
 	url="https://gitlab.com/paritytech/scripts" \
 	vcs-url="/scripts/docker-files-for-Gitlab-CI-rust/cross/android"
 
-COPY libudev.patch /root/
-COPY config /.cargo/
+COPY libudev.patch /root
+COPY config /.cargo/config
 
 # ADD libudev.patch /root
 # ADD config /.cargo/config
