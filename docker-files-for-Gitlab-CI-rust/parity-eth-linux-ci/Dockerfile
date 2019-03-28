@@ -47,7 +47,7 @@ RUN apt-get -y update; \
 	rm -rf /var/lib/apt/lists/*
 
 # compiler ENV
-RUN CC=gcc \
+ENV CC=gcc \
 	CXX=g++ \
 	CARGO_TARGET=x86_64-unknown-linux-gnu \
 # cache handler
