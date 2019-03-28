@@ -1,5 +1,5 @@
 # triggers image autoupdate with the new Rust stable release
-FROM rust:stretch AS builder
+FROM rust:stretch
 
 # metadata
 LABEL maintainer="devops-team@parity.io" \
@@ -9,8 +9,8 @@ LABEL maintainer="devops-team@parity.io" \
 	url="https://gitlab.com/paritytech/scripts" \
 	vcs-url="/scripts/docker-files-for-Gitlab-CI-rust/cross/andriod"
 
-ADD libudev.patch /root
-ADD config /.cargo/config
+ADD libudev.patch /root/
+ADD config /.cargo/
 
 # ADD libudev.patch /root
 # ADD config /.cargo/config
