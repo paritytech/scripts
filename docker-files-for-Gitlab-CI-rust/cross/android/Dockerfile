@@ -52,31 +52,31 @@ RUN set -eux; \
 	cargo install sccache; \
 # Android NDK and toolchain
 	cd /usr/local; \
-    wget -q https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip; \
-    echo "> finished downloading"; \
-    unzip -qo android-ndk-r16b-linux-x86_64.zip; \
-    echo "> finished unzipping"; \
-    rm -f android-ndk-r16b-linux-x86_64.zip; \
+	wget -q https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip; \
+	echo "> finished downloading"; \
+	unzip -qo android-ndk-r16b-linux-x86_64.zip; \
+	echo "> finished unzipping"; \
+	rm -f android-ndk-r16b-linux-x86_64.zip; \
 	/usr/local/android-ndk-r16b/build/tools/make-standalone-toolchain.sh \
-    	--arch=arm --install-dir=/opt/ndk-standalone --stl=libc++ --platform=android-26; \
+		--arch=arm --install-dir=/opt/ndk-standalone --stl=libc++ --platform=android-26; \
 # Compiling libudev for Android
 # This is the most hacky part of the process, as we need to apply a patch and
 # pass specific options that the compiler environment doesn't define.
 	cd /root; \
-    git clone https://github.com/gentoo/eudev.git; \
+	git clone https://github.com/gentoo/eudev.git; \
 # ADD libudev.patch /root
 	cd /root/eudev; \
-    git checkout 83d918449f22720d84a341a05e24b6d109e6d3ae; \
-    ./autogen.sh; \
-    ./configure  \
+	git checkout 83d918449f22720d84a341a05e24b6d109e6d3ae; \
+	./autogen.sh; \
+	./configure  \
 		--disable-introspection --disable-programs --disable-hwdb \
 		--host=arm-linux-androideabi --prefix=/opt/ndk-standalone/sysroot/usr/ \
 		--enable-shared=false CC=arm-linux-androideabi-clang \
-		CFLAGS="-D LINE_MAX=2048 -D RLIMIT_NLIMITS=15 -D IPTOS_LOWCOST=2 -std=gnu99" \
-		CXX=arm-linux-androideabi-clang++; \
-    git apply - < /root/libudev.patch; \
-    make; \
-    make install; \
+	CFLAGS="-D LINE_MAX=2048 -D RLIMIT_NLIMITS=15 -D IPTOS_LOWCOST=2 -std=gnu99" \
+	CXX=arm-linux-androideabi-clang++; \
+	git apply - < /root/libudev.patch; \
+	make; \
+	make install; \
 	rm -rf /root/eudev; \
 	rm /root/libudev.patch
 
