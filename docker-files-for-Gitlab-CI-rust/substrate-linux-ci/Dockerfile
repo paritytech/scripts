@@ -23,10 +23,10 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		software-properties-common curl git \
-		make cmake ca-certificates g++ clang rhash \
-		gcc pkg-config libudev-dev time \
-		libssl-dev libc6-dev wget; \
+		wget git ca-certificates gcc g++ clang \
+		pkg-config libssl-dev cmake libc6-dev; \
+# needed: wget ca-certificates gcc g++ libssl-dev pkg-config git cmake clang
+# not needed: software-properties-common curl make rhash libudev-dev time
 # install rustup
     url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
     wget "$url"; \
