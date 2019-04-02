@@ -1,5 +1,8 @@
+# triggers image autoupdate with the new Rust release
 # https://github.com/rust-lang-nursery/docker-rust-nightly/blob/master/nightly-slim/Dockerfile
-FROM rustlang/rust:nightly-slim
+FROM rustlang/rust:nightly-slim as notifier
+
+FROM ubuntu:xenial as builder
 
 # metadata
 LABEL maintainer="devops-team@parity.io" \
@@ -11,25 +14,35 @@ LABEL maintainer="devops-team@parity.io" \
 
 WORKDIR /builds/parity/substrate/
 
+# rustup directory
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH
+
 # install tools and dependencies
 RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		software-properties-common curl git \
-		make cmake g++ clang rhash \
-		pkg-config libudev-dev time \
-		libssl-dev; \
+		make cmake ca-certificates g++ clang rhash \
+		gcc pkg-config libudev-dev time \
+		libssl-dev ibc6-dev wget; \
+# install rustup
+    url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
+    wget "$url"; \
+    chmod +x rustup-init; \
+    ./rustup-init -y --no-modify-path --default-toolchain stable; \
+    rm rustup-init; \
+    chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+	rustup install nightly beta; \
+	cargo install cargo-audit sccache; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
-# setup default stable channel
-	rustup default stable; \
-	cargo install cargo-audit sccache; \
 # install wasm toolchain for polkadot
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
-# Install wasm-gc. It's useful for stripping slimming down wasm binaries.
-# (polkadot)
+# Install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
 	cargo +nightly install --git https://github.com/alexcrichton/wasm-gc;
 
 # compiler ENV
