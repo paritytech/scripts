@@ -26,7 +26,7 @@ RUN set -eux; \
 		software-properties-common curl git \
 		make cmake ca-certificates g++ clang rhash \
 		gcc pkg-config libudev-dev time \
-		libssl-dev ibc6-dev wget; \
+		libssl-dev libc6-dev wget; \
 # install rustup
     url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
     wget "$url"; \
