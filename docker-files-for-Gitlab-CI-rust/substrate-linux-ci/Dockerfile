@@ -16,7 +16,7 @@ WORKDIR /builds/parity/substrate/
 RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		wget git g++ clang cmake make \
+		git g++ clang cmake make \
 		pkg-config libssl-dev; \
 # apt clean up
 	apt-get autoremove -y; \
