@@ -56,14 +56,22 @@ else
 	rustup update
 fi
 
+function install_substrate {
+	g=`mktemp -d`
+	git clone https://github.com/paritytech/substrate $g
+	pushd $g
+	./scripts/build.sh
+	cargo install --force --path . substrate
+	popd
+}
+
 if [[ "$1" == "--fast" ]]; then
 	echo "Skipped cargo install of 'substrate' and 'subkey'"
-	echo "You can install manually with:"
-	echo "    cargo install --force --git https://github.com/paritytech/substrate subkey"
-	echo "    cargo install --force --git https://github.com/paritytech/substrate substrate"
+	echo "You can install manually with by cloning the https://github.com/paritytech/substrate repo,"
+	echo "building the Wasm, and using cargo to install 'substrate' and 'subkey' from the repo path."
 else 
 	cargo install --force --git https://github.com/paritytech/substrate subkey
-	cargo install --force --git https://github.com/paritytech/substrate substrate
+	install_substrate
 fi
 
 f=`mktemp -d`
