@@ -18,7 +18,7 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		git g++ clang cmake make \
 		pkg-config libssl-dev \
-		curl; \
+		curl time; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
