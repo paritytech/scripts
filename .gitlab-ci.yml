@@ -137,8 +137,8 @@ build:kubetools:
     RELEASES_URL:                  https://releases.parity.io/polkadot/x86_64-ubuntu:xenial
     KUBE_NAMESPACE:                polkasync
   before_script:
-    # - VERSION="$(wget -q -O - ${RELEASES_URL}/latest/VERSION)"
-    - VERSION="0.3.21-6bee107"
+    # - VERSION="0.3.21-6bee107"
+    - VERSION="$(wget -q -O - ${RELEASES_URL}/latest-v0.4/VERSION)"
     - echo "Polkadot version = ${VERSION}"
     - kubectl get ns "${KUBE_NAMESPACE}"
   only:
