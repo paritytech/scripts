@@ -8,40 +8,52 @@ FROM parity/rust-parity-ethereum-build:xenial as builder
 LABEL maintainer="devops-team@parity.io" \
 	vendor="Parity Technologies" \
 	name="parity/rust-parity-ethereum-build" \
-	description="This is for CI build stage for Parity Ethereum linux binary." \
-	vcs-url="https://gitlab.com/paritytech/scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci" \
-	url="https://gitlab.com/paritytech"
+	description="Image for CI build stage for Parity Ethereum armv7 binary." \
+	url="https://gitlab.com/paritytech/scripts" \
+	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/cross/armv7"
 
 	# install armv7 dependencies and tools
-	RUN dpkg --add-architecture armhf
-	RUN	echo '# source urls for armhf \n\
+RUN set -eux; \
+	dpkg --add-architecture armhf; \
+	echo '# source urls for armhf \n\
 		deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial main \n\
 		deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial main \n\
 		deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main \n\
 		deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main \n\
 		deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n\
-		deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n # end armhf section' >> /etc/apt/sources.list &&\
-		sed -r 's/deb h/deb \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list && \
-		cp /tmp/sources-tmp.list /etc/apt/sources.list&& \
-		sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list&& \
-		cat /etc/apt/sources.list && \
-	  cp /tmp/sources-tmp.list /etc/apt/sources.list&& \
-		echo "next"&&cat /etc/apt/sources.list
-
-RUN apt -y update && \
-		apt install -y \
-		g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf libudev-dev libudev-dev:armhf
-
+		deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n\
+		# end armhf section' >> /etc/apt/sources.list; \
+		sed -r 's/deb h/deb \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list; \
+		cp /tmp/sources-tmp.list /etc/apt/sources.list; \
+		sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list; \
+		cat /etc/apt/sources.list; \
+		cp /tmp/sources-tmp.list /etc/apt/sources.list; \
+		echo "next"; \
+		cat /etc/apt/sources.list; \
+# install dependencies
+	apt-get -y update; \
+	apt-get install -y \
+		g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf \
+		libudev-dev libudev-dev:armhf; \
+# apt clean up
+	apt-get autoremove -y; \
+	apt-get clean; \
+	rm -rf /var/lib/apt/lists/*; \
 # install armv7 toolchain
-RUN rustup target add armv7-unknown-linux-gnueabihf
+	rustup target add armv7-unknown-linux-gnueabihf
 
 # set cross-compiler ENV
-ADD config /.cargo/config
+COPY config /.cargo/config
 ENV CC=arm-linux-gnueabihf-gcc \
-		CXX=arm-linux-gnueabihf-g++ \
-		CARGO_TARGET=armv7-unknown-linux-gnueabihf \
-		CARGO_HOME=/parity-ethereum/.cargo/ \
-		HOST_CC=gcc \
-		HOST_CXX=g++ \
-		LDFLAGS="-L/usr/lib/arm-linix-gnueabihf" \
-		CPPFLAGS="-I/usr/include"
+	CXX=arm-linux-gnueabihf-g++ \
+	CARGO_TARGET=armv7-unknown-linux-gnueabihf \
+	HOST_CC=gcc \
+	HOST_CXX=g++ \
+	LDFLAGS="-L/usr/lib/arm-linix-gnueabihf" \
+	CPPFLAGS="-I/usr/include" \
+# cache handler
+	RUSTC_WRAPPER=sccache \
+	CARGO_HOME=/ci-cache/parity-ethereum/cargo \
+	SCCACHE_DIR=/ci-cache/parity-ethereum/sccache \
+# show backtraces
+	RUST_BACKTRACE=1
