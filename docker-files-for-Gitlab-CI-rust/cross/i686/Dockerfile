@@ -13,7 +13,8 @@ LABEL maintainer="devops-team@parity.io" \
 	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/cross/i686"
 
 # install i386 dependencies and tools
-RUN dpkg --add-architecture i386; \
+RUN set -eux; \
+	dpkg --add-architecture i386; \
 # install dependencies
 	apt-get -y update; \
 	apt install -y \
