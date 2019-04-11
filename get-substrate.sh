@@ -52,6 +52,7 @@ fi
 if ! which rustup >/dev/null 2>&1; then
 	curl https://sh.rustup.rs -sSf | sh -s -- -y
 	source ~/.cargo/env
+  rustup default stable
 else
 	rustup update
 fi
