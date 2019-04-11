@@ -8,12 +8,12 @@ FROM ubuntu:xenial as builder
 # metadata
 LABEL maintainer="devops-team@parity.io" \
 	vendor="Parity Technologies" \
-	name="parity/rust-parity-ethereum-build" \
-	description="Image for CI build stage for Parity Ethereum linux binary." \
+	name="parity/rust-coverage" \
+	description="Image for CI to collects and aggregates code coverage information for Rust projects. Based on grcov https://github.com/mozilla/grcov" \
 	url="https://gitlab.com/paritytech/scripts" \
-	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci"
+	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/coverage"
 
-WORKDIR /builds/parity/parity-ethereum/
+WORKDIR /builds/
 
 # rustup directory
 ENV RUSTUP_HOME=/usr/local/rustup \
@@ -50,9 +50,5 @@ deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main "; \
     apt-get remove -y --auto-remove wget; \
 	  rm -rf /var/lib/apt/lists/*
 
-# compiler ENV
-ENV CC=gcc \
-	CXX=g++ \
-	CARGO_TARGET=x86_64-unknown-linux-gnu \
 # show backtraces
-	RUST_BACKTRACE=1
+ENV RUST_BACKTRACE=1
