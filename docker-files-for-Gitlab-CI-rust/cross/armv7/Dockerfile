@@ -8,9 +8,9 @@ FROM parity/rust-parity-ethereum-build:xenial as builder
 LABEL maintainer="devops-team@parity.io" \
 	vendor="Parity Technologies" \
 	name="parity/rust-parity-ethereum-build" \
-	description="Image for CI build stage for Parity Ethereum armv7 binary." \
+	description="Image for CI build stage for Parity Ethereum armhf binary." \
 	url="https://gitlab.com/paritytech/scripts" \
-	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/cross/armv7"
+	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/cross/armhf"
 
 	# install armv7 dependencies and tools
 RUN set -eux; \
