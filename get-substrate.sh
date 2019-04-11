@@ -60,6 +60,7 @@ function install_substrate {
 	g=`mktemp -d`
 	git clone https://github.com/paritytech/substrate $g
 	pushd $g
+	./scripts/init.sh
 	./scripts/build.sh
 	cargo install --force --path . substrate
 	popd
