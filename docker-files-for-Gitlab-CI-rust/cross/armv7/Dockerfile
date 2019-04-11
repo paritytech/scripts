@@ -21,8 +21,8 @@ RUN set -eux; \
 		deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main \n\
 		deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-updates main \n\
 		deb [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n\
-		deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \n\
-		# end armhf section' >> /etc/apt/sources.list; \
+		deb-src [arch=armhf] http://ports.ubuntu.com/ubuntu-ports/ xenial-security main \
+		\n # end armhf section' >> /etc/apt/sources.list; \
 		sed -r 's/deb h/deb \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list; \
 		cp /tmp/sources-tmp.list /etc/apt/sources.list; \
 		sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list; \
