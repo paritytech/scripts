@@ -7,7 +7,7 @@ FROM parity/rust-parity-ethereum-build:xenial as builder
 # metadata
 LABEL maintainer="devops-team@parity.io" \
 	vendor="Parity Technologies" \
-	name="parity/rust-parity-ethereum-build" \
+	name="parity/rust-parity-ethereum-build:arm64" \
 	description="Image for CI build stage for Parity Ethereum arm64 binary." \
 	url="https://gitlab.com/paritytech/scripts" \
 	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/cross/arm64"
@@ -26,10 +26,7 @@ RUN set -eux; \
 	sed -r 's/deb h/deb \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
 	sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list; \
-	cat /etc/apt/sources.list; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
-	echo "next"; \
-	cat /etc/apt/sources.list; \
 # install dependencies
 	apt-get -y update; \
 	apt-get install -y \
@@ -43,7 +40,6 @@ RUN set -eux; \
 	rustup target add aarch64-unknown-linux-gnu
 
 # set cross-compiler ENV
-COPY config /.cargo/config
 ENV CC=aarch64-linux-gnu-gcc \
 	CXX=aarch64-linux-gnu-g++ \
 	CARGO_TARGET=aarch64-unknown-linux-gnu \
