@@ -3,7 +3,7 @@ Usage:
 ```
     build-linux-i386:
       stage: build
-      image: parity/rust-i686:gitlab-ci
+      image: parity/rust-parity-ethereum-build:i386
       script:
         - cargo build --target i686-unknown-linux-gnu $CARGO_OPTIONS
 ```
