@@ -1,11 +1,10 @@
-Docker image based on [RUST](https://www.rust-lang.org/) rust:stretch image (latest stable),
-[node.js](https://nodejs.org), for [GitLab CI runner](https://gitlab.com/gitlab-org/gitlab-ci-multi-runner),
-[sccache](https://github.com/mozilla/sccache).
+Docker image with latest stable, beta and nightly [RUST](https://www.rust-lang.org/)  based on ubuntu:xenial image for [GitLab CI runner](https://gitlab.com/gitlab-org/gitlab-ci-multi-runner).
+Uses [sccache](https://github.com/mozilla/sccache).
 Usage:
 ```
 linux-stable:
     stage: build
-    image: parity/rust-linux:stretch
+    image: parity/rust-parity-ethereum-build:xenial
     script:
       - cargo build ...
 ```
