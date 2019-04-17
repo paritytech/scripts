@@ -1,8 +1,16 @@
-image: docker:stable
+# .gitlab-ci.yml
+# paritytech/scripts
+#
 
 
-services:
-  - docker:dind
+stages:
+  - build
+  - deploy
+  - destroy
+
+
+
+
 
 
 variables:
@@ -14,10 +22,22 @@ variables:
 
 
 
+.kubernetes-build:                 &kubernetes-build
+  only:
+    refs:
+      - schedules
+      - web
+    kubernetes: active
+  tags:
+    - kubernetes-parity-build
 
 
 .build: &docker_build
   stage: build
+  <<:                              *kubernetes-build
+  image:                           docker:stable
+  services:
+    - docker:dind
   script:
     - cd $DOCKERFILE_DIR
       # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
@@ -26,16 +46,9 @@ variables:
     - docker build --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
     - docker push $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
     - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
-  only:
-    refs:
-      - schedules
-      - web
-    kubernetes: active
-  tags:
-    - kubernetes-parity-build
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-    - docker login -u $Docker_Hub_User_Parity -p $Docker_Hub_Pass_Parity
+    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
   after_script:
     - docker logout
@@ -131,45 +144,89 @@ build:kubetools:
 # to be notified when the chain isn't syncing properly on the latest build
 #
 
+
+.polkasync-env:                    &polkasync-env
+  <<:                              *kubernetes-build
+  environment:
+    name: polkasync
+
 .polkasync:                        &polkasync
+  <<:                              *polkasync-env
   image:                           parity/kubetools:latest
   variables:
     RELEASES_URL:                  https://releases.parity.io/polkadot/x86_64-ubuntu:xenial
     KUBE_NAMESPACE:                polkasync
   before_script:
-    # - VERSION="0.3.21-6bee107"
-    - VERSION="$(wget -q -O - ${RELEASES_URL}/latest-v0.4/VERSION)"
-    - echo "Polkadot version = ${VERSION}"
     - kubectl get ns "${KUBE_NAMESPACE}"
+
+
+polkadot:sync:dockerize:
+  stage:                           build
+  <<:                              *polkasync-env
+  image:                           docker:stable
+  services:
+    - docker:dind
+  variables:
+    GIT_STRATEGY:                  none
+    CONTAINER_IMAGE:               "parity/${PROJECT}"
   only:
-    refs:
-      - schedules
-      - web
-    kubernetes: active
-  tags:
-    - kubernetes-parity-build
-  environment:
-    name: polkasync
+    variables:
+      - $POLKASYNC == "start"
+      - $PROJECT =~ /\(substrate\|polkadot\)/
+      - $JOB_ID
+      - $PRNO
+  before_script:
+    - test "${Docker_Hub_User_Parity}" -a "${Docker_Hub_Pass_Parity}"
+        || ( echo "no docker credentials provided"; exit 1 )
+    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker info
+  script:
+    - echo "Building docker image tag ${PROJECT}:pr-${PRNO}"
+    - wget -O substrate.zip https://gitlab.parity.io/parity/${PROJECT}/-/jobs/${JOB_ID}/artifacts/download
+    - unzip substrate.zip
+    - cd ./artifacts
+    - docker build --tag ${CONTAINER_IMAGE}:pr-${PRNO} .
+    - docker push ${CONTAINER_IMAGE}:pr-${PRNO}
+  after_script:
+    - docker logout
 
 
 
 polkadot:sync:start:
+  stage:                           deploy
   <<:                              *polkasync
   only:
     variables:
       - $POLKASYNC == "start"
+      - $PROJECT =~ /\(substrate\|polkadot\)/
   script:
     - |
-      sed -r "s;^([[:space:]]+image: +\"parity/polkadot):.*\"$;\1:${VERSION}\";" \
-        polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" apply -f -
+      env
+      if [ "${PRNO}" ]
+      then
+        echo "deploying docker image for ${PROJECT} PR NO ${PRNO}"
+        VERSION="pr-${PRNO}"
+      else
+        # VERSION="0.3.21-6bee107"
+        VERSION="$(wget -q -O - ${RELEASES_URL}/latest-v0.4/VERSION)"
+      fi
+      echo "${PROJECT} version = ${VERSION}"
+
+      NAME="${PROJECT}-${VERSION}"
+      envsubst < polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" apply -f - --dry-run=true
+
+      # sed -r "s;^([[:space:]]+image: +\"parity/polkadot):.*\"$;\1:${VERSION}\";" \
+      #   polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" apply -f -
 
 
 
 polkadot:sync:stop:
+  stage:                           destroy
   <<:                              *polkasync
   only:
     variables:
       - $POLKASYNC == "stop"
+      - $PROJECT =~ /\(substrate\|polkadot\)/
   script:
     - |
       set -x
@@ -198,6 +255,19 @@ polkadot:sync:stop:
       rm -f out.json
       get_out
       set +x
+  after_script:
+    - test "${PRNO}" -a "${PROJECT}" || exit 0
+    - echo "Remove pr-${PRNO} image from docker hub again"
+    - |
+      set -x
+      TOKEN="$(curl -sS -H "Content-Type: application/json" -X POST
+        -d "{\"username\": \"${Docker_Hub_User_Parity}\", "password": \"${Docker_Hub_Pass_Parity}\"}"
+        https://hub.docker.com/v2/users/login/ | jq -r .token)"
+      curl -sS -X DELETE -H "Authorization: JWT ${TOKEN}"
+        'https://hub.docker.com/v2/repositories/parity/${PROJECT}/tags/pr-${PRNO}/'
+      set +x
+
+
 
 
 
