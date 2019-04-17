@@ -171,16 +171,15 @@ polkadot:sync:dockerize:
     CONTAINER_IMAGE:               "parity/${PROJECT}"
   only:
     variables:
-      - $POLKASYNC == "start"
-      - $PROJECT =~ /\(substrate\|polkadot\)/
       - $JOB_ID
-      - $PRNO
   before_script:
     - test "${Docker_Hub_User_Parity}" -a "${Docker_Hub_Pass_Parity}"
         || ( echo "no docker credentials provided"; exit 1 )
     - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
   script:
+    - test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" &&
+      ( echo "|  project '${PROJECT}' not supported"; exit 5 )
     - echo "Building docker image tag ${PROJECT}:pr-${PRNO}"
     - wget -O substrate.zip https://gitlab.parity.io/parity/${PROJECT}/-/jobs/${JOB_ID}/artifacts/download
     - unzip substrate.zip
@@ -198,10 +197,13 @@ polkadot:sync:start:
   only:
     variables:
       - $POLKASYNC == "start"
-      - $PROJECT =~ /\(substrate\|polkadot\)/
+      - $JOB_ID
   script:
+    - test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" &&
+      ( echo "|  project '${PROJECT}' not supported"; exit 5 )
     - |
       env
+
       if [ "${PRNO}" ]
       then
         echo "deploying docker image for ${PROJECT} PR NO ${PRNO}"
@@ -226,8 +228,10 @@ polkadot:sync:stop:
   only:
     variables:
       - $POLKASYNC == "stop"
-      - $PROJECT =~ /\(substrate\|polkadot\)/
+      - $JOB_ID
   script:
+    - test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" &&
+      ( echo "|  project '${PROJECT}' not supported"; exit 5 )
     - |
       set -x
       PAYLOAD="{\"jsonrpc\":\"2.0\",\"method\":\"system_health\",\"params\":[],\"id\":0}"
