@@ -178,8 +178,9 @@ polkadot:sync:dockerize:
     - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
   script:
-    - test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" &&
-      ( echo "|  project '${PROJECT}' not supported"; exit 5 )
+    - |
+      test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" && |
+        ( echo "|  project '${PROJECT}' not supported"; exit 5 )
     - echo "Building docker image tag ${PROJECT}:pr-${PRNO}"
     - wget -O substrate.zip https://gitlab.parity.io/parity/${PROJECT}/-/jobs/${JOB_ID}/artifacts/download
     - unzip substrate.zip
@@ -199,9 +200,9 @@ polkadot:sync:start:
       - $POLKASYNC == "start"
       - $JOB_ID
   script:
-    - test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" &&
-      ( echo "|  project '${PROJECT}' not supported"; exit 5 )
     - |
+      test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" && \
+        ( echo "|  project '${PROJECT}' not supported"; exit 5 )
       env
 
       if [ "${PRNO}" ]
@@ -230,10 +231,10 @@ polkadot:sync:stop:
       - $POLKASYNC == "stop"
       - $JOB_ID
   script:
-    - test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" &&
-      ( echo "|  project '${PROJECT}' not supported"; exit 5 )
     - |
       set -x
+      test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" && \
+        ( echo "|  project '${PROJECT}' not supported"; exit 5 )
       PAYLOAD="{\"jsonrpc\":\"2.0\",\"method\":\"system_health\",\"params\":[],\"id\":0}"
       get_out () {
         kill %1 # stop port-forwarding
