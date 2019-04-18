@@ -79,5 +79,6 @@ fi
 f=`mktemp -d`
 git clone https://github.com/paritytech/substrate-up $f
 cp -a $f/substrate-* ~/.cargo/bin
+cp -a $f/polkadot-* ~/.cargo/bin
 
 echo "Run source ~/.cargo/env now to update environment"
