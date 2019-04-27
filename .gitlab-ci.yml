@@ -38,26 +38,26 @@ variables:
   image:                           docker:stable
   services:
     - docker:dind
-  script:
-    - cd $DOCKERFILE_DIR
-      # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
-      # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
-    - CONTAINER_DATE_TAG="$CONTAINER_TAG-$(date +%Y%m%d)"
-    - docker build --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
-    - docker push $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-    - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
     - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
+  script:
+    - cd $DOCKERFILE_DIR
+      # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
+      # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+    # - CONTAINER_DATE_TAG="$CONTAINER_TAG-$(date +%Y%m%d)"
+    # - docker build --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+    # - docker push $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+    - docker build --no-cache --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+    - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
   after_script:
     - docker logout
   environment:
     name: parity-build
 
 
-
-
+# Deprecated, use: parity/rust-parity-ethereum-build:xenial
 build:rust:nightly:
   <<: *docker_build
   variables:
@@ -68,17 +68,106 @@ build:rust:nightly:
     variables:
       - $DOCKERIMAGE == "parity/rust"
 
-
-build:rust-android:gitlab-ci:
+build:rust-parity-ethereum-build:xenial:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/rust-android
-    CONTAINER_TAG:   gitlab-ci
+    CONTAINER_IMAGE: parity/rust-parity-ethereum-build
+    CONTAINER_TAG:   xenial
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/android
   only:
     variables:
-      - $DOCKERIMAGE == "parity/rust-android"
+      - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
 
+build:rust-parity-ethereum-android-build:stretch:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/rust-parity-ethereum-android-build
+    CONTAINER_TAG:   stretch
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/android
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/rust-parity-ethereum-android-build"
+
+build:rust-parity-ethereum-build:i386:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/rust-parity-ethereum-build
+    CONTAINER_TAG:   i386
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/i686
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
+
+build:rust-parity-ethereum-build:arm64:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/rust-parity-ethereum-build
+    CONTAINER_TAG:   arm64
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/arm64
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
+
+build:parity/rust-parity-ethereum-build:armhf:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/rust-parity-ethereum-build
+    CONTAINER_TAG:   armhf
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/armv7
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
+
+# no need to rebuild every day
+build:awscli:latest:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/awscli
+    CONTAINER_TAG:   latest
+    DOCKERFILE_DIR:  awscli
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/awscli"
+  when:
+    manual
+
+# no need to rebuild every day
+build:rust-parity-ethereum-docs:xenial:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/rust-parity-ethereum-docs
+    CONTAINER_TAG:   xenial
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/parity-eth-linux-docs
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/rust-parity-ethereum-docs"
+  when:
+    manual
+
+# no need to rebuild every day ?
+build:tools:latest:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/tools
+    CONTAINER_TAG:   latest
+    DOCKERFILE_DIR:  tools
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/tools"
+  when:
+    manual
+
+build:rust-substrate-build:stretch:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/rust-substrate-build
+    CONTAINER_TAG:   stretch
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/substrate-linux-ci
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/substrate-linux-ci"
+
+# what does it do?
 build:substrate:nightly:
   <<: *docker_build
   variables:
@@ -88,26 +177,6 @@ build:substrate:nightly:
   only:
     variables:
       - $DOCKERIMAGE == "parity/substrate"
-
-build:awscli:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE: parity/awscli
-    CONTAINER_TAG:   latest
-    DOCKERFILE_DIR:  awscli
-  only:
-    variables:
-      - $DOCKERIMAGE == "parity/awscli"
-
-build:tools:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE: parity/tools
-    CONTAINER_TAG:   latest
-    DOCKERFILE_DIR:  tools
-  only:
-    variables:
-      - $DOCKERIMAGE == "parity/tools"
 
 
 
@@ -140,7 +209,7 @@ build:kubetools:
 
 
 #
-# polkadot:sync jobs are set up via gitlab schedule on this repo with the idea 
+# polkadot:sync jobs are set up via gitlab schedule on this repo with the idea
 # to be notified when the chain isn't syncing properly on the latest build
 #
 
@@ -251,7 +320,7 @@ polkadot:sync:stop:
         curl --connect-timeout 10 -sS --data "${PAYLOAD}" \
           -H "Content-Type: application/json" \
           -X POST localhost:9933 -o out.json
-        
+
         grep -q -e isSyncing -e peers out.json || get_out FAIL
         jq -e '.result.isSyncing == false' out.json || get_out FAIL
         jq -e '.result.peers > 2' out.json || get_out FAIL
