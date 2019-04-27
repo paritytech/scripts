@@ -40,7 +40,8 @@ variables:
     - docker:dind
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    # - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker login -u $Docker_Hub_User_Parity -p $Docker_Hub_Pass_Parity
     - docker info
   script:
     - cd $DOCKERFILE_DIR
