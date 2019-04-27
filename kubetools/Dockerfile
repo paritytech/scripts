@@ -11,7 +11,7 @@ LABEL org.label-schema.maintainer="devops-team@parity.io" \
 	org.label-schema.vcs-ref="${VCS_REF}" \
 	org.label-schema.name="kubetools" \
 	org.label-schema.url="https://hub.docker.com/r/paritytech/kubetools/" \
-    org.label-schema.vcs-url="https://github.com/paritytech/scripts/kubetools" \
+	org.label-schema.vcs-url="https://github.com/paritytech/scripts/kubetools" \
 	org.label-schema.build-date="${BUILD_DATE}"
 
 ADD "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl" \
