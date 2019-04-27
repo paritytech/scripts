@@ -191,7 +191,7 @@ build:kubetools:
     # https://github.com/kubernetes/kubernetes/releases
     KUBE_VERSION:            "1.13.4"
     # https://github.com/kubernetes/helm/releases
-    HELM_VERSION:            "v2.13.1"
+    HELM_VERSION:            "2.13.1"
   only:
     variables:
       - $DOCKERIMAGE == "parity/kubetools"
