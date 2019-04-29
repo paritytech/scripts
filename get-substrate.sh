@@ -54,7 +54,8 @@ if ! which rustup >/dev/null 2>&1; then
 	source ~/.cargo/env
 	rustup default stable
 else
-	rustup update
+	rustup toolchain install stable nightly
+	rustup target add wasm32-unknown-unknown --toolchain nightly
 fi
 
 function install_substrate {
