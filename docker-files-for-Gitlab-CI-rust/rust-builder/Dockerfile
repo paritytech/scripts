@@ -2,15 +2,21 @@
 # https://github.com/rust-lang-nursery/docker-rust-nightly/blob/master/nightly-slim/Dockerfile
 FROM rustlang/rust:nightly-slim
 
-# metadata
-LABEL maintainer="devops-team@parity.io" \
-	vendor="Parity Technologies" \
-	name="parity/rust-substrate-build" \
-	description="Image for Substrate CI builds and tests." \
-	url="https://github.com/paritytech/scripts/" \
-	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/substrate-linux-ci"
+ARG VCS_REF
+ARG BUILD_DATE
 
-WORKDIR /builds/parity/substrate/
+# metadata
+LABEL io.parity.image.authors="devops-team@parity.io" \
+	io.parity.image.vendor="Parity Technologies" \
+	io.parity.image.title="parity/rust-builder" \
+	io.parity.image.description="git g++ clang cmake make pkg-config libssl-dev curl time rhash \
+		rust stable, rust nightly, cargo-audit, sccache, wasm-gc" \
+	io.parity.image.source="https://github.com/paritytech/scripts/blob/master/docker-files-for-Gitlab-CI-rust/rust-builder/Dockerfile" \
+	io.parity.image.revision="${VCS_REF}" \
+	io.parity.image.created="${BUILD_DATE}" \
+	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/master/docker-files-for-Gitlab-CI-rust/rust-builder/README.md"
+
+WORKDIR /builds
 
 # install tools and dependencies
 RUN set -eux; \
@@ -34,9 +40,7 @@ RUN set -eux; \
 # compiler ENV
 ENV CC=gcc \
 	CXX=g++ \
-# cache handlers
+# cache handler
 	RUSTC_WRAPPER=sccache \
-	CARGO_HOME=/ci-cache/substrate/cargo \
-	SCCACHE_DIR=/ci-cache/substrate/sccache \
 # show backtraces
 	RUST_BACKTRACE=1
