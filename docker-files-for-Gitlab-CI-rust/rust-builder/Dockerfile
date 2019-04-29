@@ -8,13 +8,13 @@ ARG BUILD_DATE
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="parity/substrate-ci" \
+	io.parity.image.title="parity/rust-builder" \
 	io.parity.image.description="git g++ clang cmake make pkg-config libssl-dev curl time rhash \
 		rust stable, rust nightly, cargo-audit, sccache, wasm-gc" \
-	io.parity.image.source="https://github.com/paritytech/scripts/blob/master/docker-files-for-Gitlab-CI-rust/substrate-ci/Dockerfile" \
+	io.parity.image.source="https://github.com/paritytech/scripts/blob/master/docker-files-for-Gitlab-CI-rust/rust-builder/Dockerfile" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}" \
-	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/master/docker-files-for-Gitlab-CI-rust/substrate-ci/README.md"
+	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/master/docker-files-for-Gitlab-CI-rust/rust-builder/README.md"
 
 WORKDIR /builds
 
