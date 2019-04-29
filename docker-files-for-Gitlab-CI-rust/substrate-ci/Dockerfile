@@ -16,6 +16,8 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.created="${BUILD_DATE}" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/master/docker-files-for-Gitlab-CI-rust/substrate-ci/README.md"
 
+WORKDIR /builds
+
 # install tools and dependencies
 RUN set -eux; \
 	apt-get -y update; \
