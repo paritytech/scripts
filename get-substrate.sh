@@ -56,6 +56,7 @@ if ! which rustup >/dev/null 2>&1; then
 else
 	rustup toolchain install stable nightly
 	rustup target add wasm32-unknown-unknown --toolchain nightly
+	cargo install --git https://github.com/alexcrichton/wasm-gc
 fi
 
 function install_substrate {
