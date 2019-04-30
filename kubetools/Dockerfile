@@ -18,6 +18,8 @@ ADD "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/
 	/usr/local/bin/kubectl
 ADD "https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz" \
 	/usr/local/bin/helm
+RUN wget -q "https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz" -O - | tar -xzO linux-amd64/helm \
+	> /usr/local/bin/helm
 RUN apk add --no-cache \
 	ca-certificates git jq make curl gettext; \
 	chmod +x /usr/local/bin/kubectl; \
