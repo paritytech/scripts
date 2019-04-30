@@ -16,8 +16,6 @@ LABEL org.label-schema.maintainer="devops-team@parity.io" \
 
 ADD "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl" \
 	/usr/local/bin/kubectl
-ADD "https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz" \
-	/usr/local/bin/helm
 RUN wget -q "https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz" -O - | tar -xzO linux-amd64/helm \
 	> /usr/local/bin/helm
 RUN apk add --no-cache \
