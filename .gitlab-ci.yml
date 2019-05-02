@@ -33,7 +33,7 @@ variables:
     - kubernetes-parity-build
 
 
-.build: &docker_build
+.build:                            &docker_build
   stage: build
   <<:                              *kubernetes-build
   image:                           docker:stable
@@ -63,32 +63,32 @@ variables:
 rust:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/{$CI_JOB_NAME}
+    CONTAINER_IMAGE: parity/$CI_JOB_NAME
     CONTAINER_TAG:   nightly
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/rustup
   only:
     variables:
-      - $DOCKERIMAGE == "parity/{$CI_JOB_NAME}"
+      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
 
 rust-parity-ethereum-build:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/{$CI_JOB_NAME}
+    CONTAINER_IMAGE: parity/$CI_JOB_NAME
     CONTAINER_TAG:   xenial
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci
   only:
     variables:
-      - $DOCKERIMAGE == "parity/{$CI_JOB_NAME}"
+      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
 
 rust-parity-ethereum-android-build:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/{$CI_JOB_NAME}
+    CONTAINER_IMAGE: parity/$CI_JOB_NAME
     CONTAINER_TAG:   stretch
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/android
   only:
     variables:
-      - $DOCKERIMAGE == "parity/{$CI_JOB_NAME}"
+      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
 
 rust-parity-ethereum-build:i386:
   <<: *docker_build
@@ -129,33 +129,33 @@ parity/rust-parity-ethereum-build:armhf:
 rust-parity-ethereum-docs:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/{$CI_JOB_NAME}
+    CONTAINER_IMAGE: parity/$CI_JOB_NAME
     CONTAINER_TAG:   xenial
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/parity-eth-linux-docs
   only:
     variables:
-      - $DOCKERIMAGE == "parity/{$CI_JOB_NAME}"
+      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
 
 rust-builder:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/{$CI_JOB_NAME}
+    CONTAINER_IMAGE: parity/$CI_JOB_NAME
     CONTAINER_TAG:   latest
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/{$CI_JOB_NAME}
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/$CI_JOB_NAME
   only:
     variables:
-      - $DOCKERIMAGE == "parity/{$CI_JOB_NAME}"
+      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
 
 
 substrate:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/{$CI_JOB_NAME}
+    CONTAINER_IMAGE: parity/$CI_JOB_NAME
     CONTAINER_TAG:   nightly
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/{$CI_JOB_NAME}
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/$CI_JOB_NAME
   only:
     variables:
-      - $DOCKERIMAGE == "parity/{$CI_JOB_NAME}"
+      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
 
 
 
@@ -164,31 +164,31 @@ substrate:
 awscli:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE:     parity/{$CI_JOB_NAME}
+    CONTAINER_IMAGE:     parity/$CI_JOB_NAME
     CONTAINER_TAG:       latest
     DOCKERFILE_DIR:      $CI_JOB_NAME
     CONTAINER_DATE_TAG:  "${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
   only:
     variables:
-      - $DOCKERIMAGE == "parity/{$CI_JOB_NAME}"
+      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
 
 
 tools:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE:     parity/{$CI_JOB_NAME}
+    CONTAINER_IMAGE:     parity/$CI_JOB_NAME
     CONTAINER_TAG:       latest
     DOCKERFILE_DIR:      $CI_JOB_NAME
   only:
     variables:
-      - $DOCKERIMAGE == "parity/{$CI_JOB_NAME}"
+      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
 
 
 # special case as version tags are introduced
 kubetools:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE:         parity/{$CI_JOB_NAME}
+    CONTAINER_IMAGE:         parity/$CI_JOB_NAME
     CONTAINER_TAG:           latest
     DOCKERFILE_DIR:          $CI_JOB_NAME
     # https://github.com/kubernetes/kubernetes/releases
@@ -197,7 +197,7 @@ kubetools:
     HELM_VERSION:            "2.13.1"
   only:
     variables:
-      - $DOCKERIMAGE == "parity/{$CI_JOB_NAME}"
+      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
   script:
     - cd $DOCKERFILE_DIR
     - docker build
