@@ -16,10 +16,9 @@ stages:
 variables:
   # CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
   # DOCKER_HOST: tcp://docker:2375
-  DOCKER_HOST:                     tcp://localhost:2375
-  DOCKER_DRIVER:                   overlay2
-  DATE:                            "$(git show -s --format=%ct $CI_COMMIT_SHA)"
-  CONTAINER_DATE_TAG:              "${CI_COMMIT_SHORT_SHA}-$DATE"
+  DOCKER_HOST: tcp://localhost:2375
+  DOCKER_DRIVER: overlay2
+  CONTAINER_DATE_TAG:  "${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
 
 
 
@@ -49,16 +48,15 @@ variables:
     - pwd
     # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
     # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
-    - echo $DATE
     - echo $CONTAINER_DATE_TAG
     - echo "docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHORT_SHA}"
-        --build-arg BUILD_DATE='${DATE}'
+        --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
         --tag $CONTAINER_IMAGE:$CONTAINER_TAG ."
     - docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHORT_SHA}"
-        --build-arg BUILD_DATE="${DATE}"
+        --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
         --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
     - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
