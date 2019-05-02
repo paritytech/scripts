@@ -18,8 +18,6 @@ variables:
   # DOCKER_HOST: tcp://docker:2375
   DOCKER_HOST: tcp://localhost:2375
   DOCKER_DRIVER: overlay2
-  CONTAINER_DATE_TAG:  "${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
-
 
 
 
@@ -43,18 +41,14 @@ variables:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
     - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
+  variables:
+    CONTAINER_DATE_TAG: "${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
   script:
+    - echo $CONTAINER_DATE_TAG
     - cd $DOCKERFILE_DIR
-    - pwd
     # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
     # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
     - export CONTAINER_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
-    - echo $CONTAINER_DATE_TAG
-    - echo "docker build --no-cache
-        --build-arg VCS_REF="${CI_COMMIT_SHORT_SHA}"
-        --build-arg BUILD_DATE="$(date +%Y%m%d)"
-        --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-        --tag $CONTAINER_IMAGE:$CONTAINER_TAG ."
     - docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHORT_SHA}"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
@@ -152,7 +146,7 @@ rust-builder:
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/$CI_JOB_NAME
   only:
     variables:
-      - $DOCKERIMAGE == "parity/rust-builder"
+      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
 
 
 substrate:
