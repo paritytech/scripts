@@ -40,17 +40,20 @@ variables:
     - docker:dind
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-    # - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
-    - docker login -u $Docker_Hub_User_Parity -p $Docker_Hub_Pass_Parity
+    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
   script:
     - cd $DOCKERFILE_DIR
-      # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
-      # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
-    # - CONTAINER_DATE_TAG="$CONTAINER_TAG-$(date +%Y%m%d)"
-    # - docker build --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
-    # - docker push $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-    - docker build --no-cache --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+    # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
+    # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+    - |
+      if [ "${CONTAINER_DATE_TAG}" ]
+      then
+        docker build --no-cache --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+        docker push $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+      else
+        docker build --no-cache --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+      fi
     - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
   after_script:
     - docker logout
@@ -119,20 +122,12 @@ build:parity/rust-parity-ethereum-build:armhf:
     variables:
       - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
 
-# no need to rebuild every day
-build:awscli:latest:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE: parity/awscli
-    CONTAINER_TAG:   latest
-    DOCKERFILE_DIR:  awscli
-  only:
-    variables:
-      - $DOCKERIMAGE == "parity/awscli"
-  when:
-    manual
 
-# no need to rebuild every day
+
+
+
+
+
 build:rust-parity-ethereum-docs:xenial:
   <<: *docker_build
   variables:
@@ -142,21 +137,6 @@ build:rust-parity-ethereum-docs:xenial:
   only:
     variables:
       - $DOCKERIMAGE == "parity/rust-parity-ethereum-docs"
-  when:
-    manual
-
-# no need to rebuild every day ?
-build:tools:latest:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE: parity/tools
-    CONTAINER_TAG:   latest
-    DOCKERFILE_DIR:  tools
-  only:
-    variables:
-      - $DOCKERIMAGE == "parity/tools"
-  when:
-    manual
 
 build:rust-substrate-build:stretch:
   <<: *docker_build
@@ -168,7 +148,6 @@ build:rust-substrate-build:stretch:
     variables:
       - $DOCKERIMAGE == "parity/substrate-linux-ci"
 
-# what does it do?
 build:substrate:nightly:
   <<: *docker_build
   variables:
@@ -179,6 +158,32 @@ build:substrate:nightly:
     variables:
       - $DOCKERIMAGE == "parity/substrate"
 
+
+
+
+
+build:awscli:latest:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE:     parity/awscli
+    CONTAINER_TAG:       latest
+    DOCKERFILE_DIR:      awscli
+    CONTAINER_DATE_TAG:  "${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/awscli"
+
+
+build:tools:latest:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE:     parity/tools
+    CONTAINER_TAG:       latest
+    DOCKERFILE_DIR:      tools
+    CONTAINER_DATE_TAG:  "${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/tools"
 
 
 # special case as version tags are introduced
@@ -192,13 +197,14 @@ build:kubetools:
     KUBE_VERSION:            "1.13.4"
     # https://github.com/kubernetes/helm/releases
     HELM_VERSION:            "2.13.1"
+    CONTAINER_DATE_TAG:      "${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
   only:
     variables:
       - $DOCKERIMAGE == "parity/kubetools"
   script:
     - cd $DOCKERFILE_DIR
     - docker build
-      --build-arg VCS_REF="$(cut -c 1-7 ${CI_PROJECT_DIR}/.git/refs/heads/master)"
+      --build-arg VCS_REF="${CI_COMMIT_SHORT_SHA}"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg KUBE_VERSION="${KUBE_VERSION}"
       --build-arg HELM_VERSION="${HELM_VERSION}"
