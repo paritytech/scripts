@@ -336,10 +336,10 @@ polkadot:sync:stop:
     - echo "Remove pr-${PRNO} image from docker hub again"
     - |
       set -x
-      TOKEN="$(curl -sS -H "Content-Type: application/json" -X POST
-        -d "{\"username\": \"${Docker_Hub_User_Parity}\", "password": \"${Docker_Hub_Pass_Parity}\"}"
+      TOKEN="$(curl -sS -H "Content-Type: application/json" -X POST \
+        -d "{\"username\": \"${Docker_Hub_User_Parity}\", "password": \"${Docker_Hub_Pass_Parity}\"}" \
         https://hub.docker.com/v2/users/login/ | jq -r .token)"
-      curl -sS -X DELETE -H "Authorization: JWT ${TOKEN}"
+      curl -sS -X DELETE -H "Authorization: JWT ${TOKEN}" \
         'https://hub.docker.com/v2/repositories/parity/${PROJECT}/tags/pr-${PRNO}/'
       set +x
 
