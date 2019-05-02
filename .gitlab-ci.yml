@@ -308,7 +308,6 @@ polkadot:sync:stop:
     - |
       PAYLOAD="{\"jsonrpc\":\"2.0\",\"method\":\"system_health\",\"params\":[],\"id\":0}"
       get_out () {
-        kill %1 # stop port-forwarding
         envsubst < polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" delete -f -
         case "$1" in
           (FAIL) echo "a check failed - alert somebody"; exit 1;;
@@ -316,12 +315,13 @@ polkadot:sync:stop:
         esac
       }
 
-      kubectl -n ${KUBE_NAMESPACE} port-forward svc/${NAME}-rpc 9933:9933 &
-      sleep 2
+      set -x
       for n in 1 2 3 4; do
-        curl --connect-timeout 10 -sS --data "${PAYLOAD}" \
-          -H "Content-Type: application/json" \
-          -X POST localhost:9933 -o out.json
+        kubectl -n "${KUBE_NAMESPACE}" run -it polkacheck --image=parity/tools \
+          --restart=Never --pod-running-timeout=1m0s --rm=true --quiet=true -- \
+          curl --connect-timeout 10 -sS --data "${PAYLOAD}" \
+            -H "Content-Type: application/json" \
+            -X POST "${NAME}-rpc:9933" | grep -e '{\|}' > out.json
 
         grep -q -e isSyncing -e peers out.json || get_out FAIL
         jq -e '.result.isSyncing == false' out.json || get_out FAIL
