@@ -240,13 +240,14 @@ build:kubetools:
       if [ "${PRNO}" ]
       then
         echo "deploying docker image for ${PROJECT} PR NO ${PRNO}"
-        VERSION="pr-${PRNO}"
+        export VERSION="pr-${PRNO}"
       else
         # VERSION="0.3.21-6bee107"
-        VERSION="$(wget -q -O - ${RELEASES_URL}/latest-v0.4/VERSION)"
+        export VERSION="$(wget -q -O - ${RELEASES_URL}/latest-v0.4/VERSION)"
       fi
     - echo "${PROJECT} version = ${VERSION}"
     - export NAME="${PROJECT}-alex"
+    - export CONTAINER_IMAGE="parity/${PROJECT}"
 
 
 polkadot:sync:dockerize:
