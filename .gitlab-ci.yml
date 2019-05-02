@@ -70,7 +70,7 @@ rust:
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/rustup
   only:
     variables:
-      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
+      - $DOCKERIMAGE == "parity/rust"
 
 rust-parity-ethereum-build:
   <<: *docker_build
@@ -80,7 +80,7 @@ rust-parity-ethereum-build:
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci
   only:
     variables:
-      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
+      - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
 
 rust-parity-ethereum-android-build:
   <<: *docker_build
@@ -90,7 +90,7 @@ rust-parity-ethereum-android-build:
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/android
   only:
     variables:
-      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
+      - $DOCKERIMAGE == "parity/rust-parity-ethereum-android-build"
 
 rust-parity-ethereum-build:i386:
   <<: *docker_build
@@ -136,7 +136,7 @@ rust-parity-ethereum-docs:
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/parity-eth-linux-docs
   only:
     variables:
-      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
+      - $DOCKERIMAGE == "parity/rust-parity-ethereum-docs"
 
 rust-builder:
   <<: *docker_build
@@ -146,7 +146,7 @@ rust-builder:
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/$CI_JOB_NAME
   only:
     variables:
-      - $DOCKERIMAGE == parity/${CI_JOB_NAME}
+      - $DOCKERIMAGE == "parity/rust-builder"
 
 
 substrate:
@@ -157,7 +157,7 @@ substrate:
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/$CI_JOB_NAME
   only:
     variables:
-      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
+      - $DOCKERIMAGE == "parity/substrate"
 
 
 
@@ -172,7 +172,7 @@ awscli:
     CONTAINER_DATE_TAG:  "${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
   only:
     variables:
-      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
+      - $DOCKERIMAGE == "parity/awscli"
 
 
 tools:
@@ -183,7 +183,7 @@ tools:
     DOCKERFILE_DIR:      $CI_JOB_NAME
   only:
     variables:
-      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
+      - $DOCKERIMAGE == "parity/tools"
 
 
 # special case as version tags are introduced
@@ -199,7 +199,7 @@ kubetools:
     HELM_VERSION:            "2.13.1"
   only:
     variables:
-      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
+      - $DOCKERIMAGE == "parity/kubetools"
   script:
     - cd $DOCKERFILE_DIR
     - docker build
