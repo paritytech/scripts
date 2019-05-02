@@ -18,8 +18,8 @@ variables:
   # DOCKER_HOST: tcp://docker:2375
   DOCKER_HOST:                     tcp://localhost:2375
   DOCKER_DRIVER:                   overlay2
-  DATE:                            $(date +%Y%m%d)
-  CONTAINER_DATE_TAG:  "${CI_COMMIT_SHORT_SHA}-$DATE"
+  DATE:                            "$(date +%Y%m%d)"
+  CONTAINER_DATE_TAG:              "${CI_COMMIT_SHORT_SHA}-$DATE"
 
 
 
