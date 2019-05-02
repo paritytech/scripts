@@ -51,7 +51,7 @@ variables:
     # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
     - echo "docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHORT_SHA}"
-        --build-arg BUILD_DATE='$(date +%Y%m%d)'
+        --build-arg BUILD_DATE='${DATE}'
         --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
         --tag $CONTAINER_IMAGE:$CONTAINER_TAG ."
     - docker build --no-cache
