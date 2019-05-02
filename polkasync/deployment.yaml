@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: ${NAME:-polkasync}
+  name: ${NAME}
 spec:
   accessModes:
     - ReadWriteOnce
@@ -14,12 +14,12 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: ${NAME:-polkasync}
+  name: ${NAME}
   labels:
-    app: ${NAME:-polkasync}
+    app: ${NAME}
 spec:
   containers:
-  - name: ${NAME:-polkasync}
+  - name: ${NAME}
     imagePullPolicy: Always
     image: "${CONTAINER_IMAGE}:${VERSION}"
     resources:
@@ -35,7 +35,7 @@ spec:
       - --base-path
       - /polkadot
       - --name
-      - ${NAME:-polkasync}
+      - ${NAME}
       - --rpc-external
       - --log
       - sync=trace
@@ -60,18 +60,18 @@ spec:
   volumes:
     - name: polkasyncdir
       persistentVolumeClaim:
-        claimName: ${NAME:-polkasync}
+        claimName: ${NAME}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: ${NAME:-polkasync}-rpc
+  name: ${NAME}-rpc
 spec:
   ports:
   - port: 9933
     name: http-rpc
   selector:
-    app: ${NAME:-polkasync}
+    app: ${NAME}
   sessionAffinity: None
   type: ClusterIP
   clusterIP: None

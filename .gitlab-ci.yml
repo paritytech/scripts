@@ -234,6 +234,19 @@ build:kubetools:
     KUBE_NAMESPACE:                polkasync
   before_script:
     - kubectl get ns "${KUBE_NAMESPACE}"
+    - |
+      test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" &&
+        ( echo "|  project '${PROJECT}' not supported"; exit 5 )
+      if [ "${PRNO}" ]
+      then
+        echo "deploying docker image for ${PROJECT} PR NO ${PRNO}"
+        VERSION="pr-${PRNO}"
+      else
+        # VERSION="0.3.21-6bee107"
+        VERSION="$(wget -q -O - ${RELEASES_URL}/latest-v0.4/VERSION)"
+      fi
+    - echo "${PROJECT} version = ${VERSION}"
+    - NAME="${PROJECT}-${VERSION}"
 
 
 polkadot:sync:dockerize:
@@ -276,23 +289,7 @@ polkadot:sync:start:
       - $POLKASYNC == "start"
       - $JOB_ID
   script:
-    - |
-      test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" && \
-        ( echo "|  project '${PROJECT}' not supported"; exit 5 )
-      env
-
-      if [ "${PRNO}" ]
-      then
-        echo "deploying docker image for ${PROJECT} PR NO ${PRNO}"
-        VERSION="pr-${PRNO}"
-      else
-        # VERSION="0.3.21-6bee107"
-        VERSION="$(wget -q -O - ${RELEASES_URL}/latest-v0.4/VERSION)"
-      fi
-      echo "${PROJECT} version = ${VERSION}"
-
-      NAME="${PROJECT}-${VERSION}"
-      envsubst < polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" apply -f - --dry-run=true
+    - envsubst < polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" apply -f -
 
       # sed -r "s;^([[:space:]]+image: +\"parity/polkadot):.*\"$;\1:${VERSION}\";" \
       #   polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" apply -f -
@@ -308,20 +305,17 @@ polkadot:sync:stop:
       - $JOB_ID
   script:
     - |
-      set -x
-      test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" && \
-        ( echo "|  project '${PROJECT}' not supported"; exit 5 )
       PAYLOAD="{\"jsonrpc\":\"2.0\",\"method\":\"system_health\",\"params\":[],\"id\":0}"
       get_out () {
         kill %1 # stop port-forwarding
-        kubectl -n "${KUBE_NAMESPACE}" delete -f polkasync/deployment.yaml
+        envsubst < polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" delete -f -
         case "$1" in
           (FAIL) echo "a check failed - alert somebody"; exit 1;;
           (*)    echo "chain seems to be synced well";;
         esac
       }
 
-      kubectl -n ${KUBE_NAMESPACE} port-forward svc/polkasync-rpc 9933:9933 &
+      kubectl -n ${KUBE_NAMESPACE} port-forward svc/${NAME}-rpc 9933:9933 &
       sleep 2
       for n in 1 2 3 4; do
         curl --connect-timeout 10 -sS --data "${PAYLOAD}" \
