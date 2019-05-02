@@ -52,7 +52,7 @@ variables:
         docker build --no-cache --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
         docker push $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
       else
-        docker build --no-cache --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+        docker build --no-cache --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
       fi
     - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
   after_script:
