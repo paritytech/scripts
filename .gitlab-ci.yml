@@ -49,7 +49,8 @@ variables:
     - pwd
     # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
     # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
-    - echo '${DATE}'
+    - echo $DATE
+    - echo $CONTAINER_DATE_TAG
     - echo "docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHORT_SHA}"
         --build-arg BUILD_DATE='${DATE}'
