@@ -246,7 +246,7 @@ build:kubetools:
         VERSION="$(wget -q -O - ${RELEASES_URL}/latest-v0.4/VERSION)"
       fi
     - echo "${PROJECT} version = ${VERSION}"
-    - export NAME="${PROJECT}-${VERSION}"
+    - export NAME="${PROJECT}-alex"
 
 
 polkadot:sync:dockerize:
