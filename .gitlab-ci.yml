@@ -16,9 +16,10 @@ stages:
 variables:
   # CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
   # DOCKER_HOST: tcp://docker:2375
-  DOCKER_HOST: tcp://localhost:2375
-  DOCKER_DRIVER: overlay2
-  CONTAINER_DATE_TAG:  "${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
+  DOCKER_HOST:                     tcp://localhost:2375
+  DOCKER_DRIVER:                   overlay2
+  DATE:                            $(date +%Y%m%d)
+  CONTAINER_DATE_TAG:  "${CI_COMMIT_SHORT_SHA}-$DATE"
 
 
 
@@ -50,12 +51,12 @@ variables:
     # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
     - echo "docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHORT_SHA}"
-        --build-arg BUILD_DATE="$(date +%Y%m%d)"
+        --build-arg BUILD_DATE='$(date +%Y%m%d)'
         --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
         --tag $CONTAINER_IMAGE:$CONTAINER_TAG ."
     - docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHORT_SHA}"
-        --build-arg BUILD_DATE="$(date +%Y%m%d)"
+        --build-arg BUILD_DATE="${DATE}"
         --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
         --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
     - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
