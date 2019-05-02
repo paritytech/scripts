@@ -144,7 +144,7 @@ rust-builder:
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/$CI_JOB_NAME
   only:
     variables:
-      - $DOCKERIMAGE == "parity/$CI_JOB_NAME"
+      - $DOCKERIMAGE == "parity/rust-builder"
 
 
 substrate:
