@@ -1,6 +1,5 @@
-# triggers image autoupdate with the new Rust release
-# https://github.com/rust-lang-nursery/docker-rust-nightly/blob/master/nightly-slim/Dockerfile
-FROM rustlang/rust:nightly-slim
+# DockerHub's official https://hub.docker.com/_/rust
+FROM rust:slim-stretch
 
 ARG VCS_REF
 ARG BUILD_DATE
@@ -25,17 +24,21 @@ RUN set -eux; \
 		git g++ clang cmake make \
 		pkg-config libssl-dev \
 		curl time rhash; \
-# apt clean up
-	apt-get autoremove -y; \
-	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*; \
-# setup default stable channel
-	rustup default stable; \
+# install Rust nightly, default is stable
+	rustup install nightly; \
+# install cargo tools
 	cargo install cargo-audit sccache; \
 # install wasm toolchain for polkadot
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
-# Install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
-	cargo +nightly install --git https://github.com/alexcrichton/wasm-gc;
+# install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
+	cargo +nightly install --git https://github.com/alexcrichton/wasm-gc; \
+# versions
+	rustup show; \
+	cargo --version; \
+# apt clean up
+	apt-get autoremove -y; \
+	apt-get clean; \
+	rm -rf /var/lib/apt/lists/*;
 
 # compiler ENV
 ENV CC=gcc \
