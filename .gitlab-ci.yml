@@ -58,7 +58,7 @@ variables:
     name: parity-build
 
 
-# Deprecated, used only for substrate 1.0
+# Deprecated, used only for substrate 1.0 and polkadot 0.4
 rust:
   <<: *docker_build
   variables:
@@ -119,12 +119,6 @@ parity/rust-parity-ethereum-build:armhf:
     variables:
       - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
 
-
-
-
-
-
-
 rust-parity-ethereum-docs:
   <<: *docker_build
   variables:
@@ -146,20 +140,6 @@ rust-builder:
       - $DOCKERIMAGE == "parity/rust-builder"
 
 
-substrate:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE: parity/$CI_JOB_NAME
-    CONTAINER_TAG:   nightly
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/$CI_JOB_NAME
-  only:
-    variables:
-      - $DOCKERIMAGE == "parity/substrate"
-
-
-
-
-
 awscli:
   <<: *docker_build
   variables:
@@ -170,7 +150,6 @@ awscli:
     variables:
       - $DOCKERIMAGE == "parity/awscli"
 
-
 tools:
   <<: *docker_build
   variables:
@@ -180,7 +159,6 @@ tools:
   only:
     variables:
       - $DOCKERIMAGE == "parity/tools"
-
 
 # special case as version tags are introduced
 kubetools:
