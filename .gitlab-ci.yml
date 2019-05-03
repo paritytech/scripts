@@ -60,35 +60,35 @@ variables:
 
 
 # Deprecated, used only for substrate 1.0 and polkadot 0.4
-rust:
+parity/rust:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/$CI_JOB_NAME
+    CONTAINER_IMAGE: $CI_JOB_NAME
     CONTAINER_TAG:   nightly
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/rustup
   only:
     variables:
-      - $DOCKERIMAGE == "parity/rust"
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
-rust-parity-ethereum-build:
+parity/rust-parity-ethereum-build:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/$CI_JOB_NAME
+    CONTAINER_IMAGE: $CI_JOB_NAME
     CONTAINER_TAG:   xenial
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci
   only:
     variables:
-      - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
-rust-parity-ethereum-android-build:
+parity/rust-parity-ethereum-android-build:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/$CI_JOB_NAME
+    CONTAINER_IMAGE: $CI_JOB_NAME
     CONTAINER_TAG:   stretch
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/android
   only:
     variables:
-      - $DOCKERIMAGE == "parity/rust-parity-ethereum-android-build"
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
 rust-parity-ethereum-build:i386:
   <<: *docker_build
@@ -110,7 +110,7 @@ rust-parity-ethereum-build:arm64:
     variables:
       - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
 
-parity/rust-parity-ethereum-build:armhf:
+rust-parity-ethereum-build:armhf:
   <<: *docker_build
   variables:
     CONTAINER_IMAGE: parity/rust-parity-ethereum-build
@@ -120,15 +120,15 @@ parity/rust-parity-ethereum-build:armhf:
     variables:
       - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
 
-rust-parity-ethereum-docs:
+parity/rust-parity-ethereum-docs:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/$CI_JOB_NAME
+    CONTAINER_IMAGE: $CI_JOB_NAME
     CONTAINER_TAG:   xenial
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/parity-eth-linux-docs
   only:
     variables:
-      - $DOCKERIMAGE == "parity/rust-parity-ethereum-docs"
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
 parity/rust-builder:
   <<: *docker_build
@@ -141,40 +141,40 @@ parity/rust-builder:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 
-awscli:
+parity/awscli:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE:     parity/$CI_JOB_NAME
+    CONTAINER_IMAGE:     $CI_JOB_NAME
     CONTAINER_TAG:       latest
     DOCKERFILE_DIR:      $CI_JOB_NAME
   only:
     variables:
-      - $DOCKERIMAGE == "parity/awscli"
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
-tools:
+parity/tools:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE:     parity/$CI_JOB_NAME
+    CONTAINER_IMAGE:     $CI_JOB_NAME
     CONTAINER_TAG:       latest
     DOCKERFILE_DIR:      $CI_JOB_NAME
   only:
     variables:
-      - $DOCKERIMAGE == "parity/tools"
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
 # special case as version tags are introduced
-kubetools:
+parity/kubetools:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE:         parity/$CI_JOB_NAME
+    CONTAINER_IMAGE:         $CI_JOB_NAME
     CONTAINER_TAG:           latest
-    DOCKERFILE_DIR:          $CI_JOB_NAME
+    DOCKERFILE_DIR:          kubetools
     # https://github.com/kubernetes/kubernetes/releases
     KUBE_VERSION:            "1.13.4"
     # https://github.com/kubernetes/helm/releases
     HELM_VERSION:            "2.13.1"
   only:
     variables:
-      - $DOCKERIMAGE == "parity/kubetools"
+      - $DOCKERIMAGE == $CI_JOB_NAME
   script:
     - cd $DOCKERFILE_DIR
     - docker build
