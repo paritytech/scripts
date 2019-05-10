@@ -264,6 +264,9 @@ polkadot:sync:start:
       - $POLKASYNC == "start"
       - $JOB_ID
   script:
+    - kubectl -n "${KUBE_NAMESPACE}" get pod ${NAME} &&
+      (echo "pod ${NAME} already exists. deleting it first.";
+      kubectl -n "${KUBE_NAMESPACE}" delete pod ${NAME})
     - envsubst < polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" apply -f -
 
       # sed -r "s;^([[:space:]]+image: +\"parity/polkadot):.*\"$;\1:${VERSION}\";" \
@@ -271,6 +274,8 @@ polkadot:sync:start:
 
 
 
+
+# this stop job is deprecated. polkasync test will be resetted nightly instead.
 polkadot:sync:stop:
   stage:                           destroy
   <<:                              *polkasync
@@ -311,7 +316,7 @@ polkadot:sync:stop:
     - |
       set -x
       TOKEN="$(curl -sS -H "Content-Type: application/json" -X POST \
-        -d "{\"username\": \"${Docker_Hub_User_Parity}\", "password": \"${Docker_Hub_Pass_Parity}\"}" \
+        -d "{\"username\": \"${Docker_Hub_User_Parity}\", \"password\": \"${Docker_Hub_Pass_Parity}\"}" \
         https://hub.docker.com/v2/users/login/ | jq -r .token)"
       curl -sS -X DELETE -H "Authorization: JWT ${TOKEN}" \
         'https://hub.docker.com/v2/repositories/parity/${PROJECT}/tags/pr-${PRNO}/'

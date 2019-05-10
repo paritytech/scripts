@@ -18,6 +18,17 @@ metadata:
   labels:
     app: ${NAME}
 spec:
+  initContainers:
+  - name: remove-chain-data
+    image: busybox
+    command: [ "/bin/sh" ]
+    args:
+      - -x
+      - -c
+      - rm -rfv /polkadot/chains
+    volumeMounts:
+    - name: polkasyncdir
+      mountPath: /polkadot
   containers:
   - name: ${NAME}
     imagePullPolicy: Always
@@ -54,6 +65,46 @@ spec:
         port: http-rpc
       initialDelaySeconds: 10
       periodSeconds: 10
+  - name: ${NAME}-dotexporter
+    imagePullPolicy: IfNotPresent
+    image: "python:3-alpine"
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 150m
+    tty: true
+    ports:
+    - containerPort: 8000
+      name: http
+    command: ["/bin/sh"]
+    args:
+      - "-x"
+      - "-c"
+      - >
+        mkdir -p /dev/shm/dotexporter; export HOME=/dev/shm/dotexporter;
+        pip install --no-warn-script-location --user --no-cache-dir requests;
+        exec python3 /srv/dotexporter.py
+    env:
+      - name: NODE_URL
+        value: "http://localhost:9933"
+        # value: "http://${NAME}-rpc"
+      # - name: DEBUG
+      #   value: "true"
+    volumeMounts:
+      - name: dotexporter
+        mountPath: /srv
+    readinessProbe:
+      httpGet:
+        path: /health
+        port: http
+      initialDelaySeconds: 10
+      periodSeconds: 10
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: http
+      initialDelaySeconds: 10
+      periodSeconds: 10
   securityContext:
     runAsUser: 1000
     fsGroup: 1000
@@ -61,6 +112,9 @@ spec:
     - name: polkasyncdir
       persistentVolumeClaim:
         claimName: ${NAME}
+    - name: dotexporter
+      configMap:
+        name: dotexporter
 ---
 apiVersion: v1
 kind: Service
@@ -75,3 +129,107 @@ spec:
   sessionAffinity: None
   type: ClusterIP
   clusterIP: None
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ${NAME}-dotexporter
+spec:
+  ports:
+  - port: 8000
+    name: http
+  selector:
+    app: ${NAME}
+  sessionAffinity: None
+  type: ClusterIP
+  clusterIP: None
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dotexporter
+data:
+  dotexporter.py: |
+    #!/usr/bin/env python3
+    # -*- coding: utf-8 -*-
+    #
+    # expose vital data of dot nodes for prometheus
+    #
+    
+    
+    from http.server import HTTPServer, BaseHTTPRequestHandler
+    import requests
+    import os
+    
+    
+    
+    NODE_URL = os.environ.get("NODE_URL", "http://localhost:9933")
+    LISTEN   = os.environ.get("LISTEN", "0.0.0.0")
+    PORT     = int(os.environ.get("PORT", "8000"))
+    DEBUG    = bool(os.environ.get("DEBUG", False))
+    
+    
+    
+    class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
+    
+      def query(self, method):
+        header  = { 'Content-Type': 'application/json' }
+        payload = { 'jsonrpc': '2.0', 'method': method, 'params': [], 'id': 0 }
+    
+        r = requests.post(NODE_URL, json=payload, headers=header)
+    
+        result = r.json()['result']
+        if DEBUG: print("%s: %s" % (method, result))
+        return result
+    
+    
+    
+      def send(self, text = "", status = 200):
+        self.send_response(status)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write(str.encode(text))
+    
+    
+    
+      def do_GET(self):
+    
+        if self.path == '/metrics':
+          try:
+            chain_getHeader = self.query("chain_getHeader")
+            system_health   = self.query("system_health")
+            block_number    = "block_number %s" % int(chain_getHeader['number'], 16)
+            peers           = "peer_count %s" % int(system_health["peers"])
+            shouldHavePeers = "shouldHavePeers %s" % int(system_health["shouldHavePeers"])
+            isSyncing       = "isSyncing %s" % int(system_health["isSyncing"])
+          except:
+            return self.send(status = 502)
+    
+          metrics = "%s\n%s\n%s\n%s\n" % (
+              block_number, peers, shouldHavePeers, isSyncing
+          )
+          return self.send(metrics)
+    
+        elif self.path == '/health':
+    
+    
+          try:
+            system_health = self.query("system_health")
+            if DEBUG: print("system_health: peers %s shouldHavePeers %s" \
+                % (system_health["peers"], system_health["shouldHavePeers"]))
+          except:
+            return self.send(status = 502)
+    
+    
+          if system_health["peers"] < 2 and system_health["shouldHavePeers"] == true:
+            return self.send(status = 500)
+    
+          return self.send("OK %s\n" % system_health["peers"])
+        else:
+          return self.send("substrate/polkadot node monitoring\n")
+    
+    
+    
+    httpd = HTTPServer((LISTEN, PORT), SimpleHTTPRequestHandler)
+    print("Serving requests on %s:%s" % (LISTEN, PORT))
+    httpd.serve_forever()
