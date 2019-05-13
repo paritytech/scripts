@@ -140,6 +140,7 @@ parity/rust-builder:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
+
 parity/awscli:
   <<: *docker_build
   variables:
