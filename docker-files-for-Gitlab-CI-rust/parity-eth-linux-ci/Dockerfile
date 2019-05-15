@@ -1,54 +1,53 @@
-# triggers image autoupdate with the new Rust release
-# https://github.com/rust-lang-nursery/docker-rust-nightly/blob/master/nightly-slim/Dockerfile
-FROM rustlang/rust:nightly-slim as notifier
-
-# temporary support of 16.04 with its Clib
 FROM ubuntu:xenial as builder
 
 # metadata
-LABEL maintainer="devops-team@parity.io" \
-	vendor="Parity Technologies" \
-	name="parity/rust-parity-ethereum-build" \
-	description="Image for CI build stage for Parity Ethereum linux binary." \
-	url="https://gitlab.com/paritytech/scripts" \
-	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-ci"
+ARG VCS_REF
+ARG BUILD_DATE
 
-WORKDIR /builds/parity/parity-ethereum/
+LABEL io.parity.image.authors="devops-team@parity.io" \
+	io.parity.image.vendor="Parity Technologies" \
+	io.parity.image.title="parity/parity-builder" \
+	io.parity.image.description="curl git make cmake ca-certificates g++ rhash gcc pkg-config libudev-dev time libssl-dev libc6-dev \
+		rust stable/beta/nightly, cargo-audit, sccache" \
+	io.parity.image.source="https://github.com/paritytech/scripts/blob/master/\
+		docker-files-for-Gitlab-CI-rust/parity-builder/Dockerfile" \
+	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/master/\
+		docker-files-for-Gitlab-CI-rust/parity-builder/README.md" \
+	io.parity.image.revision="${VCS_REF}" \
+	io.parity.image.created="${BUILD_DATE}"
+
+WORKDIR /builds
 
 # rustup directory
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH
 
+# download rustup
+ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" rustup-init
 # install tools and dependencies
-RUN apt-get -y update; \
+RUN set -eux; \
+	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		software-properties-common curl git \
-		make cmake ca-certificates g++ rhash \
-		gcc pkg-config libudev-dev time \
-		libssl-dev libc6-dev wget; \
-# libssl-dev won't be needed in rust:stretch
+		g++ libssl-dev gcc libc6-dev \
+		make cmake libudev-dev ca-certificates \
+		git pkg-config curl time rhash; \
 # install rustup
-    url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
-    wget "$url"; \
-    chmod +x rustup-init; \
+	chmod +x rustup-init; \
     ./rustup-init -y --no-modify-path --default-toolchain stable; \
     rm rustup-init; \
     chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
 	rustup install nightly beta; \
 	cargo install cargo-audit sccache; \
 # apt clean up
-    apt-get remove -y --auto-remove \
-        wget; \
+	apt-get autoremove -y; \
+	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*
 
 # compiler ENV
 ENV CC=gcc \
 	CXX=g++ \
-	CARGO_TARGET=x86_64-unknown-linux-gnu \
 # cache handler
 	RUSTC_WRAPPER=sccache \
-	CARGO_HOME=/ci-cache/parity-ethereum/cargo \
-	SCCACHE_DIR=/ci-cache/parity-ethereum/sccache \
 # show backtraces
 	RUST_BACKTRACE=1
