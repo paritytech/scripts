@@ -8,14 +8,14 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="parity/parity-ci-linux" \
 	io.parity.image.description="curl git make cmake ca-certificates g++ rhash gcc \
-		pkg-config libudev-dev time libssl-dev libc6-dev \
-		rust stable/beta/nightly, cargo-audit, sccache" \
-	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/ \
-		docker-files-for-Gitlab-CI-rust/parity-builder/Dockerfile" \
-	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/ \
-		docker-files-for-Gitlab-CI-rust/parity-builder/README.md" \
-	io.parity.image.revision="${VCS_REF}" \
-	io.parity.image.created="${BUILD_DATE}"
+pkg-config libudev-dev time libssl-dev libc6-dev \
+rust stable/beta/nightly, cargo-audit, sccache" \
+	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
+docker-files-for-Gitlab-CI-rust/parity-builder/Dockerfile" \
+	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
+docker-files-for-Gitlab-CI-rust/parity-builder/README.md" \
+	io.parity.image.revision=${VCS_REF} \
+	io.parity.image.created=${BUILD_DATE}
 
 WORKDIR /builds
 
