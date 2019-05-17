@@ -47,7 +47,7 @@ variables:
     # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
     - export CONTAINER_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
     - docker build --no-cache
-        --build-arg VCS_REF="${CI_COMMIT_SHORT_SHA}"
+        --build-arg VCS_REF="${CI_COMMIT_SHA}"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
         --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
@@ -178,7 +178,7 @@ parity/kubetools:
   script:
     - cd $DOCKERFILE_DIR
     - docker build
-      --build-arg VCS_REF="${CI_COMMIT_SHORT_SHA}"
+      --build-arg VCS_REF="${CI_COMMIT_SHA}"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg KUBE_VERSION="${KUBE_VERSION}"
       --build-arg HELM_VERSION="${HELM_VERSION}"
