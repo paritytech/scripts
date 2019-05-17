@@ -1,11 +1,19 @@
-Docker image based on [RUST](https://www.rust-lang.org/) rust:stretch image (latest stable),
-[node.js](https://nodejs.org), for [GitLab CI runner](https://gitlab.com/gitlab-org/gitlab-ci-multi-runner),
-[sccache](https://github.com/mozilla/sccache).
+# Parity-ci-linux
+
+Docker image based on [Ubuntu:xenial](https://hub.docker.com/_/ubuntu).
+
+Runs builds and tests `Parity Ethereum`.
+
+Dependencies and tools: `g++`, `libssl-dev`, `gcc`, `libc6-dev`, `make`, `cmake`, `libudev-dev`, `ca-certificates`, `git`, `pkg-config`, `curl`, `time`, `rhash`.
+
+Rust versions: stable - default, beta, nightly.
+
+Rust tools: `cargo-audit`, `sccache`.
 Usage:
 ```
-linux-stable:
+build-linux:
     stage: build
-    image: parity/rust-linux:stretch
+    image: parity/parity-ci-linux:latest
     script:
       - cargo build ...
 ```
