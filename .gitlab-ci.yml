@@ -169,7 +169,7 @@ parity/kubetools:
     CONTAINER_TAG:           latest
     DOCKERFILE_DIR:          kubetools
     # https://github.com/kubernetes/kubernetes/releases
-    KUBE_VERSION:            "1.13.4"
+    KUBE_VERSION:            "1.13.6"
     # https://github.com/kubernetes/helm/releases
     HELM_VERSION:            "2.13.1"
   only:
