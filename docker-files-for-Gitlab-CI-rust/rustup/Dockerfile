@@ -8,7 +8,8 @@ RUN apt-get -y update && \
   apt-get install -y --no-install-recommends \
 	software-properties-common curl git file binutils binutils-dev snapcraft \
   make cmake ca-certificates g++ zip dpkg-dev python rhash rpm openssl gettext \
-  build-essential clang libclang-dev pkg-config libssl-dev libudev-dev ruby-dev time
+  build-essential clang libclang-dev pkg-config libssl-dev libudev-dev \
+	ruby-dev time openjdk-8-jre
 
 #install nodejs and yarn
 RUN curl -sL https://deb.nodesource.com/setup_10.x | bash -
@@ -17,11 +18,11 @@ RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources
 RUN apt-get -y update && apt-get install -y --no-install-recommends \
   nodejs yarn
 
-# install java8
-RUN add-apt-repository -y ppa:webupd8team/java
-RUN apt update
-RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
-RUN apt install -y oracle-java8-installer
+# install java8 - not working like that anymore
+# RUN add-apt-repository -y ppa:webupd8team/java
+# RUN apt update
+# RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | sudo /usr/bin/debconf-set-selections
+# RUN apt install -y oracle-java8-installer
 
 # install AWS CLI
 RUN curl -O https://bootstrap.pypa.io/get-pip.py && \

@@ -1,8 +1,16 @@
-image: docker:stable
+# .gitlab-ci.yml
+# paritytech/scripts
+#
 
 
-services:
-  - docker:dind
+stages:
+  - build
+  - deploy
+  - destroy
+
+
+
+
 
 
 variables:
@@ -13,19 +21,7 @@ variables:
 
 
 
-
-
-
-.build: &docker_build
-  stage: build
-  script:
-    - cd $DOCKERFILE_DIR
-      # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
-      # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
-    - CONTAINER_DATE_TAG="$CONTAINER_TAG-$(date +%Y%m%d)"
-    - docker build --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
-    - docker push $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-    - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
+.kubernetes-build:                 &kubernetes-build
   only:
     refs:
       - schedules
@@ -33,89 +29,156 @@ variables:
     kubernetes: active
   tags:
     - kubernetes-parity-build
+
+
+.build:                            &docker_build
+  stage: build
+  <<:                              *kubernetes-build
+  image:                           docker:stable
+  services:
+    - docker:dind
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-    - docker login -u $Docker_Hub_User_Parity -p $Docker_Hub_Pass_Parity
+    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
+  script:
+    - cd $DOCKERFILE_DIR
+    # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
+    # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+    - export CONTAINER_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
+    - docker build --no-cache
+        --build-arg VCS_REF="${CI_COMMIT_SHA}"
+        --build-arg BUILD_DATE="$(date +%Y%m%d)"
+        --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+        --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+    - docker push $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+    - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
   after_script:
     - docker logout
   environment:
     name: parity-build
 
 
-
-
-build:rust:nightly:
+# Deprecated, used only for substrate 1.0 and polkadot 0.4
+parity/rust:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/rust
+    CONTAINER_IMAGE: $CI_JOB_NAME
     CONTAINER_TAG:   nightly
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/rustup
   only:
     variables:
-      - $DOCKERIMAGE == "parity/rust"
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
-
-build:rust-android:gitlab-ci:
+parity/parity-ci-linux:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/rust-android
-    CONTAINER_TAG:   gitlab-ci
+    CONTAINER_IMAGE: $CI_JOB_NAME
+    CONTAINER_TAG:   latest
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/parity-ci-linux
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
+
+parity/rust-parity-ethereum-android-build:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: $CI_JOB_NAME
+    CONTAINER_TAG:   stretch
     DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/android
   only:
     variables:
-      - $DOCKERIMAGE == "parity/rust-android"
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
-build:substrate:nightly:
+rust-parity-ethereum-build:i386:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/substrate
-    CONTAINER_TAG:   nightly
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/substrate
+    CONTAINER_IMAGE: parity/rust-parity-ethereum-build
+    CONTAINER_TAG:   i386
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/i686
   only:
     variables:
-      - $DOCKERIMAGE == "parity/substrate"
+      - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
 
-build:awscli:
+rust-parity-ethereum-build:arm64:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/awscli
+    CONTAINER_IMAGE: parity/rust-parity-ethereum-build
+    CONTAINER_TAG:   arm64
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/arm64
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
+
+rust-parity-ethereum-build:armhf:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: parity/rust-parity-ethereum-build
+    CONTAINER_TAG:   armhf
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/armv7
+  only:
+    variables:
+      - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
+
+parity/rust-parity-ethereum-docs:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: $CI_JOB_NAME
+    CONTAINER_TAG:   xenial
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/parity-eth-linux-docs
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
+
+parity/rust-builder:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE: $CI_JOB_NAME
     CONTAINER_TAG:   latest
-    DOCKERFILE_DIR:  awscli
+    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/rust-builder
   only:
     variables:
-      - $DOCKERIMAGE == "parity/awscli"
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
-build:tools:
+
+parity/awscli:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/tools
-    CONTAINER_TAG:   latest
-    DOCKERFILE_DIR:  tools
+    CONTAINER_IMAGE:     $CI_JOB_NAME
+    CONTAINER_TAG:       latest
+    DOCKERFILE_DIR:      $CI_JOB_NAME
   only:
     variables:
-      - $DOCKERIMAGE == "parity/tools"
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
-
+parity/tools:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE:     $CI_JOB_NAME
+    CONTAINER_TAG:       latest
+    DOCKERFILE_DIR:      $CI_JOB_NAME
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
 # special case as version tags are introduced
-build:kubetools:
+parity/kubetools:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE:         parity/kubetools
+    CONTAINER_IMAGE:         $CI_JOB_NAME
     CONTAINER_TAG:           latest
     DOCKERFILE_DIR:          kubetools
     # https://github.com/kubernetes/kubernetes/releases
-    KUBE_VERSION:            "1.13.4"
+    KUBE_VERSION:            "1.13.6"
     # https://github.com/kubernetes/helm/releases
-    HELM_VERSION:            "v2.13.1"
+    HELM_VERSION:            "2.13.1"
   only:
     variables:
-      - $DOCKERIMAGE == "parity/kubetools"
+      - $DOCKERIMAGE == $CI_JOB_NAME
   script:
     - cd $DOCKERFILE_DIR
     - docker build
-      --build-arg VCS_REF="$(cut -c 1-7 ${CI_PROJECT_DIR}/.git/refs/heads/master)"
+      --build-arg VCS_REF="${CI_COMMIT_SHA}"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg KUBE_VERSION="${KUBE_VERSION}"
       --build-arg HELM_VERSION="${HELM_VERSION}"
@@ -127,69 +190,118 @@ build:kubetools:
 
 
 #
-# polkadot:sync jobs are set up via gitlab schedule on this repo with the idea 
+# polkadot:sync jobs are set up via gitlab schedule on this repo with the idea
 # to be notified when the chain isn't syncing properly on the latest build
 #
 
+
+.polkasync-env:                    &polkasync-env
+  <<:                              *kubernetes-build
+  environment:
+    name: polkasync
+
 .polkasync:                        &polkasync
+  <<:                              *polkasync-env
   image:                           parity/kubetools:latest
   variables:
     RELEASES_URL:                  https://releases.parity.io/polkadot/x86_64-ubuntu:xenial
     KUBE_NAMESPACE:                polkasync
   before_script:
-    # - VERSION="0.3.21-6bee107"
-    - VERSION="$(wget -q -O - ${RELEASES_URL}/latest-v0.4/VERSION)"
-    - echo "Polkadot version = ${VERSION}"
     - kubectl get ns "${KUBE_NAMESPACE}"
+    - |
+      test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" &&
+        ( echo "|  project '${PROJECT}' not supported"; exit 5 )
+      if [ "${PRNO}" ]
+      then
+        echo "deploying docker image for ${PROJECT} PR NO ${PRNO}"
+        export VERSION="pr-${PRNO}"
+      else
+        # VERSION="0.3.21-6bee107"
+        export VERSION="$(wget -q -O - ${RELEASES_URL}/latest-v0.4/VERSION)"
+      fi
+    - echo "${PROJECT} version = ${VERSION}"
+    - export NAME="${PROJECT}-alex"
+    - export CONTAINER_IMAGE="parity/${PROJECT}"
+
+
+polkadot:sync:dockerize:
+  stage:                           build
+  <<:                              *polkasync-env
+  image:                           docker:stable
+  services:
+    - docker:dind
+  variables:
+    GIT_STRATEGY:                  none
+    CONTAINER_IMAGE:               "parity/${PROJECT}"
   only:
-    refs:
-      - schedules
-      - web
-    kubernetes: active
-  tags:
-    - kubernetes-parity-build
-  environment:
-    name: polkasync
+    variables:
+      - $JOB_ID
+  before_script:
+    - test "${Docker_Hub_User_Parity}" -a "${Docker_Hub_Pass_Parity}"
+        || ( echo "no docker credentials provided"; exit 1 )
+    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker info
+  script:
+    - |
+      test -z "$(expr "${PROJECT}" : '\(substrate\|polkadot\)')" && \
+        ( echo "|  project '${PROJECT}' not supported"; exit 5 )
+    - echo "Building docker image tag ${PROJECT}:pr-${PRNO}"
+    - wget -O substrate.zip https://gitlab.parity.io/parity/${PROJECT}/-/jobs/${JOB_ID}/artifacts/download
+    - unzip substrate.zip
+    - cd ./artifacts
+    - docker build --tag ${CONTAINER_IMAGE}:pr-${PRNO} .
+    - docker push ${CONTAINER_IMAGE}:pr-${PRNO}
+  after_script:
+    - docker logout
 
 
 
 polkadot:sync:start:
+  stage:                           deploy
   <<:                              *polkasync
   only:
     variables:
       - $POLKASYNC == "start"
+      - $JOB_ID
   script:
-    - |
-      sed -r "s;^([[:space:]]+image: +\"parity/polkadot):.*\"$;\1:${VERSION}\";" \
-        polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" apply -f -
+    - kubectl -n "${KUBE_NAMESPACE}" get pod ${NAME} &&
+      (echo "pod ${NAME} already exists. deleting it first.";
+      kubectl -n "${KUBE_NAMESPACE}" delete pod ${NAME})
+    - envsubst < polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" apply -f -
+
+      # sed -r "s;^([[:space:]]+image: +\"parity/polkadot):.*\"$;\1:${VERSION}\";" \
+      #   polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" apply -f -
 
 
 
+
+# this stop job is deprecated. polkasync test will be resetted nightly instead.
 polkadot:sync:stop:
+  stage:                           destroy
   <<:                              *polkasync
   only:
     variables:
       - $POLKASYNC == "stop"
+      - $JOB_ID
   script:
     - |
-      set -x
       PAYLOAD="{\"jsonrpc\":\"2.0\",\"method\":\"system_health\",\"params\":[],\"id\":0}"
       get_out () {
-        kill %1 # stop port-forwarding
-        kubectl -n "${KUBE_NAMESPACE}" delete -f polkasync/deployment.yaml
+        envsubst < polkasync/deployment.yaml | kubectl -n "${KUBE_NAMESPACE}" delete -f -
         case "$1" in
           (FAIL) echo "a check failed - alert somebody"; exit 1;;
           (*)    echo "chain seems to be synced well";;
         esac
       }
 
-      kubectl -n ${KUBE_NAMESPACE} port-forward svc/polkasync-rpc 9933:9933 &
-      sleep 2
+      set -x
       for n in 1 2 3 4; do
-        curl --connect-timeout 10 -sS --data "${PAYLOAD}" \
-          -H "Content-Type: application/json" \
-          -X POST localhost:9933 -o out.json
-        
+        kubectl -n "${KUBE_NAMESPACE}" run -it polkacheck --image=parity/tools \
+          --restart=Never --pod-running-timeout=1m0s --rm=true --quiet=true -- \
+          curl --connect-timeout 10 -sS --data "${PAYLOAD}" \
+            -H "Content-Type: application/json" \
+            -X POST "${NAME}-rpc:9933" | grep -e '{\|}' > out.json
+
         grep -q -e isSyncing -e peers out.json || get_out FAIL
         jq -e '.result.isSyncing == false' out.json || get_out FAIL
         jq -e '.result.peers > 2' out.json || get_out FAIL
@@ -198,6 +310,19 @@ polkadot:sync:stop:
       rm -f out.json
       get_out
       set +x
+  after_script:
+    - test "${PRNO}" -a "${PROJECT}" || exit 0
+    - echo "Remove pr-${PRNO} image from docker hub again"
+    - |
+      set -x
+      TOKEN="$(curl -sS -H "Content-Type: application/json" -X POST \
+        -d "{\"username\": \"${Docker_Hub_User_Parity}\", \"password\": \"${Docker_Hub_Pass_Parity}\"}" \
+        https://hub.docker.com/v2/users/login/ | jq -r .token)"
+      curl -sS -X DELETE -H "Authorization: JWT ${TOKEN}" \
+        'https://hub.docker.com/v2/repositories/parity/${PROJECT}/tags/pr-${PRNO}/'
+      set +x
+
+
 
 
 

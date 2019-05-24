@@ -15,7 +15,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		echo "Please refer to https://github.com/paritytech/substrate for setup information."
 	elif [ -f /etc/arch-release ]; then
 		echo "Arch Linux detected."
-		$MAKE_ME_ROOT pacman -Sy cmake gcc openssl-1.0 pkgconf git clang
+		$MAKE_ME_ROOT pacman -Syu --needed cmake gcc openssl-1.0 pkgconf git clang
 		export OPENSSL_LIB_DIR="/usr/lib/openssl-1.0";
 		export OPENSSL_INCLUDE_DIR="/usr/include/openssl-1.0"
 	elif [ -f /etc/mandrake-release ]; then
@@ -79,5 +79,6 @@ fi
 f=`mktemp -d`
 git clone https://github.com/paritytech/substrate-up $f
 cp -a $f/substrate-* ~/.cargo/bin
+cp -a $f/polkadot-* ~/.cargo/bin
 
 echo "Run source ~/.cargo/env now to update environment"
