@@ -90,7 +90,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 	echo "Downloading wasm-binaries.tbz2";
 	curl -L -o wasm-binaries.tbz2 https://storage.googleapis.com/wasm-llvm/builds/linux/$BUILD_NUM/wasm-binaries.tbz2
 
-	declare -a binaries=("wasm2wat" "wat2wasm" "wasm-opt") # Default binaries
+	declare -a binaries=("wasm2wat" "wat2wasm") # Default binaries
 	if [ "$#" -ne 0 ]; then
 		echo "Installing selected binaries.";
 		binaries=("$@");
