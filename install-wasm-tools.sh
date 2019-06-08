@@ -65,11 +65,12 @@ fi
 
 rustup update stable
 rustup update nightly
+rustup target add wasm32-unknown-unknown --toolchain stable
 rustup target add wasm32-unknown-unknown --toolchain nightly
 
 # While ink! is pinned to a specific nightly version of the Rust compiler you will need to explicitly install that toolchain.
-rustup install nightly-2019-04-20
-rustup target add wasm32-unknown-unknown --toolchain nightly-2019-04-20
+rustup install nightly-2019-05-21
+rustup target add wasm32-unknown-unknown --toolchain nightly-2019-05-21
 
 echo "Installing wasm-prune into ~/.cargo/bin"
 cargo install pwasm-utils-cli --bin wasm-prune --force
