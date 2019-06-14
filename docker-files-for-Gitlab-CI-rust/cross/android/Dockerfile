@@ -8,9 +8,9 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf; libudev.patch; \
 android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-androideabi" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-docker-files-for-Gitlab-CI-rust/cross/android/Dockerfile" \
+dockerfiles/parity-ci-android/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-docker-files-for-Gitlab-CI-rust/cross/android/README.md" \
+dockerfiles/parity-ci-android/README.md" \
 	io.parity.image.revision=${VCS_REF} \
 	io.parity.image.created=${BUILD_DATE}
 

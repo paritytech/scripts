@@ -5,9 +5,9 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.title="parity/parity-ci-docs" \
 	io.parity.image.description="curl ca-certificates git; nodejs yarn" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-docker-files-for-Gitlab-CI-rust/parity-eth-linux-docs/Dockerfile" \
+dockerfiles/parity-ci-docs/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-docker-files-for-Gitlab-CI-rust/parity-eth-linux-docs/README.md" \
+dockerfiles/parity-ci-docs/README.md" \
 	io.parity.image.revision=${VCS_REF} \
 	io.parity.image.created=${BUILD_DATE}
 

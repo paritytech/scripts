@@ -7,9 +7,9 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.description="gcc-multilib g++-multilib libudev-dev libudev-dev:i386; \
 cargo target i686-unknown-linux-gnu" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-docker-files-for-Gitlab-CI-rust/cross/i686/Dockerfile" \
+dockerfiles/parity-ci-i386/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-docker-files-for-Gitlab-CI-rust/cross/i686/README.md" \
+dockerfiles/parity-ci-i386/README.md" \
 	io.parity.image.revision=${VCS_REF} \
 	io.parity.image.created=${BUILD_DATE}
 

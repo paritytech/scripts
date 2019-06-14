@@ -11,9 +11,9 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.description="g++ libssl-dev gcc clang-8 cmake make git pkg-config \
 curl time rhash rust stable, rust nightly, cargo-audit, sccache, wasm-gc" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-docker-files-for-Gitlab-CI-rust/rust-builder/Dockerfile" \
+dockerfiles/rust-builder/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-docker-files-for-Gitlab-CI-rust/rust-builder/README.md" \
+dockerfiles/rust-builder/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 

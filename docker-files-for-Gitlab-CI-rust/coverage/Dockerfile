@@ -1,17 +1,26 @@
-# triggers image autoupdate with the new Rust release
-# https://github.com/rust-lang-nursery/docker-rust-nightly/blob/master/nightly-slim/Dockerfile
-FROM rustlang/rust:nightly-slim as notifier
-
-# temporary support of 16.04 with its Clib
 FROM ubuntu:xenial as builder
 
 # metadata
-LABEL maintainer="devops-team@parity.io" \
-	vendor="Parity Technologies" \
 	name="parity/rust-coverage" \
 	description="Image for CI to collects and aggregates code coverage information for Rust projects. Based on grcov https://github.com/mozilla/grcov" \
 	url="https://gitlab.com/paritytech/scripts" \
-	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/coverage"
+	vcs-url="scripts/dockerfiles/coverage"
+
+
+# metadata
+LABEL io.parity.image.authors="devops-team@parity.io" \
+	io.parity.image.vendor="Parity Technologies" \
+	io.parity.image.title="parity/rust-coverage" \
+	io.parity.image.description="software-properties-common curl git make cmake \
+ca-certificates g++  gcc pkg-config libudev-dev time libssl-dev libc6-dev wget; \
+libllvm8 llvm-8 llvm-8-dev llvm-8-runtime; rust grcov" \
+	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
+dockerfiles/rust-coverage/Dockerfile" \
+	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
+dockerfiles/rust-coverage/README.md" \
+	io.parity.image.revision=${VCS_REF} \
+	io.parity.image.created=${BUILD_DATE}
+
 
 WORKDIR /builds/
 
@@ -45,10 +54,10 @@ deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main "; \
     ./rustup-init -y --no-modify-path --default-toolchain nightly; \
     rm rustup-init; \
     chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
-	  cargo install grcov; \
+	cargo install grcov; \
 # apt clean up
     apt-get remove -y --auto-remove wget; \
-	  rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/*
 
 # show backtraces
 ENV RUST_BACKTRACE=1

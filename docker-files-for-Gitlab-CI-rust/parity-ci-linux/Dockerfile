@@ -11,9 +11,9 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 pkg-config libudev-dev time libssl-dev libc6-dev \
 rust stable/beta/nightly, cargo-audit, sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-docker-files-for-Gitlab-CI-rust/parity-builder/Dockerfile" \
+dockerfiles/parity-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-docker-files-for-Gitlab-CI-rust/parity-builder/README.md" \
+dockerfiles/parity-ci-linux/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 

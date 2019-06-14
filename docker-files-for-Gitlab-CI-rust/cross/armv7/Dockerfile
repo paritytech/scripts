@@ -7,9 +7,9 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.description="g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf libudev-dev \
 libudev-dev:armhf; cargo target armv7-unknown-linux-gnueabihf" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-docker-files-for-Gitlab-CI-rust/cross/armv7/Dockerfile" \
+dockerfiles/parity-ci-armhf/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-docker-files-for-Gitlab-CI-rust/cross/armv7/README.md" \
+dockerfiles/parity-ci-armhf/README.md" \
 	io.parity.image.revision=${VCS_REF} \
 	io.parity.image.created=${BUILD_DATE}
 
