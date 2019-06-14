@@ -14,8 +14,8 @@ rust stable/beta/nightly, cargo-audit, sccache" \
 docker-files-for-Gitlab-CI-rust/parity-builder/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 docker-files-for-Gitlab-CI-rust/parity-builder/README.md" \
-	io.parity.image.revision=${VCS_REF} \
-	io.parity.image.created=${BUILD_DATE}
+	io.parity.image.revision="${VCS_REF}" \
+	io.parity.image.created="${BUILD_DATE}"
 
 WORKDIR /builds
 

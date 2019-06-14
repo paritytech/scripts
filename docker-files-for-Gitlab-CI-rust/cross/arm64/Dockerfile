@@ -1,16 +1,17 @@
-# triggers image autoupdate with the new Rust release
-FROM rust:slim as notifier
-
-# temporary support of 16.04 with its Clib
-FROM parity/rust-parity-ethereum-build:xenial as builder
+FROM parity-ci-linux:latest as builder
 
 # metadata
-LABEL maintainer="devops-team@parity.io" \
-	vendor="Parity Technologies" \
-	name="parity/rust-parity-ethereum-build:arm64" \
-	description="Image for CI build stage for Parity Ethereum arm64 binary." \
-	url="https://gitlab.com/paritytech/scripts" \
-	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/cross/arm64"
+LABEL io.parity.image.authors="devops-team@parity.io" \
+	io.parity.image.vendor="Parity Technologies" \
+	io.parity.image.title="parity/parity-ci-arm64" \
+	io.parity.image.description="g++-aarch64-linux-gnu gcc-aarch64-linux-gnu libudev-dev \
+libudev-dev:arm64; rustup target aarch64-unknown-linux-gnu" \
+	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
+docker-files-for-Gitlab-CI-rust/cross/arm64/Dockerfile" \
+	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
+docker-files-for-Gitlab-CI-rust/cross/arm64/README.md" \
+	io.parity.image.revision=${VCS_REF} \
+	io.parity.image.created=${BUILD_DATE}
 
 # install aarch64(armv8) dependencies and tools
 RUN set -eux; \
@@ -49,7 +50,5 @@ ENV CC=aarch64-linux-gnu-gcc \
 	CPPFLAGS="-I/usr/include" \
 # cache handler
 	RUSTC_WRAPPER=sccache \
-	CARGO_HOME=/ci-cache/parity-ethereum/cargo \
-	SCCACHE_DIR=/ci-cache/parity-ethereum/sccache \
 # show backtraces
 	RUST_BACKTRACE=1

@@ -2,12 +2,17 @@
 FROM rust:stretch
 
 # metadata
-LABEL maintainer="devops-team@parity.io" \
-	vendor="Parity Technologies" \
-	name="parity/rust-parity-ethereum-android-build" \
-	description="Image for CI build stage for Parity Ethereum Android binary." \
-	url="https://gitlab.com/paritytech/scripts/" \
-	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/cross/android"
+LABEL io.parity.image.authors="devops-team@parity.io" \
+	io.parity.image.vendor="Parity Technologies" \
+	io.parity.image.title="parity/parity-ci-android" \
+	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf; libudev.patch; \
+android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-androideabi" \
+	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
+docker-files-for-Gitlab-CI-rust/cross/android/Dockerfile" \
+	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
+docker-files-for-Gitlab-CI-rust/cross/android/README.md" \
+	io.parity.image.revision=${VCS_REF} \
+	io.parity.image.created=${BUILD_DATE}
 
 COPY libudev.patch /root/
 COPY config /.cargo/
@@ -82,8 +87,6 @@ RUN set -eux; \
 
 # cache handlers
 ENV	RUSTC_WRAPPER=sccache \
-	CARGO_HOME=/ci-cache/parity-ethereum/cargo \
-	SCCACHE_DIR=/ci-cache/parity-ethereum/sccache \
 # show backtraces
 	RUST_BACKTRACE=1
 

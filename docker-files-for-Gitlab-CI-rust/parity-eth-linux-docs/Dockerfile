@@ -1,12 +1,15 @@
 FROM ubuntu:xenial as builder
 
-# metadata
-LABEL maintainer="devops-team@parity.io" \
-	vendor="Parity Technologies" \
-	name="parity/rust-parity-ethereum-docs" \
-	description="Image for CI docs stage for Parity Ethereum." \
-	url="https://gitlab.com/paritytech/scripts/" \
-	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/parity-eth-linux-docs"
+LABEL io.parity.image.authors="devops-team@parity.io" \
+	io.parity.image.vendor="Parity Technologies" \
+	io.parity.image.title="parity/parity-ci-docs" \
+	io.parity.image.description="curl ca-certificates git; nodejs yarn" \
+	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
+docker-files-for-Gitlab-CI-rust/parity-eth-linux-docs/Dockerfile" \
+	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
+docker-files-for-Gitlab-CI-rust/parity-eth-linux-docs/README.md" \
+	io.parity.image.revision=${VCS_REF} \
+	io.parity.image.created=${BUILD_DATE}
 
 WORKDIR /builds/parity/parity-ethereum/
 

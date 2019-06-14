@@ -1,16 +1,17 @@
-# triggers image autoupdate with the new Rust release
-FROM rust:slim as notifier
-
-# temporary support of 16.04 with its Clib
-FROM parity/rust-parity-ethereum-build:xenial as builder
+FROM parity-ci-linux:latest as builder
 
 # metadata
-LABEL maintainer="devops-team@parity.io" \
-	vendor="Parity Technologies" \
-	name="parity/rust-parity-ethereum-build:armhf" \
-	description="Image for CI build stage for Parity Ethereum armhf binary." \
-	url="https://gitlab.com/paritytech/scripts" \
-	vcs-url="scripts/docker-files-for-Gitlab-CI-rust/cross/armhf"
+LABEL io.parity.image.authors="devops-team@parity.io" \
+	io.parity.image.vendor="Parity Technologies" \
+	io.parity.image.title="parity/parity-ci-armhf" \
+	io.parity.image.description="g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf libudev-dev \
+libudev-dev:armhf; cargo target armv7-unknown-linux-gnueabihf" \
+	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
+docker-files-for-Gitlab-CI-rust/cross/armv7/Dockerfile" \
+	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
+docker-files-for-Gitlab-CI-rust/cross/armv7/README.md" \
+	io.parity.image.revision=${VCS_REF} \
+	io.parity.image.created=${BUILD_DATE}
 
 	# install armv7 dependencies and tools
 RUN set -eux; \
@@ -49,7 +50,5 @@ ENV CC=arm-linux-gnueabihf-gcc \
 	CPPFLAGS="-I/usr/include" \
 # cache handler
 	RUSTC_WRAPPER=sccache \
-	CARGO_HOME=/ci-cache/parity-ethereum/cargo \
-	SCCACHE_DIR=/ci-cache/parity-ethereum/sccache \
 # show backtraces
 	RUST_BACKTRACE=1
