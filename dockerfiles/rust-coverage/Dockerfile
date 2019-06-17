@@ -1,13 +1,6 @@
 FROM ubuntu:xenial as builder
 
 # metadata
-	name="parity/rust-coverage" \
-	description="Image for CI to collects and aggregates code coverage information for Rust projects. Based on grcov https://github.com/mozilla/grcov" \
-	url="https://gitlab.com/paritytech/scripts" \
-	vcs-url="scripts/dockerfiles/coverage"
-
-
-# metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="parity/rust-coverage" \
@@ -20,7 +13,6 @@ dockerfiles/rust-coverage/Dockerfile" \
 dockerfiles/rust-coverage/README.md" \
 	io.parity.image.revision=${VCS_REF} \
 	io.parity.image.created=${BUILD_DATE}
-
 
 WORKDIR /builds/
 
@@ -45,7 +37,7 @@ deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main "; \
     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|apt-key add -;\
     apt-get -y update; \
     apt-get install -y --no-install-recommends \
-    libllvm8 llvm-8 llvm-8-dev llvm-8-runtime; \
+        libllvm8 llvm-8 llvm-8-dev llvm-8-runtime; \
 # libssl-dev won't be needed in rust:stretch
 # install rustup
     url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \

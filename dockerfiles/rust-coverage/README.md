@@ -1,0 +1,1 @@
+Image for CI to collects and aggregates code coverage information for Rust projects. Based on grcov https://github.com/mozilla/grcov
