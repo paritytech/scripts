@@ -42,17 +42,17 @@ variables:
     - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
   script:
-    - cd $DOCKERFILE_DIR
+    - cd dockerfiles/$DOCKERFILE_DIR
     # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
     # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
     - export CONTAINER_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
     - docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHA}"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
-        --tag $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-        --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
-    - docker push $CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-    - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
+        --tag parity/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+        --tag parity/$CONTAINER_IMAGE:$CONTAINER_TAG .
+    - docker push parity/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+    - docker push parity/$CONTAINER_IMAGE:$CONTAINER_TAG
   after_script:
     - docker logout
   environment:
@@ -60,118 +60,118 @@ variables:
 
 
 # Deprecated, used only for substrate 1.0 and polkadot 0.4
-parity/rust:
+rust:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: $CI_JOB_NAME
-    CONTAINER_TAG:   nightly
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/rustup
+    CONTAINER_IMAGE:               $CI_JOB_NAME
+    CONTAINER_TAG:                 nightly
+    DOCKERFILE_DIR:                rustup
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
-parity/parity-ci-linux:
+parity-ci-linux:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: $CI_JOB_NAME
-    CONTAINER_TAG:   latest
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/parity-ci-linux
+    CONTAINER_IMAGE:               $CI_JOB_NAME
+    CONTAINER_TAG:                 latest
+    DOCKERFILE_DIR:                $CI_JOB_NAME
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
-parity/rust-parity-ethereum-android-build:
+parity-ci-android:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: $CI_JOB_NAME
-    CONTAINER_TAG:   stretch
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/android
+    CONTAINER_IMAGE:               $CI_JOB_NAME
+    CONTAINER_TAG:                 stretch
+    DOCKERFILE_DIR:                $CI_JOB_NAME
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
-rust-parity-ethereum-build:i386:
+parity-ci-i386:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: parity/rust-parity-ethereum-build
-    CONTAINER_TAG:   i386
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/i686
-  only:
-    variables:
-      - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
-
-rust-parity-ethereum-build:arm64:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE: parity/rust-parity-ethereum-build
-    CONTAINER_TAG:   arm64
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/arm64
-  only:
-    variables:
-      - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
-
-rust-parity-ethereum-build:armhf:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE: parity/rust-parity-ethereum-build
-    CONTAINER_TAG:   armhf
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/cross/armv7
-  only:
-    variables:
-      - $DOCKERIMAGE == "parity/rust-parity-ethereum-build"
-
-parity/rust-parity-ethereum-docs:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE: $CI_JOB_NAME
-    CONTAINER_TAG:   xenial
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/parity-eth-linux-docs
+    CONTAINER_IMAGE:               $CI_JOB_NAME
+    CONTAINER_TAG:                 latest
+    DOCKERFILE_DIR:                $CI_JOB_NAME
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
-parity/rust-builder:
+parity-ci-arm64:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE: $CI_JOB_NAME
-    CONTAINER_TAG:   latest
-    DOCKERFILE_DIR:  docker-files-for-Gitlab-CI-rust/rust-builder
+    CONTAINER_IMAGE:               $CI_JOB_NAME
+    CONTAINER_TAG:                 latest
+    DOCKERFILE_DIR:                $CI_JOB_NAME
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
+
+parity-ci-armhf:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE:               $CI_JOB_NAME
+    CONTAINER_TAG:                 latest
+    DOCKERFILE_DIR:                $CI_JOB_NAME
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
+
+parity-ci-docs:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE:               $CI_JOB_NAME
+    CONTAINER_TAG:                 latest
+    DOCKERFILE_DIR:                $CI_JOB_NAME
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
+
+rust-builder:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE:               $CI_JOB_NAME
+    CONTAINER_TAG:                 latest
+    DOCKERFILE_DIR:                $CI_JOB_NAME
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 
-parity/awscli:
+awscli:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE:     $CI_JOB_NAME
-    CONTAINER_TAG:       latest
-    DOCKERFILE_DIR:      $CI_JOB_NAME
+    CONTAINER_IMAGE:               $CI_JOB_NAME
+    CONTAINER_TAG:                 latest
+    DOCKERFILE_DIR:                $CI_JOB_NAME
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
-parity/tools:
+tools:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE:     $CI_JOB_NAME
-    CONTAINER_TAG:       latest
-    DOCKERFILE_DIR:      $CI_JOB_NAME
+    CONTAINER_IMAGE:               $CI_JOB_NAME
+    CONTAINER_TAG:                 latest
+    DOCKERFILE_DIR:                $CI_JOB_NAME
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 # special case as version tags are introduced
-parity/kubetools:
+kubetools:
   <<: *docker_build
   variables:
-    CONTAINER_IMAGE:         $CI_JOB_NAME
-    CONTAINER_TAG:           latest
-    DOCKERFILE_DIR:          kubetools
+    CONTAINER_IMAGE:               $CI_JOB_NAME
+    CONTAINER_TAG:                 latest
+    DOCKERFILE_DIR:                kubetools
     # https://github.com/kubernetes/kubernetes/releases
-    KUBE_VERSION:            "1.13.6"
+    KUBE_VERSION:                  "1.13.6"
     # https://github.com/kubernetes/helm/releases
-    HELM_VERSION:            "2.13.1"
+    HELM_VERSION:                  "2.13.1"
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
@@ -182,10 +182,10 @@ parity/kubetools:
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg KUBE_VERSION="${KUBE_VERSION}"
       --build-arg HELM_VERSION="${HELM_VERSION}"
-      --tag $CONTAINER_IMAGE:$CONTAINER_TAG
-      --tag $CONTAINER_IMAGE:$HELM_VERSION .
-    - docker push $CONTAINER_IMAGE:$CONTAINER_TAG
-    - docker push $CONTAINER_IMAGE:$HELM_VERSION
+      --tag parity/$CONTAINER_IMAGE:$CONTAINER_TAG
+      --tag parity/$CONTAINER_IMAGE:$HELM_VERSION .
+    - docker push parity/$CONTAINER_IMAGE:$CONTAINER_TAG
+    - docker push parity/$CONTAINER_IMAGE:$HELM_VERSION
 
 
 

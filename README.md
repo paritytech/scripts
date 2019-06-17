@@ -10,17 +10,14 @@ Download, verify and install
 
 
 ## Dockerfiles for images used in GitLab CI
-[Documentation](docker-files-for-Gitlab-CI-rust/README.md).
-
- - rust image
+[Documentation](dockerfiles/README.md).
+Rust and tools for:
+ - Substrate-based Cis
+ - parity-ethereum CI
  - android
- - arm
  - arm64
  - armv7
- - centos
- - debian
  - i686
- - snapcraft
 
 
 ## GitLab CI for building docker images
@@ -30,8 +27,8 @@ CI/CD -> Pipelines menu and click "Run Pipeline". Variables have to be given
 to select the image to build. E.g.
 
 ```
-DOCKERIMAGE="rust"
-DOCKERTAG="nightly"
+parity/$CONTAINER_IMAGE="parity/parity-ci-linux"
+$CONTAINER_TAG="nightly"
 ```
 
 Docker image parity/rust:nightly is set up to be rebuild every night.
