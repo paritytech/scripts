@@ -4,7 +4,7 @@ Usage:
 ```
     build-linux-arm64:
       stage: build
-      image: parity/parity-ci-ethereum:latest
+      image: parity/parity-ci-arm64:latest
       script:
         - cargo build build --target aarch64-unknown-linux-gnu $CARGO_OPTIONS
 ```
