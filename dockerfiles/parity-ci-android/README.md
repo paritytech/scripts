@@ -3,7 +3,7 @@ Uses [sccache](https://github.com/mozilla/sccache).
 Usage:
 ```linux-armv7-android:
       stage: build
-      parity/rust-parity-ethereum-android-build:stretch
+      image: parity/parity-ci-android:stretch
       script:
         - cargo build ...
 ```

@@ -4,7 +4,7 @@ Usage:
 ```
     build-linux-i386:
       stage: build
-      image: parity/rust-parity-ethereum-build:i386
+      image: parity/parity-ci-i386:latest
       script:
         - cargo build --target i686-unknown-linux-gnu $CARGO_OPTIONS
 ```

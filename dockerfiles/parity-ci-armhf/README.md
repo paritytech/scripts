@@ -4,7 +4,7 @@ Usage:
 ```
     build-linux-armhf:
       stage: build
-      image: parity/rust-parity-ethereum-build:armhf
+      image: parity/parity-ci-armhf:latest
       script:
         - cargo build --target armv7-unknown-linux-gnueabihf $CARGO_OPTIONS
 ```
