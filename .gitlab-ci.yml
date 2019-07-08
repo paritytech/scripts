@@ -59,7 +59,7 @@ variables:
     name: parity-build
 
 
-# Deprecated, used only for substrate 1.0 and polkadot 0.4
+# TODO: check/change substrate 1.0, polkadot 0.4, zcash, parity-pharma, parity-bitcoin, light and remove this image
 rust:
   <<: *docker_build
   variables:
