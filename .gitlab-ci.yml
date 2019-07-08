@@ -141,33 +141,59 @@ rust-builder:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 
+<<<<<<< HEAD
 awscli:
   <<: *docker_build
   variables:
     CONTAINER_IMAGE:               $CI_JOB_NAME
     CONTAINER_TAG:                 latest
     DOCKERFILE_DIR:                $CI_JOB_NAME
+=======
+
+# helpers
+
+parity/awscli:
+  <<: *docker_build
+  variables:
+    CONTAINER_IMAGE:     $CI_JOB_NAME
+    CONTAINER_TAG:       latest
+    DOCKERFILE_DIR:      docker/helpers/awscli
+>>>>>>> master
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
+      - $DOCKERIMAGE == "awscli"
 
 tools:
   <<: *docker_build
   variables:
+<<<<<<< HEAD
     CONTAINER_IMAGE:               $CI_JOB_NAME
     CONTAINER_TAG:                 latest
     DOCKERFILE_DIR:                $CI_JOB_NAME
+=======
+    CONTAINER_IMAGE:     $CI_JOB_NAME
+    CONTAINER_TAG:       latest
+    DOCKERFILE_DIR:      docker/helpers/tools
+>>>>>>> master
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
+      - $DOCKERIMAGE == "tools"
 
 # special case as version tags are introduced
 kubetools:
   <<: *docker_build
   variables:
+<<<<<<< HEAD
     CONTAINER_IMAGE:               $CI_JOB_NAME
     CONTAINER_TAG:                 latest
     DOCKERFILE_DIR:                $CI_JOB_NAME
+=======
+    CONTAINER_IMAGE:         $CI_JOB_NAME
+    CONTAINER_TAG:           latest
+    DOCKERFILE_DIR:          docker/helpers/kubetools
+>>>>>>> master
     # https://github.com/kubernetes/kubernetes/releases
     KUBE_VERSION:                  "1.13.6"
     # https://github.com/kubernetes/helm/releases
@@ -175,6 +201,7 @@ kubetools:
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
+      - $DOCKERIMAGE == "kubetools"
   script:
     - cd dockerfiles/$DOCKERFILE_DIR
     - docker build
