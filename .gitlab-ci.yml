@@ -167,7 +167,7 @@ kubetools:
   variables:
     CONTAINER_IMAGE:               $CI_JOB_NAME
     CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                kubetools
+    DOCKERFILE_DIR:                $CI_JOB_NAME
     # https://github.com/kubernetes/kubernetes/releases
     KUBE_VERSION:                  "1.13.6"
     # https://github.com/kubernetes/helm/releases
@@ -176,7 +176,7 @@ kubetools:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
   script:
-    - cd $DOCKERFILE_DIR
+    - cd dockerfiles/$DOCKERFILE_DIR
     - docker build
       --build-arg VCS_REF="${CI_COMMIT_SHA}"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
