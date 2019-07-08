@@ -12,6 +12,6 @@ dockerfiles/tools/README.md" \
 	io.parity.image.revision=${VCS_REF} \
 	io.parity.image.created=${BUILD_DATE}
 
-RUN apk add --no-cache curl git jq
+RUN apk add --no-cache curl git jq rsync
 
 CMD /bin/sh
