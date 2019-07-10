@@ -150,7 +150,6 @@ awscli:
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
-      - $DOCKERIMAGE == "awscli"
 
 tools:
   <<: *docker_build
@@ -161,7 +160,6 @@ tools:
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
-      - $DOCKERIMAGE == "tools"
 
 # special case as version tags are introduced
 kubetools:
