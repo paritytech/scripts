@@ -1,4 +1,4 @@
-FROM parity-ci-linux:latest as builder
+FROM parity/parity-ci-linux:latest as builder
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
