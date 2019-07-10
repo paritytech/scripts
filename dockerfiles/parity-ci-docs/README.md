@@ -1,0 +1,1 @@
+Image for CI docs stage for Parity Ethereum.

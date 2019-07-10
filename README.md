@@ -10,29 +10,22 @@ Download, verify and install
 
 
 ## Dockerfiles for images used in GitLab CI
-[Documentation](docker-files-for-Gitlab-CI-rust/README.md).
-
- - rust image
+[Documentation](dockerfiles/README.md).
+Rust and tools for:
+ - Substrate-based projects CIs
+ - parity-ethereum
  - android
- - arm
  - arm64
  - armv7
- - centos
- - debian
  - i686
- - snapcraft
+ - docs autogeneration
+ - various tools
+ - tools for kubernetes
 
 
 ## GitLab CI for building docker images
 
-Pipelines can only be triggered manually for now. For that go to the projects 
-CI/CD -> Pipelines menu and click "Run Pipeline". Variables have to be given 
-to select the image to build. E.g.
-
-```
-DOCKERIMAGE="rust"
-DOCKERTAG="nightly"
-```
-
-Docker image parity/rust:nightly is set up to be rebuild every night.
-
+Pipelines are triggered by schedule. Can be launched manually though.
+To launch the pipeline go to the project's CI/CD -> Schedules menu.
+To change, edit/create the new schedule: 
+    set the required variable and cron schedule.
