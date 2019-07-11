@@ -2,6 +2,9 @@
 FROM rust:stretch
 
 # metadata
+ARG VCS_REF
+ARG BUILD_DATE
+
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="parity/parity-ci-android" \
@@ -11,8 +14,8 @@ android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-a
 dockerfiles/parity-ci-android/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-android/README.md" \
-	io.parity.image.revision=${VCS_REF} \
-	io.parity.image.created=${BUILD_DATE}
+	io.parity.image.revision="${VCS_REF}" \
+	io.parity.image.created="${BUILD_DATE}"
 
 COPY libudev.patch /root/
 COPY config /.cargo/

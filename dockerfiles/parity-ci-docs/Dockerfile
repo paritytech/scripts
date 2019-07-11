@@ -1,5 +1,9 @@
 FROM ubuntu:xenial as builder
 
+# metadata
+ARG VCS_REF
+ARG BUILD_DATE
+
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="parity/parity-ci-docs" \
@@ -8,8 +12,8 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 dockerfiles/parity-ci-docs/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-docs/README.md" \
-	io.parity.image.revision=${VCS_REF} \
-	io.parity.image.created=${BUILD_DATE}
+	io.parity.image.revision="${VCS_REF}" \
+	io.parity.image.created="${BUILD_DATE}"
 
 WORKDIR /builds/parity/parity-ethereum/
 

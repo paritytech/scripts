@@ -1,6 +1,9 @@
 FROM ubuntu:xenial
 
 # metadata
+ARG VCS_REF
+ARG BUILD_DATE
+
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="parity/deploy" \
@@ -10,8 +13,8 @@ libudev-dev:arm64; rustup target aarch64-unknown-linux-gnu" \
 dockerfiles/deploy/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/deploy/README.md" \
-	io.parity.image.revision=${VCS_REF} \
-	io.parity.image.created=${BUILD_DATE}
+	io.parity.image.revision="${VCS_REF}" \
+	io.parity.image.created="${BUILD_DATE}"
 
 WORKDIR /build
 

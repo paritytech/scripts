@@ -1,6 +1,9 @@
 FROM parity/parity-ci-linux:latest as builder
 
 # metadata
+ARG VCS_REF
+ARG BUILD_DATE
+
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="parity/parity-ci-armhf" \
@@ -10,10 +13,10 @@ libudev-dev:armhf; cargo target armv7-unknown-linux-gnueabihf" \
 dockerfiles/parity-ci-armhf/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-armhf/README.md" \
-	io.parity.image.revision=${VCS_REF} \
-	io.parity.image.created=${BUILD_DATE}
+	io.parity.image.revision="${VCS_REF}" \
+	io.parity.image.created="${BUILD_DATE}"
 
-	# install armv7 dependencies and tools
+# install armv7 dependencies and tools
 RUN set -eux; \
 	dpkg --add-architecture armhf; \
 	echo '# source urls for armhf \n\
