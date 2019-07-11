@@ -1,7 +1,9 @@
 FROM python:3.6-alpine
-MAINTAINER devops-team@parity.io
 
 # metadata
+ARG VCS_REF
+ARG BUILD_DATE
+
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="parity/awscli" \
@@ -10,8 +12,8 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 dockerfiles/awscli/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/awscli/README.md" \
-	io.parity.image.revision=${VCS_REF} \
-	io.parity.image.created=${BUILD_DATE}
+	io.parity.image.revision="${VCS_REF}" \
+	io.parity.image.created="${BUILD_DATE}"
 
 RUN pip install awscli
 
