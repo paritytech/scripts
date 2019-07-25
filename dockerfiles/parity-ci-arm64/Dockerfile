@@ -44,6 +44,7 @@ RUN set -eux; \
 	rustup target add aarch64-unknown-linux-gnu
 
 # set cross-compiler ENV
+ADD config /.cargo/config
 ENV CC=aarch64-linux-gnu-gcc \
 	CXX=aarch64-linux-gnu-g++ \
 	CARGO_TARGET=aarch64-unknown-linux-gnu \
