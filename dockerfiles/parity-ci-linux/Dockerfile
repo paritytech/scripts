@@ -40,7 +40,8 @@ RUN set -eux; \
     rm rustup-init; \
     chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
 	rustup install nightly beta; \
-	cargo install cargo-audit sccache; \
+	cargo install cargo-audit; \
+	cargo install sccache --features redis; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
