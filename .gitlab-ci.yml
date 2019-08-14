@@ -62,7 +62,8 @@ variables:
   <<:                              *docker_build
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-    - docker login registry.parity.io
+    # - docker login registry.parity.io
+    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
     - docker info
   script:
     - cd dockerfiles/$DOCKERFILE_DIR
