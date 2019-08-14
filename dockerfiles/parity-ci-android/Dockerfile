@@ -7,7 +7,7 @@ ARG BUILD_DATE
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="parity/parity-ci-android" \
+	io.parity.image.title="registry.parity.io/pub/ci/parity-ci-android" \
 	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf; libudev.patch; \
 android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-androideabi" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\

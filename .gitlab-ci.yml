@@ -62,7 +62,6 @@ variables:
   <<:                              *docker_build
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-    # - docker login registry.parity.io
     - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
     - docker info
   script:
@@ -75,8 +74,8 @@ variables:
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --tag registry.parity.io/pub/ci/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
         --tag registry.parity.io/pub/ci/$CONTAINER_IMAGE:$CONTAINER_TAG .
-    - docker push registry.parity.io/pub/ci/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-    - docker push registry.parity.io/pub/ci/$CONTAINER_IMAGE:$CONTAINER_TAG
+    - docker push $CI_REGISTRY/pub/ci/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+    - docker push $CI_REGISTRY/pub/ci/$CONTAINER_IMAGE:$CONTAINER_TAG
 
 
 # TODO: check/change substrate 1.0, polkadot 0.4, zcash, parity-pharma, parity-bitcoin, light and remove this image

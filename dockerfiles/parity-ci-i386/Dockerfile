@@ -1,4 +1,4 @@
-FROM parity/parity-ci-linux:latest as builder
+FROM registry.parity.io/pub/ci/parity-ci-linux:latest as builder
 
 # metadata
 ARG VCS_REF
@@ -6,7 +6,7 @@ ARG BUILD_DATE
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="parity/parity-ci-i386" \
+	io.parity.image.title="registry.parity.io/pub/ci/parity-ci-i386" \
 	io.parity.image.description="gcc-multilib g++-multilib libudev-dev libudev-dev:i386; \
 cargo target i686-unknown-linux-gnu" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
