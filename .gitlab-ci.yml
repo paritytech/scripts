@@ -62,7 +62,7 @@ variables:
   <<:                              *docker_build
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY
+    - docker login -u $CI_DEPLOY_USER -p $CI_DEPLOY_PASSWORD $CI_REGISTRY/pub/ci
     - docker info
   script:
     - cd dockerfiles/$DOCKERFILE_DIR
@@ -72,8 +72,8 @@ variables:
     - docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHA}"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
-        --tag registry.parity.io/pub/ci/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-        --tag registry.parity.io/pub/ci/$CONTAINER_IMAGE:$CONTAINER_TAG .
+        --tag $CI_REGISTRY/pub/ci/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+        --tag $CI_REGISTRY/pub/ci/$CONTAINER_IMAGE:$CONTAINER_TAG .
     - docker push $CI_REGISTRY/pub/ci/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
     - docker push $CI_REGISTRY/pub/ci/$CONTAINER_IMAGE:$CONTAINER_TAG
 
