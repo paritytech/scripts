@@ -90,7 +90,7 @@ rust:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 parity-ci-linux:
-  <<:                              &docker_build_to_own_reg
+  <<:                              *docker_build_to_own_reg
   variables:
     CONTAINER_IMAGE:               $CI_JOB_NAME
     CONTAINER_TAG:                 latest
@@ -100,7 +100,7 @@ parity-ci-linux:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 parity-ci-android:
-  <<:                              &docker_build_to_own_reg
+  <<:                              *docker_build_to_own_reg
   variables:
     CONTAINER_IMAGE:               $CI_JOB_NAME
     CONTAINER_TAG:                 stretch
@@ -110,7 +110,7 @@ parity-ci-android:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 parity-ci-i386:
-  <<:                              &docker_build_to_own_reg
+  <<:                              *docker_build_to_own_reg
   variables:
     CONTAINER_IMAGE:               $CI_JOB_NAME
     CONTAINER_TAG:                 latest
@@ -120,7 +120,7 @@ parity-ci-i386:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 parity-ci-arm64:
-  <<:                              &docker_build_to_own_reg
+  <<:                              *docker_build_to_own_reg
   variables:
     CONTAINER_IMAGE:               $CI_JOB_NAME
     CONTAINER_TAG:                 latest
@@ -130,7 +130,7 @@ parity-ci-arm64:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 parity-ci-armhf:
-  <<:                              &docker_build_to_own_reg
+  <<:                              *docker_build_to_own_reg
   variables:
     CONTAINER_IMAGE:               $CI_JOB_NAME
     CONTAINER_TAG:                 latest
@@ -140,7 +140,7 @@ parity-ci-armhf:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 parity-ci-docs:
-  <<:                              &docker_build_to_own_reg
+  <<:                              *docker_build_to_own_reg
   variables:
     CONTAINER_IMAGE:               $CI_JOB_NAME
     CONTAINER_TAG:                 latest
@@ -161,7 +161,7 @@ rust-builder:
 
 
 awscli:
-  <<:                              &docker_build_to_own_reg
+  <<:                              *docker_build_to_own_reg
   variables:
     CONTAINER_IMAGE:               $CI_JOB_NAME
     CONTAINER_TAG:                 latest
