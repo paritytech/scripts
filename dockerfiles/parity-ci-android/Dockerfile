@@ -57,7 +57,7 @@ RUN set -eux; \
 # autotools-dev automake autoconf libtool docbook-xsl
 	rustup target add arm-linux-androideabi; \
 	rustup target add armv7-linux-androideabi; \
-	cargo install sccache; \
+	cargo install sccache --features redis; \
 # Android NDK and toolchain
 	cd /usr/local; \
 	wget -q https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip; \
