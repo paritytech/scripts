@@ -6,7 +6,7 @@ ARG BUILD_DATE
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="parity/parity-ci-linux" \
+	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-linux" \
 	io.parity.image.description="curl git make cmake ca-certificates g++ rhash gcc \
 pkg-config libudev-dev time libssl-dev libc6-dev \
 rust stable/beta/nightly, cargo-audit, sccache" \

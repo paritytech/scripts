@@ -13,7 +13,7 @@ Usage:
 ```
 build-linux:
     stage: build
-    image: parity/parity-ci-linux:latest
+    image: registry.parity.io/parity/infrastructure/scripts/parity-ci-linux:latest
     script:
       - cargo build ...
 ```

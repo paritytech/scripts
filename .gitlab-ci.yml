@@ -63,7 +63,6 @@ variables:
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker info
   script:
     # $CI_REGISTRY_IMAGE == registry.parity.io/parity/infrastructure/scripts/
     # $CI_REGISTRY == registry.parity.io/

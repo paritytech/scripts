@@ -1,4 +1,4 @@
-FROM registry.parity.io/pub/ci/parity-ci-linux:latest as builder
+FROM registry.parity.io/parity/infrastructure/scripts/parity-ci-linux:latest as builder
 
 # metadata
 ARG VCS_REF
@@ -6,7 +6,7 @@ ARG BUILD_DATE
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="registry.parity.io/pub/ci/parity-ci-armhf" \
+	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-armhf" \
 	io.parity.image.description="g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf libudev-dev \
 libudev-dev:armhf; cargo target armv7-unknown-linux-gnueabihf" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
