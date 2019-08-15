@@ -5,7 +5,7 @@ Uses [sccache](https://github.com/mozilla/sccache).
 ```
     build-linux-armhf:
       stage: build
-      image: parity/parity-ci-armhf:latest
+      image: registry.parity.io/parity/infrastructure/scripts/parity-ci-armhf:latest
       script:
         - cargo build --target armv7-unknown-linux-gnueabihf $CARGO_OPTIONS
 ```

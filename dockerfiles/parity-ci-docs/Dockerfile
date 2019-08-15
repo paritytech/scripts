@@ -6,7 +6,7 @@ ARG BUILD_DATE
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="parity/parity-ci-docs" \
+	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-docs" \
 	io.parity.image.description="curl ca-certificates git; nodejs yarn" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-docs/Dockerfile" \

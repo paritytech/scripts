@@ -6,7 +6,7 @@ ARG BUILD_DATE
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="parity/awscli" \
+	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/awscli" \
 	io.parity.image.description="awscli" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/awscli/Dockerfile" \

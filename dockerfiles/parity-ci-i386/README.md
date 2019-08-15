@@ -5,7 +5,7 @@ Uses [sccache](https://github.com/mozilla/sccache).
 ```
     build-linux-i386:
       stage: build
-      image: parity/parity-ci-i386:latest
+      image: registry.parity.io/parity/infrastructure/scripts/parity-ci-i386:latest
       script:
         - cargo build --target i686-unknown-linux-gnu $CARGO_OPTIONS
 ```
