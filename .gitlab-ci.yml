@@ -74,10 +74,10 @@ variables:
     - docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHA}"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
-        --tag $CI_REGISTRY/pub/ci/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-        --tag $CI_REGISTRY/pub/ci/$CONTAINER_IMAGE:$CONTAINER_TAG .
-    - docker push $CI_REGISTRY/pub/ci/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-    - docker push $CI_REGISTRY/pub/ci/$CONTAINER_IMAGE:$CONTAINER_TAG
+        --tag $CI_REGISTRY/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+        --tag $CI_REGISTRY/$CONTAINER_IMAGE:$CONTAINER_TAG .
+    - docker push $CI_REGISTRY/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+    - docker push $CI_REGISTRY/$CONTAINER_IMAGE:$CONTAINER_TAG
 
 
 # TODO: check/change substrate 1.0, polkadot 0.4, zcash, parity-pharma, parity-bitcoin, light and remove this image
