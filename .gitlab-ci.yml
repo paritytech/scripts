@@ -63,25 +63,21 @@ variables:
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    # - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN registry.parity.io
-    # - docker login -u gitlab-ci-token -p $CI_JOB_TOKEN $CI_REGISTRY
     - docker info
   script:
+    # $CI_REGISTRY_IMAGE == registry.parity.io/parity/infrastructure/scripts/
+    # $CI_REGISTRY == registry.parity.io/
     - cd dockerfiles/$DOCKERFILE_DIR
-    # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
-    # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
-    - export CONTAINER_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
+    # - docker pull $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_TAG || true
+    - CONTAINER_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
+    # - docker build --cache-from $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_TAG
     - docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHA}"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --tag $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-        --tag $CI_REGISTRY/parity/infrastructure/scripts/$CONTAINER_IMAGE:$CONTAINER_TAG
-        --tag registry.parity.io/pub/ci/$CONTAINER_IMAGE:$CONTAINER_TAG
-        --tag registry.parity.io/$CONTAINER_IMAGE:$CONTAINER_TAG .
+        --tag $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_TAG .
     - docker push $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-    - docker push $CI_REGISTRY/parity/infrastructure/scripts/$CONTAINER_IMAGE:$CONTAINER_TAG
-    - docker push registry.parity.io/pub/ci/$CONTAINER_IMAGE:$CONTAINER_TAG
-    - docker push registry.parity.io/$CONTAINER_IMAGE:$CONTAINER_TAG 
+    - docker push $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_TAG
 
 
 # TODO: check/change substrate 1.0, polkadot 0.4, zcash, parity-pharma, parity-bitcoin, light and remove this image
