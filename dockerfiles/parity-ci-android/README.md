@@ -4,7 +4,7 @@ Uses [sccache](https://github.com/mozilla/sccache).
 # Usage
 ```linux-armv7-android:
       stage: build
-      image: parity/parity-ci-android:stretch
+      image: registry.parity.io/parity/infrastructure/scripts/parity-ci-android:stretch
       script:
         - cargo build ...
 ```

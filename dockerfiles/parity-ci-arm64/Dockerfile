@@ -1,4 +1,4 @@
-FROM parity/parity-ci-linux:latest as builder
+FROM registry.parity.io/parity/infrastructure/scripts/parity-ci-linux:latest as builder
 
 # metadata
 ARG VCS_REF
@@ -6,7 +6,7 @@ ARG BUILD_DATE
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="parity/parity-ci-arm64" \
+	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-arm64" \
 	io.parity.image.description="g++-aarch64-linux-gnu gcc-aarch64-linux-gnu libudev-dev \
 libudev-dev:arm64; rustup target aarch64-unknown-linux-gnu" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\

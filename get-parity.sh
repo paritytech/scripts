@@ -3,7 +3,7 @@
 
 ## Update this with any new relase!
 VERSION_STABLE="2.5.6"
-VERSION_BETA="2.6.0"
+VERSION_BETA="2.6.1"
 ##
 
 RELEASE="beta"
