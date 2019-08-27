@@ -10,12 +10,12 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		echo "Redhat Linux detected."
 		echo "This OS is not supported with this script at present. Sorry."
 		echo "Please refer to https://github.com/paritytech/substrate for setup information."
-		exit 1;
+		exit 1
 	elif [ -f /etc/SuSE-release ]; then
 		echo "Suse Linux detected."
 		echo "This OS is not supported with this script at present. Sorry."
 		echo "Please refer to https://github.com/paritytech/substrate for setup information."
-		exit 1;
+		exit 1
 	elif [ -f /etc/arch-release ]; then
 		echo "Arch Linux detected."
 		$MAKE_ME_ROOT pacman -Syu --needed --noconfirm cmake gcc openssl-1.0 pkgconf git clang
@@ -25,7 +25,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		echo "Mandrake Linux detected."
 		echo "This OS is not supported with this script at present. Sorry."
 		echo "Please refer to https://github.com/paritytech/substrate for setup information."
-		exit 1;
+		exit 1
 	elif [ -f /etc/debian_version ]; then
 		echo "Ubuntu/Debian Linux detected."
 		$MAKE_ME_ROOT apt update
@@ -34,7 +34,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		echo "Unknown Linux distribution."
 		echo "This OS is not supported with this script at present. Sorry."
 		echo "Please refer to https://github.com/paritytech/substrate for setup information."
-		exit 1;
+		exit 1
 	fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 	set -e
@@ -49,12 +49,12 @@ elif [[ "$OSTYPE" == "freebsd"* ]]; then
 	echo "FreeBSD detected."
 	echo "This OS is not supported with this script at present. Sorry."
 	echo "Please refer to https://github.com/paritytech/substrate for setup information."
-	exit 1;
+	exit 1
 else
 	echo "Unknown operating system."
 	echo "This OS is not supported with this script at present. Sorry."
 	echo "Please refer to https://github.com/paritytech/substrate for setup information."
-	exit 1;
+	exit 1
 fi
 
 if ! which rustup >/dev/null 2>&1; then
@@ -67,18 +67,24 @@ else
 fi
 
 function install_substrate {
-	g=`mktemp -d`
-	git clone https://github.com/paritytech/substrate $g
+	if [ ! -d "$g" ]; then
+		g=`mktemp -d`
+		git clone https://github.com/paritytech/substrate $g
+	fi
 	pushd $g
 	./scripts/init.sh
-	cargo install --force --path . substrate
+	cargo install --force --path ./ substrate
 	popd
 }
 
 function install_subkey {
-	rustup update nightly
-	rustup target add wasm32-unknown-unknown --toolchain nightly
-	cargo +nightly install --force --git https://github.com/paritytech/substrate subkey
+	if [ ! -d "$g" ]; then
+		g=`mktemp -d`
+		git clone https://github.com/paritytech/substrate $g
+	fi
+	pushd $g
+	cargo install --force --path ./subkey subkey
+	popd
 }
 
 if [[ "$1" == "--fast" ]]; then
@@ -86,6 +92,8 @@ if [[ "$1" == "--fast" ]]; then
 	echo "You can install manually by cloning the https://github.com/paritytech/substrate repo,"
 	echo "building the Wasm, and using cargo to install 'substrate' and 'subkey' from the repo path."
 else 
+	g=`mktemp -d`
+	git clone https://github.com/paritytech/substrate $g
 	install_substrate
 	install_subkey
 fi
