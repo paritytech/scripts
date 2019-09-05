@@ -29,7 +29,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 	elif [ -f /etc/debian_version ]; then
 		echo "Ubuntu/Debian Linux detected."
 		$MAKE_ME_ROOT apt update
-		$MAKE_ME_ROOT apt install -y cmake pkg-config libssl-dev git gcc build-essential clang libclang-dev
+		$MAKE_ME_ROOT apt install -y cmake pkg-config libssl-dev git gcc build-essential git clang libclang-dev
 	else
 		echo "Unknown Linux distribution."
 		echo "This OS is not supported with this script at present. Sorry."
@@ -44,6 +44,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 	fi
 
+	brew upgrade
 	brew install openssl cmake llvm
 elif [[ "$OSTYPE" == "freebsd"* ]]; then
 	echo "FreeBSD detected."
@@ -66,36 +67,22 @@ else
 	rustup default stable
 fi
 
-function install_substrate {
-	if [ ! -d "$g" ]; then
-		g=`mktemp -d`
-		git clone https://github.com/paritytech/substrate $g
-	fi
-	pushd $g
-	./scripts/init.sh
-	cargo install --force --path ./ substrate
-	popd
-}
-
-function install_subkey {
-	if [ ! -d "$g" ]; then
-		g=`mktemp -d`
-		git clone https://github.com/paritytech/substrate $g
-	fi
-	pushd $g
-	cargo install --force --path ./subkey subkey
-	popd
-}
-
 if [[ "$1" == "--fast" ]]; then
 	echo "Skipped cargo install of 'substrate' and 'subkey'"
 	echo "You can install manually by cloning the https://github.com/paritytech/substrate repo,"
-	echo "building the Wasm, and using cargo to install 'substrate' and 'subkey' from the repo path."
+	echo "and using cargo to install 'substrate' and 'subkey' from the repo path."
+
+	rustup target add wasm32-unknown-unknown --toolchain stable
+	rustup update nightly
+	rustup target add wasm32-unknown-unknown --toolchain nightly
 else 
 	g=`mktemp -d`
 	git clone https://github.com/paritytech/substrate $g
-	install_substrate
-	install_subkey
+	pushd $g
+	./scripts/init.sh
+	cargo install --force --path ./ substrate
+	cargo install --force --path ./subkey subkey
+	popd
 fi
 
 f=`mktemp -d`
