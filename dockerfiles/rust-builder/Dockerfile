@@ -22,7 +22,7 @@ WORKDIR /builds
 # install tools and dependencies
 COPY clang8.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 # config for wasm32-unknown-unknown
-COPY config /root/.cargo
+COPY config /root/.cargo/config
 # gcc and clang are necessary to be able to compile crates that have build scripts
 # Most notably, clang 8 has WASM support enabled by default.
 RUN set -eux; \
