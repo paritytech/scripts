@@ -46,11 +46,13 @@ RUN set -eux; \
 	apt-get autoremove -y; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*
-
+# config file for sccache
+RUN echo -e '[cache] \n redis.url = "redis://172.17.0.1/0"' >>/builds/sccache_conf
 # compiler ENV
 ENV CC=gcc \
 	CXX=g++ \
 # cache handler
 	RUSTC_WRAPPER=sccache \
+	SCCACHE_CONF=/builds/sccache_conf \
 # show backtraces
 	RUST_BACKTRACE=1
