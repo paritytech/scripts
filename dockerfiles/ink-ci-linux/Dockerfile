@@ -34,7 +34,7 @@ RUN set -eux; \
 	kcov --version; \
 # clean up
 	cd /builds; \
-	rm -rf ./kcov-master/build; \
+	rm -rf ./kcov-master; \
 	apt-get autoremove -y; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
