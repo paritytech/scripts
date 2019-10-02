@@ -4,8 +4,11 @@ Docker image based on our substrate builder <parity/rust-builder:latest>.
 
 Used to build and test `ink!`.
 
-Dependencies and tools: `g++`, `libssl-dev`, `gcc`, `clang-8`,  
-`cmake`, `make`, `git`, `pkg-config`, `curl`, `time`, `rhash`.
+Dependencies and tools:
+Inherited from `rust-builder`: `g++`, `libssl-dev`, `gcc`, `clang-8`,  
+`cmake`, `make`, `git`, `pkg-config`, `curl`, `time`, `rhash`
+Other: `libcurl4-openssl-dev` `python3` `libelf-dev` `libdw-dev`
+`zlib1g-dev`; `kcov`; `rust nightly-2019-08-30` `clippy` `rustfmt` `cargo-kcov` \
 
 Rust versions: stable - default, nightly, nightly-2019-08-30 (as default).
 

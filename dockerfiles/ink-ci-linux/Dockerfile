@@ -7,7 +7,8 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/ink-ci-linux" \
-	io.parity.image.description="inherits from rust-builder; rust nightly-2019-08-30 clippy rustfmt" \
+	io.parity.image.description="inherits from rust-builder; libcurl4-openssl-dev python3 \
+libelf-dev libdw-dev zlib1g-dev; kcov; rust nightly-2019-08-30 clippy rustfmt cargo-kcov" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ink-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -17,6 +18,34 @@ dockerfiles/ink-ci-linux/README.md" \
 
 WORKDIR /builds
 
-RUN rustup default nightly-2019-08-30; \
+# install tools and dependencies
+RUN set -eux; \
+	DEBIAN_FRONTEND=noninteractive apt-get -y update; \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+# dependencies for kcov
+		libcurl4-openssl-dev libelf-dev libdw-dev zlib1g-dev python3; \
+# kcov building
+	curl -L https://github.com/SimonKagstrom/kcov/archive/master.tar.gz | tar xvz; \
+	mkdir -p kcov-master/build; \
+	cd kcov-master/build/; \
+	cmake ..; \
+	make; \
+	make install; \
+	kcov --version; \
+# clean up
+	cd /builds; \
+	rm -rf ./kcov-master/build; \
+	apt-get autoremove -y; \
+	apt-get clean; \
+	rm -rf /var/lib/apt/lists/*; \
+# install specific Rust nightly toolchain
+	rustup default nightly-2019-08-30; \
+# reinstall wasm32 target for this toolchain
     rustup target add wasm32-unknown-unknown; \
-    rustup component add clippy rustfmt
+# install cargo tools
+    rustup component add \
+		clippy rustfmt; \
+	cargo install cargo-kcov; \
+# versions
+	rustup show; \
+	cargo --version
