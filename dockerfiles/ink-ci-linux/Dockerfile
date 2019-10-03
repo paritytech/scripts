@@ -25,16 +25,16 @@ RUN set -eux; \
 # dependencies for kcov
 		libcurl4-openssl-dev libelf-dev libdw-dev zlib1g-dev python3; \
 # kcov building
-	curl -L https://github.com/SimonKagstrom/kcov/archive/master.tar.gz | tar xvz; \
-	mkdir -p kcov-master/build; \
-	cd kcov-master/build/; \
+	curl -L https://github.com/SimonKagstrom/kcov/archive/v36.tar.gz | tar xvz; \
+	mkdir -p kcov-v36/build; \
+	cd kcov-v36/build/; \
 	cmake ..; \
 	make; \
 	make install; \
 	kcov --version; \
 # clean up
 	cd /builds; \
-	rm -rf ./kcov-master; \
+	rm -rf ./kcov-v36; \
 	apt-get autoremove -y; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
