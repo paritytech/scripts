@@ -23,7 +23,7 @@ RUN set -eux; \
 	DEBIAN_FRONTEND=noninteractive apt-get -y update; \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 # dependencies for kcov
-		libcurl4-openssl-dev libelf-dev libdw-dev zlib1g-dev python3; \
+		libcurl4-openssl-dev libelf-dev libdw-dev zlib1g-dev python; \
 # kcov building
 	curl -L https://github.com/SimonKagstrom/kcov/archive/v36.tar.gz | tar xvz; \
 	mkdir -p kcov-36/build; \
