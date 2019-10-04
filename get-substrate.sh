@@ -67,19 +67,19 @@ else
 	rustup default stable
 fi
 
+rustup target add wasm32-unknown-unknown --toolchain nightly
+# Install wasm-gc. It's useful for stripping slimming down wasm binaries.
+command -v wasm-gc || \
+	cargo +nightly install --git https://github.com/alexcrichton/wasm-gc --force
+
 if [[ "$1" == "--fast" ]]; then
 	echo "Skipped cargo install of 'substrate' and 'subkey'"
 	echo "You can install manually by cloning the https://github.com/paritytech/substrate repo,"
 	echo "and using cargo to install 'substrate' and 'subkey' from the repo path."
-
-	rustup target add wasm32-unknown-unknown --toolchain stable
-	rustup update nightly
-	rustup target add wasm32-unknown-unknown --toolchain nightly
 else 
 	g=`mktemp -d`
 	git clone https://github.com/paritytech/substrate $g
 	pushd $g
-	./scripts/init.sh
 	cargo install --force --path ./ substrate
 	cargo install --force --path ./subkey subkey
 	popd
