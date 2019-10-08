@@ -32,4 +32,6 @@ shmall=`expr $phys_pages / 2`
 shmmax=`expr $shmall \* $page_size`
 echo kernel.shmmax = $shmmax >> /etc/sysctl.conf
 echo kernel.shmall = $shmall >> /etc/sysctl.conf
+echo '* hard nofile 1048576' >> /etc/security/limits.conf
+echo '* soft nofile 1048576' >> /etc/security/limits.conf
 sysctl -p
