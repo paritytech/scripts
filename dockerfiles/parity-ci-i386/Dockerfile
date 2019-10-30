@@ -24,12 +24,17 @@ RUN set -eux; \
 	apt install -y \
 		gcc-multilib g++-multilib \
 		libudev-dev libudev-dev:i386; \
+# install i686 toolchain
+	rustup target add i686-unknown-linux-gnu;\
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
-# install i686 toolchain
-	rustup target add i686-unknown-linux-gnu
+# cargo clean up
+# removes compilation artifacts cargo install creates (>250M)
+	rm -rf $CARGO_HOME/registry; \
+# removes toolchain's html docs and autocompletions (>300M for each toolchain)
+	rm -rf /usr/local/rustup/toolchains/*/share;
 
 # set cross-compiler ENV
 ENV CC=gcc \

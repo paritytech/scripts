@@ -49,6 +49,11 @@ RUN set -eux; \
 # versions
 	rustup show; \
 	cargo --version; \
+# cargo clean up
+# removes compilation artifacts cargo install creates (>250M)
+	rm -rf $CARGO_HOME/registry; \
+# removes toolchain's html docs and autocompletions (>300M for each toolchain)
+	rm -rf /usr/local/rustup/toolchains/*/share; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \

@@ -47,17 +47,18 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		cmake rhash libudev-dev \
 		time xsltproc gperf; \
+	rustup target add arm-linux-androideabi; \
+	rustup target add armv7-linux-androideabi; \
+	cargo install sccache --features redis; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
-# removed:
-# wget curl ca-certificates g++ git unzip
-# sudo file build-essential bison flex lib32stdc++6 lib32z1 python
-# autotools-dev automake autoconf libtool docbook-xsl
-	rustup target add arm-linux-androideabi; \
-	rustup target add armv7-linux-androideabi; \
-	cargo install sccache --features redis; \
+# cargo clean up
+# removes compilation artifacts cargo install creates (>250M)
+	rm -rf $CARGO_HOME/registry; \
+# removes toolchain's html docs and autocompletions (>300M for each toolchain)
+	rm -rf /usr/local/rustup/toolchains/*/share; \
 # Android NDK and toolchain
 	cd /usr/local; \
 	wget -q https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip; \
@@ -93,4 +94,4 @@ ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
 	RUST_BACKTRACE=1
 
-WORKDIR /builds/parity/parity-ethereum/
+WORKDIR /builds
