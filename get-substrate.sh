@@ -69,6 +69,8 @@ fi
 
 rustup update nightly
 rustup target add wasm32-unknown-unknown --toolchain nightly
+
+# TODO: Remove after Substrate 2.0 release.
 # Install wasm-gc. It's useful for stripping slimming down wasm binaries.
 command -v wasm-gc || \
 	cargo +nightly install --git https://github.com/alexcrichton/wasm-gc --force
@@ -81,7 +83,7 @@ else
 	g=`mktemp -d`
 	git clone https://github.com/paritytech/substrate $g
 	pushd $g
-	cargo install --force --path ./ substrate
+	cargo install --force --path ./node/cli #substrate
 	cargo install --force --path ./subkey subkey
 	popd
 fi
