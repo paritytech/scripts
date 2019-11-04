@@ -36,12 +36,17 @@ RUN set -eux; \
 	apt-get install -y \
 		g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf \
 		libudev-dev libudev-dev:armhf; \
+# install armv7 toolchain
+	rustup target add armv7-unknown-linux-gnueabihf; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
-# install armv7 toolchain
-	rustup target add armv7-unknown-linux-gnueabihf
+# cargo clean up
+# removes compilation artifacts cargo install creates (>250M)
+	rm -rf $CARGO_HOME/registry; \
+# removes toolchain's html docs and autocompletions (>300M for each toolchain)
+	rm -rf /usr/local/rustup/toolchains/*/share;
 
 # set cross-compiler ENV
 ADD config /.cargo/config

@@ -36,12 +36,17 @@ RUN set -eux; \
 	apt-get install -y \
 		g++-aarch64-linux-gnu gcc-aarch64-linux-gnu \
 		libudev-dev libudev-dev:arm64; \
+# install aarch64 toolchain
+	rustup target add aarch64-unknown-linux-gnu; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
-# install aarch64 toolchain
-	rustup target add aarch64-unknown-linux-gnu
+# cargo clean up
+# removes compilation artifacts cargo install creates (>250M)
+	rm -rf $CARGO_HOME/registry; \
+# removes toolchain's html docs and autocompletions (>300M for each toolchain)
+	rm -rf /usr/local/rustup/toolchains/*/share;
 
 # set cross-compiler ENV
 ADD config /.cargo/config
