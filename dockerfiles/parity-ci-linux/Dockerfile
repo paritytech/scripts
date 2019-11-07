@@ -32,8 +32,13 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
 		g++ libssl-dev gcc libc6-dev \
-		make cmake libudev-dev ca-certificates \
-		git pkg-config curl time rhash; \
+		make libudev-dev ca-certificates \
+		git pkg-config curl time rhash software-properties-common apt-transport-https; \
+	apt-add-repository ppa:ubuntu-toolchain-r/test; \
+	apt-add-repository 'deb https://apt.kitware.com/ubuntu/ xenial main'; \
+	apt-get -y update; \
+	apt-get install -y  --allow-unauthenticated gcc-9 g++-9 cmake; \
+
 # install rustup
 	chmod +x rustup-init; \
     ./rustup-init -y --no-modify-path --default-toolchain stable; \
