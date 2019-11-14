@@ -1,8 +1,8 @@
-# Ink-ci-linux
+# substrate-ci-linux
 
 Docker image based on our base CI image `<base-ci-linux:latest>`.
 
-Used to build and test ink!.
+Used to build and test Substrate-based projects.
 
 ## Dependencies and Tools
 
@@ -23,25 +23,25 @@ Used to build and test ink!.
 
 **Rust versions:**
 
-- nightly-2019-11-14 (default)
-- stable (unsupported)
+- stable (default)
+- nightly
 
 **Rust tools & toolchains:**
 
-- `clippy`
-- `rustfmt`
+- `cargo-audit`
+- `cargo-web`
 - `sccache`
-- `cargo-contract`
+- `wasm-pack`
 - `wasm32-unknown-unknown` toolchain
 
-[Click here](https://registry.parity.io/parity/infrastructure/scripts/ink-ci-linux) for the registry.
+[Click here](https://registry.parity.io/parity/infrastructure/scripts/substrate-ci-linux) for the registry.
 
 ## Usage
 
 ```yaml
-test-ink:
+test-substrate:
     stage: test
-        image: registry.parity.io/parity/infrastructure/scripts/ink-ci-linux:latest
+        image: registry.parity.io/parity/infrastructure/scripts/substrate-ci-linux
         script:
             - cargo build ...
 ```
