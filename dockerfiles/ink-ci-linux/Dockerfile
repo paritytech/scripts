@@ -39,7 +39,7 @@ RUN set -eux; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
 # install specific Rust nightly toolchain
-	rustup default nightly-2019-10-24; \
+	rustup default nightly-2019-11-13; \
 # reinstall wasm32 target for this toolchain
     rustup target add wasm32-unknown-unknown; \
 # install cargo tools
