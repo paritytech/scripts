@@ -36,7 +36,7 @@ Used to build and test ink!.
 
 **Rust versions:**
 
-- nightly-2019-08-30 (default)
+- nightly-2019-11-13 (default)
 - stable (unsupported)
 - nightly (partly supported, some nightlies might break)
 
