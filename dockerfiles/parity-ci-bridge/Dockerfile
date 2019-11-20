@@ -19,7 +19,7 @@ dockerfiles/bridge-ci-linux/README.md" \
 WORKDIR /builds
 
 #install Parity Ethereum
-ADD "https://releases.parity.io/ethereum/stable/x86_64-unknown-linux-gnu/parity" parity
+ADD "https://releases.parity.io/ethereum/stable/x86_64-unknown-linux-gnu/parity" /usr/bin/
 RUN chmod +x parity&& mv -v parity /usr/bin/
 
 #instal Solidity Compiler
