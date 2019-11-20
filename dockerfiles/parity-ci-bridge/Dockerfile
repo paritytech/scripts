@@ -10,7 +10,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.description="Inherits from parity-ci-linux. \
 rust stable, rust nightly, cargo-audit, sccache (redis)" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/rust-builder/Dockerfile" \
+dockerfiles/bridge-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-builder/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
