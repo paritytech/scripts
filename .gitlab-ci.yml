@@ -99,6 +99,16 @@ base-ci-linux:
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
+      
+bridge-ci-linux:
+  <<:                              *docker_build_to_own_reg
+  variables:
+    CONTAINER_IMAGE:               $CI_JOB_NAME
+    CONTAINER_TAG:                 latest
+    DOCKERFILE_DIR:                $CI_JOB_NAME
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
 substrate-ci-linux:
   <<:                              *docker_build_to_own_reg
