@@ -20,7 +20,7 @@ WORKDIR /builds
 
 #install Parity Ethereum
 ADD "https://releases.parity.io/ethereum/stable/x86_64-unknown-linux-gnu/parity" /usr/bin/
-RUN chmod +x parity&& mv -v parity /usr/bin/
+RUN chmod +x /usr/bin/parity; \
 
 #instal Solidity Compiler
   set -eux; \
