@@ -23,7 +23,7 @@ ADD "https://releases.parity.io/ethereum/stable/x86_64-unknown-linux-gnu/parity"
 RUN chmod +x parity&& mv -v parity /usr/bin/
 
 #instal Solidity Compiler
-RUN set -eux; \
+  set -eux; \
   add-apt-repository ppa:ethereum/ethereum -y; \
   apt-get update -y; \
   apt-get install solc -y; \
