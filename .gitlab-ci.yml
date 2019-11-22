@@ -79,18 +79,17 @@ variables:
     - docker push $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_TAG
 
 
-# TODO: check/change substrate 1.0, polkadot 0.4, zcash, parity-pharma, parity-bitcoin, light and remove this image. Cleared parity/rust-builder:latest
-rust:
-  <<: *docker_build
+base-ci-linux:
+  <<:                              *docker_build_to_own_reg
   variables:
     CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 nightly
-    DOCKERFILE_DIR:                rustup
+    CONTAINER_TAG:                 latest
+    DOCKERFILE_DIR:                $CI_JOB_NAME
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
-
-base-ci-linux:
+      
+bridge-ci-linux:
   <<:                              *docker_build_to_own_reg
   variables:
     CONTAINER_IMAGE:               $CI_JOB_NAME
