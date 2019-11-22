@@ -23,7 +23,7 @@ Used to build and test ink!.
 
 **Rust versions:**
 
-- nightly-2019-11-14 (default)
+- nightly-2019-11-17 (default)
 - stable (unsupported)
 
 **Rust tools & toolchains:**

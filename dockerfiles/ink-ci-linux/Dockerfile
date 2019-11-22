@@ -20,13 +20,13 @@ WORKDIR /builds
 
 # install specific Rust nightly toolchain
 # see on https://rust-lang.github.io/rustup-components-history/
-RUN	rustup default nightly-2019-11-14; \
+RUN	rustup default nightly-2019-11-17; \
 # install wasm32 target for this toolchain
     rustup target add wasm32-unknown-unknown; \
 # install cargo tools
     rustup component add rustfmt clippy; \
 	cargo install sccache --features redis; \
-	# cargo install cargo-audit cargo-web wasm-pack; \
+	cargo install grcov; \
 	cargo install --force --git https://github.com/paritytech/ink cargo-contract; \
 # versions
 	rustup show; \
