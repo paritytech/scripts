@@ -31,8 +31,8 @@ COPY clang8.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
 	echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" \
 		> /etc/apt/sources.list.d/llvm.list; \
-echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" \
-	>> /etc/apt/sources.list.d/llvm.list; \
+	echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" \
+		>> /etc/apt/sources.list.d/llvm.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
