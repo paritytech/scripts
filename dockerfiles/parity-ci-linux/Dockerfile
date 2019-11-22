@@ -27,13 +27,20 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 # download rustup
 ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" rustup-init
 # install tools and dependencies
+COPY clang8.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
+	echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" \
+		> /etc/apt/sources.list.d/llvm.list; \
+echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" \
+	>> /etc/apt/sources.list.d/llvm.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
-		g++ libssl-dev gcc libc6-dev \
+		g++ libssl-dev gcc clang-8 \
 		make cmake libudev-dev ca-certificates \
 		git pkg-config curl time rhash; \
+# set a link to clang-8
+	ln -s /usr/bin/clang-8 /usr/bin/clang; \
 # install rustup
 	chmod +x rustup-init; \
     ./rustup-init -y --no-modify-path --default-toolchain stable; \
