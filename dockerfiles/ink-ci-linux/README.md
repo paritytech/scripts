@@ -36,7 +36,6 @@ The [`rustup` component history](https://rust-lang.github.io/rustup-components-h
 - `clippy`
 - `rustfmt`
 - `sccache`
-- `cargo-contract`
 - `wasm32-unknown-unknown` toolchain
 
 [Click here](https://registry.parity.io/parity/infrastructure/scripts/ink-ci-linux) for the registry.

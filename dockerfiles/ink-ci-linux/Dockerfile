@@ -27,7 +27,6 @@ RUN	rustup default nightly-2019-11-25; \
     rustup component add rustfmt clippy; \
 	cargo install sccache --features redis; \
 	cargo install grcov; \
-	cargo install --force --git https://github.com/paritytech/ink cargo-contract; \
 # versions
 	rustup show; \
 	cargo --version; \
