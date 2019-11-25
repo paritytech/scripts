@@ -1,5 +1,5 @@
 # triggers image autoupdate with the new Rust stable release
-FROM rust:stretch
+FROM rust:slim-stretch
 
 # metadata
 ARG VCS_REF
@@ -8,8 +8,8 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-android" \
-	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf clang-8; libudev.patch; \
-android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-androideabi; sccache" \
+	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf clang-8 ; \
+	libudev.patch; android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-androideabi; sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-android/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -45,14 +45,12 @@ ENV NDK_HOME=/usr/local/android-ndk-r16b \
 # install tools and dependencies
 COPY clang8.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
-	echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" \
-		> /etc/apt/sources.list.d/llvm.list; \
-	echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" \
-		>> /etc/apt/sources.list.d/llvm.list; \
-	apt-get -y update; \
-	apt-get install -y --no-install-recommends \
+echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
+	> /etc/apt/sources.list.d/llvm.list; \
+DEBIAN_FRONTEND=noninteractive apt-get -y update; \
+DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
-		g++ libssl-dev gcc clang-8 \
+		g++-5 libssl-dev gcc-5 clang-8 libstdc++-5-dev libgcc-5-dev libobjc-5-dev \
 		make cmake libudev-dev ca-certificates \
 		git pkg-config curl time rhash xsltproc gperf; \
 # set a link to clang-8
