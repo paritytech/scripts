@@ -8,8 +8,8 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-android" \
-	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf; libudev.patch; \
-android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-androideabi" \
+	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf clang-8; libudev.patch; \
+android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-androideabi; sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-android/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -42,11 +42,22 @@ ENV NDK_HOME=/usr/local/android-ndk-r16b \
 	CC=gcc \
 	CXX=g++
 
+# install tools and dependencies
+COPY clang8.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
+	echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" \
+		> /etc/apt/sources.list.d/llvm.list; \
+	echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" \
+		>> /etc/apt/sources.list.d/llvm.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		cmake rhash libudev-dev \
-		time xsltproc gperf; \
+# libssl-dev is needed for cargo-audit and sccache
+		g++ libssl-dev gcc clang-8 \
+		make cmake libudev-dev ca-certificates \
+		git pkg-config curl time rhash \
+		libudev-dev xsltproc gperf; \
+# set a link to clang-8
+	ln -s /usr/bin/clang-8 /usr/bin/clang; \
 	rustup target add arm-linux-androideabi; \
 	rustup target add armv7-linux-androideabi; \
 	cargo install sccache --features redis; \
