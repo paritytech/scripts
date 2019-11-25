@@ -54,8 +54,7 @@ RUN set -eux; \
 # libssl-dev is needed for cargo-audit and sccache
 		g++ libssl-dev gcc clang-8 \
 		make cmake libudev-dev ca-certificates \
-		git pkg-config curl time rhash \
-		libudev-dev xsltproc gperf; \
+		git pkg-config curl time rhash xsltproc gperf; \
 # set a link to clang-8
 	ln -s /usr/bin/clang-8 /usr/bin/clang; \
 	rustup target add arm-linux-androideabi; \
