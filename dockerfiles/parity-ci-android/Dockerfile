@@ -1,5 +1,5 @@
 # triggers image autoupdate with the new Rust stable release
-FROM rust:slim-stretch
+FROM rust:stretch
 
 # metadata
 ARG VCS_REF
@@ -50,7 +50,7 @@ echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
 DEBIAN_FRONTEND=noninteractive apt-get -y update; \
 DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
-		g++ gcc libssl-dev clang-8 wget unzip \
+		g++ gcc libssl-dev clang-8 \
 		make cmake libudev-dev ca-certificates \
 		git pkg-config curl time rhash xsltproc gperf; \
 # set a link to clang-8
