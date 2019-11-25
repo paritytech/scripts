@@ -50,7 +50,7 @@ echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
 DEBIAN_FRONTEND=noninteractive apt-get -y update; \
 DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
-		g++-5 libssl-dev gcc-5 clang-8 libstdc++-5-dev libgcc-5-dev libobjc-5-dev \
+		g++-5 libssl-dev clang-8 wget \
 		make cmake libudev-dev ca-certificates \
 		git pkg-config curl time rhash xsltproc gperf; \
 # set a link to clang-8
