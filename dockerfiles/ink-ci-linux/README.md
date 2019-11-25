@@ -23,8 +23,13 @@ Used to build and test ink!.
 
 **Rust versions:**
 
-- nightly-2019-11-17 (default)
-- stable (unsupported)
+We always try to use the latest possible `nightly` version that supports our required `rustup` components:
+
+- `clippy`
+- `cargo`
+- `rustfmt`
+
+The [`rustup` component history](https://rust-lang.github.io/rustup-components-history/) provides a decent overview to decide upon a new version update.
 
 **Rust tools & toolchains:**
 
