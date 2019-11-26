@@ -7,7 +7,7 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-arm64" \
-	io.parity.image.description="g++-aarch64-linux-gnu gcc-aarch64-linux-gnu libudev-dev \
+	io.parity.image.description="g++-aarch64-linux-gnu gcc-aarch64-linux-gnu libudev-dev clang-8 \
 libudev-dev:arm64; rustup target aarch64-unknown-linux-gnu" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-arm64/Dockerfile" \
@@ -17,6 +17,7 @@ dockerfiles/parity-ci-arm64/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 # install aarch64(armv8) dependencies and tools
+COPY clang8.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
 	dpkg --add-architecture arm64; \
 	echo '# source urls for arm64 \n\
@@ -31,11 +32,16 @@ RUN set -eux; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
 	sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
-# install dependencies
-	apt-get -y update; \
-	apt-get install -y \
-		g++-aarch64-linux-gnu gcc-aarch64-linux-gnu \
+	echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
+		> /etc/apt/sources.list.d/llvm.list; \
+	echo "deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
+		>> /etc/apt/sources.list.d/llvm.list; \
+	DEBIAN_FRONTEND=noninteractive apt-get -y update; \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		g++-aarch64-linux-gnu gcc-aarch64-linux-gnu clang-8 \
 		libudev-dev libudev-dev:arm64; \
+# set a link to clang-8
+	ln -s /usr/bin/clang-8 /usr/bin/clang; \
 # install aarch64 toolchain
 	rustup target add aarch64-unknown-linux-gnu; \
 # apt clean up
