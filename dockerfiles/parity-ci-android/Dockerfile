@@ -47,6 +47,8 @@ COPY clang8.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
 echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
 	> /etc/apt/sources.list.d/llvm.list; \
+echo "deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
+	>> /etc/apt/sources.list.d/llvm.list; \
 DEBIAN_FRONTEND=noninteractive apt-get -y update; \
 DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
@@ -56,7 +58,6 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 # set a link to clang-8
 	ln -s /usr/bin/clang-8 /usr/bin/clang; \
 	ln -s /usr/bin/llvm-config-8 /usr/bin/llvm-config; \
-	ln -s /usr/bin/llvm-8 /usr/bin/llvm; \
 	rustup target add arm-linux-androideabi; \
 	rustup target add armv7-linux-androideabi; \
 	cargo install sccache --features redis; \
