@@ -7,7 +7,7 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-arm64" \
-	io.parity.image.description="g++-aarch64-linux-gnu gcc-aarch64-linux-gnu libudev-dev \
+	io.parity.image.description="g++-aarch64-linux-gnu gcc-aarch64-linux-gnu libudev-dev libc6-dev-i386 \
 libudev-dev:arm64; rustup target aarch64-unknown-linux-gnu" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-arm64/Dockerfile" \
@@ -31,10 +31,9 @@ RUN set -eux; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
 	sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
-# install dependencies
-	apt-get -y update; \
-	apt-get install -y \
-		g++-aarch64-linux-gnu gcc-aarch64-linux-gnu \
+	DEBIAN_FRONTEND=noninteractive apt-get -y update; \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		g++-aarch64-linux-gnu gcc-aarch64-linux-gnu libc6-dev-i386 \
 		libudev-dev libudev-dev:arm64; \
 # install aarch64 toolchain
 	rustup target add aarch64-unknown-linux-gnu; \

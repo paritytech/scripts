@@ -8,7 +8,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-linux" \
 	io.parity.image.description="curl git make cmake ca-certificates g++ rhash gcc \
-pkg-config libudev-dev time libssl-dev libc6-dev \
+pkg-config libudev-dev time libssl-dev libc6-dev clang-8 \
 rust stable/beta/nightly, cargo-audit, sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-linux/Dockerfile" \

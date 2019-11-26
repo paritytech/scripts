@@ -7,7 +7,7 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-armhf" \
-	io.parity.image.description="g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf libudev-dev \
+	io.parity.image.description="g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf libudev-dev libc6-dev-i386 \
 libudev-dev:armhf; cargo target armv7-unknown-linux-gnueabihf" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-armhf/Dockerfile" \
@@ -31,10 +31,9 @@ RUN set -eux; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
 	sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
-# install dependencies
-	apt-get -y update; \
-	apt-get install -y \
-		g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf \
+	DEBIAN_FRONTEND=noninteractive apt-get -y update; \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		g++-arm-linux-gnueabihf gcc-arm-linux-gnueabihf libc6-dev-i386 \
 		libudev-dev libudev-dev:armhf; \
 # install armv7 toolchain
 	rustup target add armv7-unknown-linux-gnueabihf; \
