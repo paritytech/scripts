@@ -32,9 +32,9 @@ RUN set -eux; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
 	sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
-	echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
+	echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" \
 		> /etc/apt/sources.list.d/llvm.list; \
-	echo "deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
+	echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main" \
 		>> /etc/apt/sources.list.d/llvm.list; \
 	DEBIAN_FRONTEND=noninteractive apt-get -y update; \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
