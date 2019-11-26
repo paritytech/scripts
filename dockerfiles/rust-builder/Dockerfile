@@ -8,7 +8,7 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="parity/rust-builder" \
-	io.parity.image.description="g++ libssl-dev gcc clang-8 cmake make git pkg-config \
+	io.parity.image.description="g++ libssl-dev gcc clang-9 cmake make git pkg-config \
 curl time rhash rust stable, rust nightly, cargo-audit, sccache, wasm-gc" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-builder/Dockerfile" \
@@ -20,22 +20,22 @@ dockerfiles/rust-builder/README.md" \
 WORKDIR /builds
 
 # install tools and dependencies
-COPY clang8.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
+COPY llvm-snapshot.gpg.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 # config for wasm32-unknown-unknown
 COPY config /root/.cargo/config
 # gcc and clang are necessary to be able to compile crates that have build scripts
 # Most notably, clang 8 has WASM support enabled by default.
 RUN set -eux; \
-	echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
+	echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
 		> /etc/apt/sources.list.d/llvm.list; \
-	echo "deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
+	echo "deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
 		>> /etc/apt/sources.list.d/llvm.list; \
 	DEBIAN_FRONTEND=noninteractive apt-get -y update; \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-		g++ libssl-dev gcc clang-8 cmake make \
+		g++ libssl-dev gcc clang-9 cmake make \
 		git pkg-config curl time rhash; \
-# set a link to clang-8
-	ln -s /usr/bin/clang-8 /usr/bin/clang; \
+# set a link to clang-9
+	ln -s /usr/bin/clang-9 /usr/bin/clang; \
 # install Rust nightly, default is stable
 	rustup install nightly; \
 # install cargo tools

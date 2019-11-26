@@ -3,7 +3,7 @@ Docker image based on [official Rust image](https://hub.docker.com/_/rust).
 
 Used to build and test `Substrate`-based projects.
 
-Dependencies and tools: `g++`, `libssl-dev`, `gcc`, `clang-8`,  
+Dependencies and tools: `g++`, `libssl-dev`, `gcc`, `clang-9`,  
 `cmake`, `make`, `git`, `pkg-config`, `curl`, `time`, `rhash`.
 
 Rust versions: stable - default, nightly.
