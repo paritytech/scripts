@@ -8,7 +8,7 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-android" \
-	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf clang-8 wget unzip; \
+	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf clang-8 libc6-dev-i386 wget unzip; \
 	libudev.patch; android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-androideabi; sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-android/Dockerfile" \
@@ -47,10 +47,12 @@ COPY clang8.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
 echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
 	> /etc/apt/sources.list.d/llvm.list; \
+echo "deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-8 main" \
+	>> /etc/apt/sources.list.d/llvm.list; \
 DEBIAN_FRONTEND=noninteractive apt-get -y update; \
 DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
-		g++ gcc libssl-dev clang-8 \
+		g++ gcc libssl-dev clang-8 libc6-dev-i386\
 		make cmake libudev-dev ca-certificates \
 		git pkg-config curl time rhash xsltproc gperf; \
 # set a link to clang-8
