@@ -27,7 +27,7 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 # download rustup
 ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" rustup-init
 # install tools and dependencies
-COPY llvm-snapshot.gpg.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
+COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
 	echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main" \
 		> /etc/apt/sources.list.d/llvm.list; \

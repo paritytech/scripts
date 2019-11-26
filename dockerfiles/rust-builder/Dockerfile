@@ -20,11 +20,11 @@ dockerfiles/rust-builder/README.md" \
 WORKDIR /builds
 
 # install tools and dependencies
-COPY llvm-snapshot.gpg.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
+COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 # config for wasm32-unknown-unknown
 COPY config /root/.cargo/config
 # gcc and clang are necessary to be able to compile crates that have build scripts
-# Most notably, clang 8 has WASM support enabled by default.
+# Most notably, clang 9 has WASM support enabled by default.
 RUN set -eux; \
 	echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
 		> /etc/apt/sources.list.d/llvm.list; \

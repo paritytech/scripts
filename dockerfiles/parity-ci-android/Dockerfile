@@ -43,7 +43,7 @@ ENV NDK_HOME=/usr/local/android-ndk-r16b \
 	CXX=g++
 
 # install tools and dependencies
-COPY llvm-snapshot.gpg.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
+COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
 echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
 	> /etc/apt/sources.list.d/llvm.list; \
