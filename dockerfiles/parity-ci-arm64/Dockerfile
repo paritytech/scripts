@@ -17,7 +17,6 @@ dockerfiles/parity-ci-arm64/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 # install aarch64(armv8) dependencies and tools
-COPY clang8.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
 	dpkg --add-architecture arm64; \
 	echo '# source urls for arm64 \n\
