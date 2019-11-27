@@ -40,7 +40,8 @@ RUN set -eux; \
 	rustup install nightly; \
 # install cargo tools
 	cargo install \
-		cargo-audit sccache cargo-web wasm-pack; \
+		cargo-audit cargo-web wasm-pack; \
+	cargo install sccache --features redis; \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
