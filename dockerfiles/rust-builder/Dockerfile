@@ -8,7 +8,7 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="parity/rust-builder" \
-	io.parity.image.description="g++ libssl-dev gcc clang-9 cmake make git pkg-config \
+	io.parity.image.description="g++ libssl-dev gcc clang-9 libclang-9-dev cmake make git pkg-config \
 curl time rhash rust stable, rust nightly, cargo-audit, sccache, wasm-gc" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-builder/Dockerfile" \
@@ -32,7 +32,7 @@ RUN set -eux; \
 		>> /etc/apt/sources.list.d/llvm.list; \
 	DEBIAN_FRONTEND=noninteractive apt-get -y update; \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-		g++ libssl-dev gcc clang-9 cmake make \
+		g++ libssl-dev gcc clang-9 libclang-9-dev cmake make \
 		git pkg-config curl time rhash; \
 # set a link to clang-9
 	ln -s /usr/bin/clang-9 /usr/bin/clang; \
