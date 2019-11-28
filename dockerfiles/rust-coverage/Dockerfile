@@ -9,7 +9,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.title="parity/rust-coverage" \
 	io.parity.image.description="software-properties-common curl git make cmake \
 ca-certificates g++  gcc pkg-config libudev-dev time libssl-dev libc6-dev wget; \
-libllvm8 llvm-8 llvm-8-dev llvm-8-runtime; rust grcov" \
+libllvm9 llvm-9 llvm-9-dev llvm-9-runtime; rust grcov" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-coverage/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -33,14 +33,14 @@ RUN apt-get -y update; \
 # install LLVM
     LLVM_REPO="deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial main \n \
 deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial main \n \
-deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main \n \
-deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-8 main "; \
+deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main \n \
+deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main "; \
     echo "$LLVM_REPO" > /etc/apt/sources.list.d/llvm.list; \
     cat /etc/apt/sources.list.d/llvm.list; \
     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|apt-key add -;\
     apt-get -y update; \
     apt-get install -y --no-install-recommends \
-        libllvm8 llvm-8 llvm-8-dev llvm-8-runtime; \
+        libllvm9 llvm-9 llvm-9-dev llvm-9-runtime; \
 # libssl-dev won't be needed in rust:stretch
 # install rustup
     url="https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init"; \
