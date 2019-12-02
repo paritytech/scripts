@@ -8,7 +8,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-linux" \
 	io.parity.image.description="curl git make cmake ca-certificates g++ rhash gcc \
-pkg-config libudev-dev time libssl-dev libc6-dev clang-9 \
+pkg-config libudev-dev time libssl-dev libc6-dev clang-9 libclang-9-dev \
 rust stable/beta/nightly, cargo-audit, sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-linux/Dockerfile" \
@@ -36,7 +36,7 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
-		g++ libssl-dev gcc clang-9 \
+		g++ libssl-dev gcc clang-9 libclang-9-dev \
 		make cmake libudev-dev ca-certificates \
 		git pkg-config curl time rhash; \
 # set a link to clang-9
