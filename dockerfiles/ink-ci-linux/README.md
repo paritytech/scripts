@@ -1,12 +1,12 @@
 # Ink-ci-linux
 
-Docker image based on our substrate builder `<parity/rust-builder:latest>`.
+Docker image based on our base CI image `<base-ci-linux:latest>`.
 
 Used to build and test ink!.
 
 ## Dependencies and Tools
 
-**Inherited from `<parity/rust-builder:latest>`:**
+**Inherited from `<base-ci-linux:latest>`:**
 
 - `clang-8`
 - `cmake`
@@ -21,43 +21,33 @@ Used to build and test ink!.
 - `rust-builder`
 - `time`
 
-**Others:**
-
-- `cargo-kcov`
-- `clippy`
-- `libcurl4-openssl-dev`
-- `libelf-dev`
-- `libdw-dev`
-- `python3`
-- `kcov`
-- `rust nightly-2019-10-03`
-- `rustfmt`
-- `zlib1g-dev`
-
 **Rust versions:**
 
-- nightly-2019-08-30 (default)
-- stable (unsupported)
-- nightly (partly supported, some nightlies might break)
+We always try to use the latest possible `nightly` version that supports our required `rustup` components:
+
+- `clippy`
+- `cargo`
+- `rustfmt`
+
+The [`rustup` component history](https://rust-lang.github.io/rustup-components-history/) provides a decent overview to decide upon a new version update.
 
 **Rust tools & toolchains:**
 
-- `cargo-audit`
-- `cargo-web`
 - `clippy`
 - `rustfmt`
 - `sccache`
-- `wasm-pack`
+- `grcov`
+- `cargo-contract`
 - `wasm32-unknown-unknown` toolchain
 
 [Click here](https://registry.parity.io/parity/infrastructure/scripts/ink-ci-linux) for the registry.
 
 ## Usage
 
-```
+```yaml
 test-ink:
     stage: test
-        image: registry.parity.io/parity/infrastructure/scripts/ink-ci-linux
+        image: registry.parity.io/parity/infrastructure/scripts/ink-ci-linux:latest
         script:
             - cargo build ...
 ```

@@ -8,8 +8,8 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-android" \
-	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf; libudev.patch; \
-android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-androideabi" \
+	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf clang-9 libclang-9-dev libc6-dev-i386 wget unzip; \
+	libudev.patch; android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-androideabi; sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-android/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -17,6 +17,9 @@ dockerfiles/parity-ci-android/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
+# download and install cmake
+ADD "https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-Linux-x86_64.sh" cmake.sh
+RUN sh cmake.sh --skip-license --prefix=/usr/ --exclude-subdir&&rm cmake.sh&&cmake --version
 COPY libudev.patch /root/
 COPY config /.cargo/
 
@@ -42,11 +45,21 @@ ENV NDK_HOME=/usr/local/android-ndk-r16b \
 	CC=gcc \
 	CXX=g++
 
+# install tools and dependencies
+COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
-	apt-get -y update; \
-	apt-get install -y --no-install-recommends \
-		cmake rhash libudev-dev \
-		time xsltproc gperf; \
+echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
+	> /etc/apt/sources.list.d/llvm.list; \
+echo "deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
+	>> /etc/apt/sources.list.d/llvm.list; \
+DEBIAN_FRONTEND=noninteractive apt-get -y update; \
+DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+# libssl-dev is needed for cargo-audit and sccache
+		g++ gcc libssl-dev clang-9 libclang-9-dev libc6-dev-i386\
+		make libudev-dev ca-certificates \
+		git pkg-config curl time rhash xsltproc gperf; \
+# set a link to clang-9
+	ln -s /usr/bin/clang-9 /usr/bin/clang; \
 	rustup target add arm-linux-androideabi; \
 	rustup target add armv7-linux-androideabi; \
 	cargo install sccache --features redis; \

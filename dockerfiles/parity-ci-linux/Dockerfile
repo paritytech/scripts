@@ -8,7 +8,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-linux" \
 	io.parity.image.description="curl git make cmake ca-certificates g++ rhash gcc \
-pkg-config libudev-dev time libssl-dev libc6-dev \
+pkg-config libudev-dev time libssl-dev libc6-dev clang-9 libclang-9-dev \
 rust stable/beta/nightly, cargo-audit, sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-linux/Dockerfile" \
@@ -26,19 +26,25 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 
 # download rustup
 ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" rustup-init
+# download and install cmake
+ADD "https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-Linux-x86_64.sh" cmake.sh
+RUN sh cmake.sh --skip-license --prefix=/usr/ --exclude-subdir&&rm cmake.sh&&cmake --version
+
 # install tools and dependencies
+COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
+	echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main" \
+		> /etc/apt/sources.list.d/llvm.list; \
+	echo "deb-src http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main" \
+		>> /etc/apt/sources.list.d/llvm.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
-		g++ libssl-dev gcc libc6-dev \
+		g++ libssl-dev gcc clang-9 libclang-9-dev \
 		make libudev-dev ca-certificates \
-		git pkg-config curl time rhash software-properties-common apt-transport-https; \
-	apt-add-repository ppa:ubuntu-toolchain-r/test; \
-	apt-add-repository 'deb https://apt.kitware.com/ubuntu/ xenial main'; \
-	apt-get -y update; \
-	apt-get install -y  --allow-unauthenticated gcc-9 g++-9 cmake; \
-
+		git pkg-config curl time rhash; \
+# set a link to clang-9
+	ln -s /usr/bin/clang-9 /usr/bin/clang; \
 # install rustup
 	chmod +x rustup-init; \
     ./rustup-init -y --no-modify-path --default-toolchain stable; \
