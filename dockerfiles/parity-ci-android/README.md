@@ -17,4 +17,3 @@ export CARGO_TARGET=armv7-linux-androideabi
 export CI_SERVER_NAME=local
 scripts/gitlab/build-linux.sh
 ```
-

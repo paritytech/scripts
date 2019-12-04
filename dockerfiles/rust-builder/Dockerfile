@@ -1,5 +1,5 @@
 # DockerHub's official https://hub.docker.com/_/rust
-FROM rust:slim-stretch
+FROM rust:slim-buster
 
 # metadata
 ARG VCS_REF
@@ -29,9 +29,9 @@ COPY config /root/.cargo/config
 ADD "https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-Linux-x86_64.sh" cmake.sh
 RUN sh cmake.sh --skip-license --prefix=/usr/ --exclude-subdir&&rm cmake.sh&&cmake --version
 RUN set -eux; \
-	echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
+	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
 		> /etc/apt/sources.list.d/llvm.list; \
-	echo "deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
+	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
 		>> /etc/apt/sources.list.d/llvm.list; \
 	DEBIAN_FRONTEND=noninteractive apt-get -y update; \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \

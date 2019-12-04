@@ -10,23 +10,23 @@ Used to build and test Substrate-based projects.
 
 **Dependencies and Tools:**
 
-- `clang-8`
-- `cmake`
-- `curl`
-- `g++`
-- `gcc`
-- `git`
-- `libssl-dev`
-- `make`
-- `pkg-config`
-- `rhash`
-- `rust-builder`
-- `time`
+-   `clang-9`
+-   `cmake`
+-   `curl`
+-   `g++`
+-   `gcc`
+-   `git`
+-   `libssl-dev`
+-   `make`
+-   `pkg-config`
+-   `rhash`
+-   `rust-builder`
+-   `time`
 
 **Rust versions:**
 
-- stable (default)
-- nightly
+-   stable (default)
+-   nightly
 
 [Click here](https://registry.parity.io/parity/infrastructure/scripts/base-ci-linux) for the registry.
 

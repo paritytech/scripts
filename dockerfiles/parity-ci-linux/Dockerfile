@@ -40,9 +40,9 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
-		g++ libssl-dev gcc clang-9 libclang-9-dev \
+		gcc g++ clang-9 libclang-9-dev \
 		make libudev-dev ca-certificates \
-		git pkg-config curl time rhash; \
+		git libssl-dev pkg-config curl time rhash; \
 # set a link to clang-9
 	ln -s /usr/bin/clang-9 /usr/bin/clang; \
 # install rustup
@@ -61,7 +61,7 @@ RUN set -eux; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*
+	rm -rf /var/lib/apt/lists/*; rm -rf /usr/doc/*;
 
 # compiler ENV
 ENV CC=gcc \

@@ -1,5 +1,5 @@
 # triggers image autoupdate with the new Rust stable release
-FROM rust:stretch
+FROM rust:buster
 
 # metadata
 ARG VCS_REF
@@ -48,9 +48,9 @@ ENV NDK_HOME=/usr/local/android-ndk-r16b \
 # install tools and dependencies
 COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
-echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
+echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
 	> /etc/apt/sources.list.d/llvm.list; \
-echo "deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
+echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
 	>> /etc/apt/sources.list.d/llvm.list; \
 DEBIAN_FRONTEND=noninteractive apt-get -y update; \
 DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
