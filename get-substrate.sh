@@ -74,12 +74,13 @@ if [[ "$1" == "--fast" ]]; then
 else 
 	g=`mktemp -d`
 	git clone https://github.com/paritytech/substrate $g
-    pushd $g
-    git checkout -b workshop 7874be8668ba6ff43c107c5da26105f934654cc2
-    ./scripts/init.sh
+	pushd $g
+	git checkout 7874be8668ba6ff43c107c5da26105f934654cc2 -b workshop
+	./scripts/init.sh
 	cargo install --force --path ./node/cli
 	popd
-    cargo install --force --git https://github.com/paritytech/ink.git --branch=workshop
+	rustup target add wasm32-unknown-unknown --toolchain stable
+	cargo install --force --git https://github.com/paritytech/ink.git --branch=workshop
 fi
 
 echo "Run source ~/.cargo/env now to update environment"
