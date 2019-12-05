@@ -79,6 +79,7 @@ else
     ./scripts/init.sh
 	cargo install --force --path ./node/cli
 	popd
+    cargo install --force --git https://github.com/paritytech/ink.git --branch=workshop
 fi
 
 echo "Run source ~/.cargo/env now to update environment"
