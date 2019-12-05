@@ -67,9 +67,6 @@ else
 	rustup default stable
 fi
 
-rustup update nightly
-rustup target add wasm32-unknown-unknown --toolchain nightly
-
 if [[ "$1" == "--fast" ]]; then
 	echo "Skipped cargo install of 'substrate' and 'subkey'"
 	echo "You can install manually by cloning the https://github.com/paritytech/substrate repo,"
@@ -77,15 +74,11 @@ if [[ "$1" == "--fast" ]]; then
 else 
 	g=`mktemp -d`
 	git clone https://github.com/paritytech/substrate $g
-	pushd $g
-	cargo install --force --path ./bin/node/cli #substrate
-	cargo install --force --path ./bin/subkey subkey
+    pushd $g
+    git checkout -b workshop 7874be8668ba6ff43c107c5da26105f934654cc2
+    ./scripts/init.sh
+	cargo install --force --path ./node/cli
 	popd
 fi
-
-f=`mktemp -d`
-git clone https://github.com/paritytech/substrate-up $f
-cp -a $f/substrate-* ~/.cargo/bin
-cp -a $f/polkadot-* ~/.cargo/bin
 
 echo "Run source ~/.cargo/env now to update environment"
