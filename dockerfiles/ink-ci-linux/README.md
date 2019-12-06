@@ -8,37 +8,37 @@ Used to build and test ink!.
 
 **Inherited from `<base-ci-linux:latest>`:**
 
--   `clang-8`
--   `cmake`
--   `curl`
--   `g++`
--   `gcc`
--   `git`
--   `libssl-dev`
--   `make`
--   `pkg-config`
--   `rhash`
--   `rust-builder`
--   `time`
+- `clang-8`
+- `cmake`
+- `curl`
+- `g++`
+- `gcc`
+- `git`
+- `libssl-dev`
+- `make`
+- `pkg-config`
+- `rhash`
+- `rust-builder`
+- `time`
 
 **Rust versions:**
 
 We always try to use the latest possible `nightly` version that supports our required `rustup` components:
 
--   `clippy`
--   `cargo`
--   `rustfmt`
+- `clippy`
+- `cargo`
+- `rustfmt`
 
 The [`rustup` component history](https://rust-lang.github.io/rustup-components-history/) provides a decent overview to decide upon a new version update.
 
 **Rust tools & toolchains:**
 
--   `clippy`
--   `rustfmt`
--   `sccache`
--   `grcov`
--   `cargo-contract`
--   `wasm32-unknown-unknown` toolchain
+- `clippy`
+- `rustfmt`
+- `sccache`
+- `grcov`
+- `cargo-contract`
+- `wasm32-unknown-unknown` toolchain
 
 [Click here](https://registry.parity.io/parity/infrastructure/scripts/ink-ci-linux) for the registry.
 

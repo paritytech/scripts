@@ -1,6 +1,6 @@
 # Parity-ci-linux
 
-Docker image based on [Debian:buster](https://hub.docker.com/_/debian).
+Docker image based on [Ubuntu:xenial](https://hub.docker.com/_/debian).
 
 Runs builds and tests `Parity Ethereum`.
 

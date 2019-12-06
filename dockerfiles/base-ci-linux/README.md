@@ -10,18 +10,18 @@ Used to build and test Substrate-based projects.
 
 **Dependencies and Tools:**
 
--   `clang-9`
--   `cmake`
--   `curl`
--   `g++`
--   `gcc`
--   `git`
--   `libssl-dev`
--   `make`
--   `pkg-config`
--   `rhash`
--   `rust-builder`
--   `time`
+- `clang-9`
+- `cmake`
+- `curl`
+- `g++`
+- `gcc`
+- `git`
+- `libssl-dev`
+- `make`
+- `pkg-config`
+- `rhash`
+- `rust-builder`
+- `time`
 
 **Rust versions:**
 
