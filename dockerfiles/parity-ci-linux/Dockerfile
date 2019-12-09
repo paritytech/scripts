@@ -66,7 +66,8 @@ RUN set -eux; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*; rm -rf /usr/doc/*; \
+	rm -rf /var/lib/apt/lists/*; \
+	rm -rf /usr/doc/*; \
 	rm cmake.sh
 
 # compiler ENV
