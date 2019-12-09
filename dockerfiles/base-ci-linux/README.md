@@ -25,8 +25,8 @@ Used to build and test Substrate-based projects.
 
 **Rust versions:**
 
--   stable (default)
--   nightly
+- stable (default)
+- nightly
 
 [Click here](https://registry.parity.io/parity/infrastructure/scripts/base-ci-linux) for the registry.
 

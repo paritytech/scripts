@@ -17,9 +17,8 @@ dockerfiles/parity-ci-android/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-# download and install cmake
+# download cmake
 ADD "https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-Linux-x86_64.sh" cmake.sh
-RUN sh cmake.sh --skip-license --prefix=/usr/ --exclude-subdir&&rm cmake.sh&&cmake --version
 COPY libudev.patch /root/
 COPY config /.cargo/
 
@@ -45,8 +44,8 @@ ENV NDK_HOME=/usr/local/android-ndk-r16b \
 	CC=gcc \
 	CXX=g++
 
-# install tools and dependencies
 COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
+# install tools and dependencies
 RUN set -eux; \
 echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
 	> /etc/apt/sources.list.d/llvm.list; \
@@ -63,10 +62,15 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	rustup target add arm-linux-androideabi; \
 	rustup target add armv7-linux-androideabi; \
 	cargo install sccache --features redis; \
+# install cmake
+	chmod +x cmake.sh; \
+	sh cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
+	cmake --version; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
+	rm cmake.sh; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf $CARGO_HOME/registry; \
