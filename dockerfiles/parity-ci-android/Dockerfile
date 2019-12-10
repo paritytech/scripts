@@ -44,8 +44,8 @@ ENV NDK_HOME=/usr/local/android-ndk-r16b \
 	CC=gcc \
 	CXX=g++
 
-COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 # install tools and dependencies
+COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
 RUN set -eux; \
 echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
 	> /etc/apt/sources.list.d/llvm.list; \
@@ -62,15 +62,15 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	rustup target add arm-linux-androideabi; \
 	rustup target add armv7-linux-androideabi; \
 	cargo install sccache --features redis; \
-# install cmake
+	# install cmake
+	echo "c87dc439a8d6b1b368843c580f0f92770ed641af8ff8fe0b706cfa79eed3ac91 cmake.sh" | sha256sum -c - || exit 1; \
 	chmod +x cmake.sh; \
-	sh cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
-	cmake --version; \
+	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
-	rm cmake.sh; \
+	rm cmake.sh \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf $CARGO_HOME/registry; \
