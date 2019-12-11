@@ -79,7 +79,7 @@ else
 	git clone https://github.com/paritytech/substrate $g
 	pushd $g
 	cargo install --force --path ./bin/node/cli #substrate
-	cargo install --force --path ./bin/subkey subkey
+	cargo install --force --path ./bin/utils/subkey subkey
 	popd
 fi
 
