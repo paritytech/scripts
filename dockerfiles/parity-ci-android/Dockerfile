@@ -17,10 +17,15 @@ dockerfiles/parity-ci-android/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-# download cmake
-ADD "https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-Linux-x86_64.sh" cmake.sh
-COPY libudev.patch /root/
-COPY config /.cargo/
+# gcc and clang are necessary to be able to compile crates that have build scripts
+# Most notably, clang 9 has WASM support enabled by default.
+COPY utility/clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
+# copy cmake
+COPY utility/cmake.sh cmake.sh
+# copy patch
+COPY parity-ci-android/libudev.patch /root/
+# config for arm*-linux-androideabi
+COPY parity-ci-android/config /.cargo/
 
 # Android NDK configurations
 ENV NDK_HOME=/usr/local/android-ndk-r16b \
@@ -45,7 +50,6 @@ ENV NDK_HOME=/usr/local/android-ndk-r16b \
 	CXX=g++
 
 # install tools and dependencies
-COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
 RUN set -eux; \
 echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
 	> /etc/apt/sources.list.d/llvm.list; \
@@ -63,8 +67,6 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	rustup target add armv7-linux-androideabi; \
 	cargo install sccache --features redis; \
 	# install cmake
-	echo "c87dc439a8d6b1b368843c580f0f92770ed641af8ff8fe0b706cfa79eed3ac91 cmake.sh" | sha256sum -c - || exit 1; \
-	chmod +x cmake.sh; \
 	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
 # apt clean up
 	apt-get autoremove -y; \

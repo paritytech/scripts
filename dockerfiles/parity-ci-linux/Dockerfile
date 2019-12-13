@@ -26,9 +26,14 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 
 # download rustup
 ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" rustup-init
-# download cmake
-ADD "https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-Linux-x86_64.sh" cmake.sh
-COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
+
+# gcc and clang are necessary to be able to compile crates that have build scripts
+# Most notably, clang 9 has WASM support enabled by default.
+COPY utility/clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
+
+# copy cmake
+COPY utility/cmake.sh cmake.sh
+
 # install tools and dependencies
 RUN set -eux; \
 	echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main" \
@@ -44,8 +49,6 @@ RUN set -eux; \
 # set a link to clang-9
 	ln -s /usr/bin/clang-9 /usr/bin/clang; \
 # install cmake
-  echo "c87dc439a8d6b1b368843c580f0f92770ed641af8ff8fe0b706cfa79eed3ac91 cmake.sh" | sha256sum -c - || exit 1; \
-	chmod +x cmake.sh; \
 	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
 # install rustup
 	chmod +x rustup-init; \

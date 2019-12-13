@@ -16,7 +16,7 @@ dockerfiles/deploy/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-WORKDIR /build
+WORKDIR /builds
 
 # install tools and dependencies
 RUN set -eux; \

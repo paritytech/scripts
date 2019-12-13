@@ -31,8 +31,8 @@ RUN set -eux; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
 	sed -r 's/deb-src h/deb-src \[arch=amd64\] h/g' /etc/apt/sources.list > /tmp/sources-tmp.list; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
-	DEBIAN_FRONTEND=noninteractive apt-get -y update; \
-	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+	apt-get -y update; \
+	apt-get install -y --no-install-recommends \
 		g++-aarch64-linux-gnu gcc-aarch64-linux-gnu libc6-dev-i386 \
 		libudev-dev libudev-dev:arm64; \
 # install aarch64 toolchain
@@ -47,8 +47,10 @@ RUN set -eux; \
 # removes toolchain's html docs and autocompletions (>300M for each toolchain)
 	rm -rf /usr/local/rustup/toolchains/*/share;
 
+# config for aarch-unknown-linux-gnu
+COPY parity-ci-arm64/config /.cargo/config
+
 # set cross-compiler ENV
-ADD config /.cargo/config
 ENV CC=aarch64-linux-gnu-gcc \
 	CXX=aarch64-linux-gnu-g++ \
 	CARGO_TARGET=aarch64-unknown-linux-gnu \
