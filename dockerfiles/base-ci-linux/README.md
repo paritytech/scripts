@@ -10,7 +10,7 @@ Used to build and test Substrate-based projects.
 
 **Dependencies and Tools:**
 
-- `clang-8`
+- `clang-9`
 - `cmake`
 - `curl`
 - `g++`
