@@ -17,7 +17,7 @@ dockerfiles/awscli/README.md" \
 
 RUN pip install awscli
 
-COPY awscli/config /etc/aws.config
+COPY utility/awscli-config /etc/aws.config
 ENV AWS_CONFIG_FILE /etc/aws.config
 
 CMD /bin/sh
