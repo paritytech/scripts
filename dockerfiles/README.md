@@ -1,3 +1,15 @@
+Most of these Dockerfiles rely on `utility` dir to `COPY` some files from it.
+This means if you want to build these Dockerfiles you **must** do it from `dockerfiles` dir.
+Like that:
+
+cd dockerfiles
+docker build --build-arg VCS_REF="12345" --build-arg BUILD_DATE="(date -u '+%Y-%m-%dT%H:%M:%SZ')" --tag grcov .
+docker build --no-cache
+        --build-arg VCS_REF="12345"
+        --build-arg BUILD_DATE="$(date +%Y%m%d)"
+        --tag my-local:substrate
+        --file <DOCKERFILE_DIR>/Dockerfile .
+
 Rust 1.39.0
 
 The current version of cmake is [3.16.0](https://github.com/Kitware/CMake/tree/v3.16.0)
