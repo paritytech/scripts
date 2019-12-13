@@ -19,7 +19,7 @@ dockerfiles/parity-ci-android/README.md" \
 
 # gcc and clang are necessary to be able to compile crates that have build scripts
 # Most notably, clang 9 has WASM support enabled by default.
-COPY utility/clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
+COPY utility/debian-llvm-clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
 # copy cmake
 COPY utility/cmake.sh cmake.sh
 # copy patch
