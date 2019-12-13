@@ -44,6 +44,7 @@ variables:
   script:
     # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
     # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+    - cd dockerfiles/
     - export CONTAINER_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
     - docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHA}"
@@ -69,6 +70,7 @@ variables:
     # - docker pull $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_TAG || true
     - CONTAINER_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
     # - docker build --cache-from $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_TAG
+    - cd dockerfiles/
     - docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHA}"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
@@ -237,6 +239,7 @@ kubetools:
       | HELM_VERSION = ${BUILD_HELM_VERSION}
       |
       EOT
+    - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="${CI_COMMIT_SHA}"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
