@@ -23,7 +23,7 @@ WORKDIR /builds
 COPY config /root/.cargo/config
 # gcc and clang are necessary to be able to compile crates that have build scripts
 # Most notably, clang 9 has WASM support enabled by default.
-COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
+COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
 # download cmake
 ADD "https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-Linux-x86_64.sh" cmake.sh
 # install tools and dependencies

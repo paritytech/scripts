@@ -1,5 +1,5 @@
 # triggers image autoupdate with the new Rust stable release
-FROM rust:buster
+FROM rust:stretch
 
 # metadata
 ARG VCS_REF
@@ -45,11 +45,11 @@ ENV NDK_HOME=/usr/local/android-ndk-r16b \
 	CXX=g++
 
 # install tools and dependencies
-COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
+COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
 RUN set -eux; \
-echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
+echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
 	> /etc/apt/sources.list.d/llvm.list; \
-echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
+echo "deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
 	>> /etc/apt/sources.list.d/llvm.list; \
 DEBIAN_FRONTEND=noninteractive apt-get -y update; \
 DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
@@ -70,7 +70,7 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
 	apt-get autoremove -y; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
-	rm cmake.sh \
+	rm cmake.sh; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf $CARGO_HOME/registry; \

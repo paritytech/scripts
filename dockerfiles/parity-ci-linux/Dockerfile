@@ -28,7 +28,7 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" rustup-init
 # download cmake
 ADD "https://github.com/Kitware/CMake/releases/download/v3.16.0/cmake-3.16.0-Linux-x86_64.sh" cmake.sh
-COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-jessie-automatic.gpg
+COPY clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
 # install tools and dependencies
 RUN set -eux; \
 	echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-9 main" \
