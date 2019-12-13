@@ -48,7 +48,7 @@ RUN set -eux; \
 	rm -rf /usr/local/rustup/toolchains/*/share;
 
 # config for aarch-unknown-linux-gnu
-COPY parity-ci-arm64/config /.cargo/config
+COPY utility/parity-ci-arm64-config /.cargo/config
 
 # set cross-compiler ENV
 ENV CC=aarch64-linux-gnu-gcc \

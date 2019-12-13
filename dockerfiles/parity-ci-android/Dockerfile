@@ -23,9 +23,9 @@ COPY utility/debian-llvm-clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.g
 # copy cmake
 COPY utility/cmake.sh cmake.sh
 # copy patch
-COPY parity-ci-android/libudev.patch /root/
+COPY utility/libudev.patch /root/
 # config for arm*-linux-androideabi
-COPY parity-ci-android/config /.cargo/
+COPY utility/parity-ci-android-config /.cargo/
 
 # Android NDK configurations
 ENV NDK_HOME=/usr/local/android-ndk-r16b \

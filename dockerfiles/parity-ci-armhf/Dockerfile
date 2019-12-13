@@ -48,7 +48,7 @@ RUN set -eux; \
 	rm -rf /usr/local/rustup/toolchains/*/share;
 
 # config for armv7-unknown-linux-gnueabihf
-COPY parity-ci-armhf/config /.cargo/config
+COPY utility/parity-ci-armhf-config /.cargo/config
 
 # set cross-compiler ENV
 ENV CC=arm-linux-gnueabihf-gcc \

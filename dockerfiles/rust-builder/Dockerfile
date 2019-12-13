@@ -20,7 +20,7 @@ dockerfiles/rust-builder/README.md" \
 WORKDIR /builds
 
 # config for wasm32-unknown-unknown
-COPY rust-builder/config /root/.cargo/config
+COPY utility/rust-builder-config /root/.cargo/config
 
 # gcc and clang are necessary to be able to compile crates that have build scripts
 # Most notably, clang 9 has WASM support enabled by default.
