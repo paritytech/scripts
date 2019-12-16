@@ -17,6 +17,9 @@ dockerfiles/parity-ci-docs/README.md" \
 
 WORKDIR /builds/parity/parity-ethereum/
 
+# copy yarn repo key
+COPY utility/yarn.key /etc/apt/trusted.gpg.d/debian-yarn.gpg
+
 # install tools and dependencies
 RUN set -eux; \
 	apt-get -y update; \
@@ -24,7 +27,6 @@ RUN set -eux; \
 		curl ca-certificates git; \
 # install nodejs and yarn
 	curl -sL https://deb.nodesource.com/setup_10.x | bash -; \
-	curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -; \
 	echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
