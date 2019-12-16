@@ -8,8 +8,8 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-android" \
-	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf clang-9 libclang-9-dev libc6-dev-i386 wget unzip; \
-	libudev.patch; android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-androideabi; sccache" \
+	io.parity.image.description="cmake rhash libudev-dev time xsltproc gperf clang-9 libclang-9-dev libc6-dev-i386 wget unzip;/\
+libudev.patch; android ndk r16b; cargo target arm-linux-androideabi, cargo target armv7-linux-androideabi; sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-android/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -25,7 +25,7 @@ COPY utility/cmake.sh cmake.sh
 # copy patch
 COPY utility/libudev.patch /root/
 # config for arm*-linux-androideabi
-COPY utility/parity-ci-android-config /.cargo/
+COPY utility/parity-ci-android-config /.cargo/config
 
 # Android NDK configurations
 ENV NDK_HOME=/usr/local/android-ndk-r16b \
@@ -55,8 +55,8 @@ echo "deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
 	> /etc/apt/sources.list.d/llvm.list; \
 echo "deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch-9 main" \
 	>> /etc/apt/sources.list.d/llvm.list; \
-DEBIAN_FRONTEND=noninteractive apt-get -y update; \
-DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+apt-get -y update; \
+apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
 		g++ gcc libssl-dev clang-9 libclang-9-dev libc6-dev-i386\
 		make libudev-dev ca-certificates \
