@@ -5,12 +5,7 @@
 
 stages:
   - build
-  - deploy
   - destroy
-
-
-
-
 
 
 variables:
@@ -18,7 +13,6 @@ variables:
   # DOCKER_HOST: tcp://docker:2375
   DOCKER_HOST: tcp://localhost:2375
   DOCKER_DRIVER: overlay2
-
 
 
 .kubernetes-build:                 &kubernetes-build
@@ -293,3 +287,8 @@ redis-exporter:
 
 
 # vim: expandtab sts=2
+
+### scan
+
+container_scanning:
+  stage:                           .post
