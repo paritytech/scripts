@@ -25,7 +25,7 @@ RUN set -eux; \
 	echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list; \
 	DEBIAN_FRONTEND=noninteractive apt-get -y update; \
 	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-        npm yarn wabt; \
+        npm yarn wabt unzip; \
 # install Rust nightly, default is stable
     rustup toolchain install nightly; \
 # install wasm toolchain
