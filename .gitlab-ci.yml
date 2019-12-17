@@ -81,6 +81,11 @@ variables:
     - docker push $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_TAG
 
 
+# triggers the container scanning built-in tool
+include:
+  - template: Container-Scanning.gitlab-ci.yml
+
+
 base-ci-linux:
   <<:                              *docker_build_to_own_reg
   variables:
