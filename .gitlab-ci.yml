@@ -5,7 +5,7 @@
 
 stages:
   - build
-  - destroy
+  - scan
 
 
 variables:
@@ -291,4 +291,4 @@ redis-exporter:
 ### scan
 
 container_scanning:
-  stage:                           .post
+  stage:                           scan
