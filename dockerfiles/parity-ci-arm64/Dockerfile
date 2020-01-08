@@ -33,7 +33,7 @@ RUN set -eux; \
 	cp /tmp/sources-tmp.list /etc/apt/sources.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		g++-aarch64-linux-gnu gcc-aarch64-linux-gnu libc6-dev-i386 \
+		g++-aarch64-linux-gnu gcc-aarch64-linux-gnu libc6-dev-i386 gcc \
 		libudev-dev libudev-dev:arm64; \
 # install aarch64 toolchain
 	rustup target add aarch64-unknown-linux-gnu; \
@@ -54,8 +54,9 @@ COPY utility/parity-ci-arm64-config /.cargo/config
 ENV CC=aarch64-linux-gnu-gcc \
 	CXX=aarch64-linux-gnu-g++ \
 	CARGO_TARGET=aarch64-unknown-linux-gnu \
-	HOST_CC=gcc \
-	HOST_CXX=g++ \
+	HOST_CC=clang \
+	HOST_CXX=clang++ \
+	RUSTFLAGS="" \
 	LDFLAGS="-L/usr/lib/arm-linux-aarch64" \
 	CPPFLAGS="-I/usr/include" \
 # cache handler

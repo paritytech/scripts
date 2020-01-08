@@ -38,10 +38,11 @@ RUN set -eux; \
 		>> /etc/apt/sources.list.d/llvm.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		g++ libssl-dev gcc clang-9 libclang-9-dev make \
+		libssl-dev clang-9 clang++-9 lld-9 libclang-9-dev make \
 		git pkg-config curl time rhash; \
-# set a link to clang-9
-	ln -s /usr/bin/clang-9 /usr/bin/clang; \
+		# set a link to clang-9 and clang++-9
+		ln -s /usr/bin/clang-9 /usr/bin/clang; \
+		ln -s /usr/bin/clang++-9 /usr/bin/clang++; \
 # install cmake
 	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
 # versions
