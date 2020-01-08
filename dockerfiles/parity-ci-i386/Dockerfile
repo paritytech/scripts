@@ -38,10 +38,10 @@ RUN set -eux; \
 
 # set cross-compiler ENV
 ENV CC=clang \
-	CXX=clang++ \
+	CXX=clang \
 	CARGO_TARGET=i686-unknown-linux-gnu \
 	HOST_CC=clang \
-	HOST_CXX=clang++ \
+	HOST_CXX=clang \
 	LDFLAGS="-L/usr/lib32" \
 	CPPFLAGS="-I/usr/include" \
 # cache handler
