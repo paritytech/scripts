@@ -56,6 +56,7 @@ RUN set -eux; \
 		git libssl-dev pkg-config curl time rhash; \
 # set a link to clang-9
 	ln -s /usr/bin/clang-9 /usr/bin/clang; \
+	ln -sf /usr/bin/clang-9 /usr/bin/cc; \
 # install cmake
 	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
 # install rustup

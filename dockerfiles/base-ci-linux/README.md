@@ -11,10 +11,10 @@ Used to build and test Substrate-based projects.
 **Dependencies and Tools:**
 
 - `clang-9`
+- `libclang-9-dev`
+- `lld-9`
 - `cmake`
 - `curl`
-- `g++`
-- `gcc`
 - `git`
 - `libssl-dev`
 - `make`
@@ -29,6 +29,10 @@ Used to build and test Substrate-based projects.
 - nightly
 
 [Click here](https://registry.parity.io/parity/infrastructure/scripts/base-ci-linux) for the registry.
+
+**Rust tools & toolchains:**
+
+- `sccache`
 
 ## Usage
 

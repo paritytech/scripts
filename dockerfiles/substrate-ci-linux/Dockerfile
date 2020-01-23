@@ -18,10 +18,7 @@ dockerfiles/rust-builder/README.md" \
 
 WORKDIR /builds
 
-# install Rust nightly, default is stable
-RUN	rustup install nightly; \
 # install cargo tools
-	cargo install sccache --features redis; \
 	cargo install cargo-audit cargo-web wasm-pack; \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown; \
@@ -36,11 +33,3 @@ RUN	rustup install nightly; \
 	rm -rf $CARGO_HOME/registry; \
 # removes toolchain's html docs and autocompletions (>300M for each toolchain)
 	rm -rf /usr/local/rustup/toolchains/*/share
-
-# compiler ENV
-ENV CC=gcc \
-	CXX=g++ \
-# cache handler
-	RUSTC_WRAPPER=sccache \
-# show backtraces
-	RUST_BACKTRACE=1

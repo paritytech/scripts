@@ -34,8 +34,8 @@ RUN chmod +x /usr/bin/parity; \
 	rm -rf /var/lib/apt/lists/*
 
 # compiler ENV
-ENV CC=gcc \
-		CXX=g++ \
+ENV CC=clang \
+		CXX=clang \
 	# cache handler
 		RUSTC_WRAPPER=sccache \
 	# show backtraces
