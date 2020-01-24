@@ -62,7 +62,6 @@ variables:
 .build_to_own_reg:                 &docker_build_to_own_reg
   <<:                              *docker_build
   before_script:
-    - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     # $CI_REGISTRY_IMAGE == registry.parity.io/parity/infrastructure/scripts/
