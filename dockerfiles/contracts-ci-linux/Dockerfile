@@ -24,15 +24,15 @@ COPY utility/yarn.key /etc/apt/trusted.gpg.d/debian-yarn.gpg
 RUN set -eux; \
 	echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list; \
 	apt-get -y update; \
-	      apt-get install -y --no-install-recommends \
-        npm yarn wabt unzip; \
+		apt-get install -y --no-install-recommends \
+		npm yarn wabt unzip; \
 # install wasm toolchain
     rustup target add wasm32-unknown-unknown --toolchain nightly; \
 # install cargo tools
     cargo install pwasm-utils-cli --bin wasm-prune; \
     cargo install --git https://github.com/paritytech/cargo-contract; \
 # versions
-  yarn --version; \
+	yarn --version; \
 	rustup show; \
 	cargo --version; \
 # cargo clean up

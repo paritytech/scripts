@@ -33,7 +33,7 @@ ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH \
     CC=clang \
-		CXX=clang
+	CXX=clang
 # download rustup
 ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" rustup-init
 
@@ -48,15 +48,15 @@ RUN set -eux; \
 		libssl-dev clang-9 lld-9 libclang-9-dev make \
 		git pkg-config curl time rhash ca-certificates; \
 # set a link to clang-9
-  ln -s /usr/bin/clang-9 /usr/bin/clang; \
-  ln -sf /usr/bin/clang-9 /usr/bin/cc;\
+	ln -s /usr/bin/clang-9 /usr/bin/clang; \
+	ln -sf /usr/bin/clang-9 /usr/bin/cc;\
 # install cmake
 	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
 # install rustup
-  chmod +x rustup-init; \
-  ./rustup-init -y --no-modify-path --default-toolchain stable; \
-  rm rustup-init; \
-  chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+	chmod +x rustup-init; \
+	./rustup-init -y --no-modify-path --default-toolchain stable; \
+	rm rustup-init; \
+	chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
 # install Rust nightly, default is stable
 	rustup install nightly; \
 # install cargo tools

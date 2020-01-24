@@ -19,7 +19,7 @@ dockerfiles/rust-builder/README.md" \
 WORKDIR /builds
 
 # install cargo tools
-	cargo install cargo-audit cargo-web wasm-pack; \
+RUN cargo install cargo-audit cargo-web wasm-pack; \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \

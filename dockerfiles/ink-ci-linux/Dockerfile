@@ -8,7 +8,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/ink-ci-linux" \
 	io.parity.image.description="Inherits from base-ci-linux:latest. \
-libelf-dev libdw-dev zlib1g-dev; kcov; rust nightly-2019-08-30 clippy rustfmt cargo-kcov" \
+libelf-dev libdw-dev zlib1g-dev; kcov; rust nightly clippy rustfmt cargo-kcov" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ink-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\

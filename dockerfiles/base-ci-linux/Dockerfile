@@ -9,8 +9,8 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/base-ci-linux" \
 	io.parity.image.description="Layer 1 image with all dependencies for Rust and WASM compilation. \
-	libssl-dev clang-9 libclang-9-dev lld-9 cmake make git pkg-config \
-	curl time rhash rust stable, rust nightly, cargo-audit, sccache, wasm-gc" \
+libssl-dev clang-9 libclang-9-dev lld-9 cmake make git pkg-config \
+curl time rhash rust stable, rust nightly, cargo-audit, sccache, wasm-gc" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-builder/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -31,8 +31,8 @@ COPY utility/debian-llvm-clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.g
 COPY utility/cmake.sh cmake.sh
 
 ENV RUSTUP_HOME=/usr/local/rustup \
-    CARGO_HOME=/usr/local/cargo \
-    PATH=/usr/local/cargo/bin:$PATH \
+	CARGO_HOME=/usr/local/cargo \
+	PATH=/usr/local/cargo/bin:$PATH \
 		CC=clang \
 		CXX=clang
 
@@ -47,18 +47,18 @@ RUN set -eux; \
 		>> /etc/apt/sources.list.d/llvm.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-	libssl-dev clang-9 lld-9 libclang-9-dev make \
-	git pkg-config curl time rhash ca-certificates; \
+		libssl-dev clang-9 lld-9 libclang-9-dev make \
+		git pkg-config curl time rhash ca-certificates; \
 # set a link to clang-9
-  ln -s /usr/bin/clang-9 /usr/bin/clang; \
-  ln -sf /usr/bin/clang-9 /usr/bin/cc; \
+	ln -s /usr/bin/clang-9 /usr/bin/clang; \
+	ln -sf /usr/bin/clang-9 /usr/bin/cc; \
 # install cmake
 	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
 # install rustup
-  chmod +x rustup-init; \
-  ./rustup-init -y --no-modify-path --default-toolchain stable; \
-  rm rustup-init; \
-  chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+  	chmod +x rustup-init; \
+  	./rustup-init -y --no-modify-path --default-toolchain stable; \
+  	rm rustup-init; \
+  	chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
 # install Rust nightly, default is stable
 	rustup install nightly; \
 # install sccache

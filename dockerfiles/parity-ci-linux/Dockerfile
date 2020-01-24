@@ -29,7 +29,7 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 		RUSTFLAGS="-C linker-plugin-lto -C linker=clang -C link-arg=-fuse-ld=lld" \
 		RUSTDOCFLAGS="-C linker-plugin-lto -C linker=clang -C link-arg=-fuse-ld=lld" \
     CC=clang \
-		CXX=clang
+	CXX=clang
 
 
 # download rustup
