@@ -168,7 +168,7 @@ parity-ci-docs:
     CONTAINER_TAG:                 latest
     DOCKERFILE_DIR:                $CI_JOB_NAME
   only:
-    - 140
+    - "140"
 
 rust-builder:
   <<: *docker_build
