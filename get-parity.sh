@@ -3,10 +3,9 @@
 
 ## Update this with any new relase!
 VERSION_STABLE="2.5.13"
-VERSION_BETA="2.6.8"
 ##
 
-RELEASE="beta"
+RELEASE="stable"
 ARCH=$(uname -m)
 VANITY_SERVICE_URL="https://vanity-service.parity.io/parity-binaries?architecture=$ARCH&format=markdown"
 
@@ -29,9 +28,7 @@ check_os() {
 }
 
 get_package() {
-	if [ "$RELEASE" = "beta" ]; then
-		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=v$VERSION_BETA"
-	elif [ "$RELEASE" = "stable" ]; then
+	if [ "$RELEASE" = "stable" ]; then
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=v$VERSION_STABLE"
 	else
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$RELEASE"
@@ -45,8 +42,6 @@ check_upgrade() {
 
   # Determine new Version 
   case "$RELEASE" in
-    "beta")  NEW_VERSION=$VERSION_BETA
-        ;;
     "stable") NEW_VERSION=$VERSION_STABLE
         ;;
     *) NEW_VERSION=$(echo $DOWNLOAD_FILE | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')   
@@ -159,6 +154,10 @@ while [ "$1" != "" ]; do
 	done
 
 	echo "Release selected is: $RELEASE"
+  if [ "$RELEASE" == "beta" ]; then
+    echo "[!] As of v2.7.0, parity-ethereum now uses a single release track, 'stable'. All prior versions are now deprecated. In order to continue receiving updates to your parity-ethereum client, please switch to the 'stable' track."
+    exit 1
+  fi
 
 check_os
 get_package
