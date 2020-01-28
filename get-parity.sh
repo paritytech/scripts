@@ -24,7 +24,7 @@ check_os() {
 		echo "Choices:"
 		echo "	     linux - any linux distro"
 		echo "	     darwin - MacOS"
-		read PKG
+		read -r PKG
 	fi
 }
 
@@ -37,8 +37,8 @@ get_package() {
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$RELEASE"
 	fi
 
-  MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep " \[parity\]")
-  DOWNLOAD_FILE=$(echo $MD | grep -oE 'https://[^)]+')
+  MD=$(curl -Ss "${LOOKUP_URL}" | grep -v sha256 | grep " \[parity\]")
+  DOWNLOAD_FILE=$(echo "$MD" | grep -oE 'https://[^)]+')
 }
 
 check_upgrade() {
@@ -49,14 +49,14 @@ check_upgrade() {
         ;;
     "stable") NEW_VERSION=$VERSION_STABLE
         ;;
-    *) NEW_VERSION=$(echo $DOWNLOAD_FILE | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')   
+    *) NEW_VERSION=$(echo "$DOWNLOAD_FILE" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')   
         ;;
   esac
 
   # Determine old (installed) Version 
   parity_bin=$(which parity)
 
-	if [ -z $parity_bin ] ; then
+	if [ -z "$parity_bin" ] ; then
 		OLD_VERSION="0.0.0"
 	else
 		OLD_VERSION=$(parity --version | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')
@@ -76,16 +76,16 @@ check_upgrade() {
 }
 
 install() {
-  TMPDIR=$(mktemp -d) && cd $TMPDIR
-	curl -Ss -O $DOWNLOAD_FILE
+  TMPDIR=$(mktemp -d) && cd "$TMPDIR" || exit
+	curl -Ss -O "$DOWNLOAD_FILE"
   check_sha256
 
 	if [ "$PKG" = "linux" ] ; then
-	  sudo cp $TMPDIR/parity /usr/bin && sudo chmod +x /usr/bin/parity
+	  sudo cp "$TMPDIR"/parity /usr/bin && sudo chmod +x /usr/bin/parity
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
-	  sudo cp $TMPDIR/parity /usr/local/bin && sudo chmod +x /usr/local/bin/parity
+	  sudo cp "$TMPDIR"/parity /usr/local/bin && sudo chmod +x /usr/local/bin/parity
 	fi
 }
 
@@ -121,11 +121,11 @@ check_sha256() {
   fi
 
   # $SHA256_CHECK $TMPDIR/$DOWNLOAD_FILE 
-  IS_CHECKSUM=$($SHA256_CHECK $TMPDIR/parity | awk '{print $1}')
-  MUST_CHECKSUM=$(curl -sS $LOOKUP_URL | grep ' \[parity\]' | awk '{print $NF'})
+  IS_CHECKSUM=$($SHA256_CHECK "$TMPDIR"/parity | awk '{print $1}')
+  MUST_CHECKSUM=$(curl -sS "$LOOKUP_URL" | grep ' \[parity\]' | awk '{print $NF}')
   # debug # echo -e "is checksum:\t $IS_CHECKSUM"
   # debug # echo -e "must checksum:\t $MUST_CHECKSUM"
-  if [[ $IS_CHECKSUM != $MUST_CHECKSUM ]]; then
+  if [[ $IS_CHECKSUM != "$MUST_CHECKSUM" ]]; then
     echo "SHA256 Checksum missmatch, aboarding installation"
     cleanup
     exit 1 
@@ -133,15 +133,14 @@ check_sha256() {
 }
 
 cleanup() {
-  rm $TMPDIR/*
-  rmdir $TMPDIR
+  rm "$TMPDIR"/*
+  rmdir "$TMPDIR"
 }
 
 ## MAIN ##
 
 ## curl installed? 
-which curl &> /dev/null 
-if [[ $? -ne 0 ]] ; then
+if ! which curl &> /dev/null ; then
     echo '"curl" binary not found, please install and retry'
     exit 1
 fi
