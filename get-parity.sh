@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2015-2019 Parity Technologies (UK) Ltd.
+# Copyright 2015-2020 Parity Technologies (UK) Ltd.
 
 ## Update this with any new relase!
 VERSION_STABLE="2.5.13"
