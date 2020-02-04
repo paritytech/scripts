@@ -1,5 +1,5 @@
 # DockerHub's official https://hub.docker.com/_/rust
-FROM rust:slim-buster
+FROM debian:buster
 
 # metadata
 ARG VCS_REF
@@ -8,7 +8,7 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="parity/rust-builder" \
-	io.parity.image.description="g++ libssl-dev gcc clang-9 libclang-9-dev cmake make git pkg-config \
+	io.parity.image.description="libssl-dev clang-9 libclang-9-dev lld-9 cmake make git pkg-config \
 curl time rhash rust stable, rust nightly, cargo-audit, sccache, wasm-gc" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-builder/Dockerfile" \
@@ -29,6 +29,14 @@ COPY utility/debian-llvm-clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.g
 # copy cmake
 COPY utility/cmake.sh cmake.sh
 
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH \
+    CC=clang \
+	CXX=clang
+# download rustup
+ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" rustup-init
+
 # install tools and dependencies
 RUN set -eux; \
 	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
@@ -37,12 +45,18 @@ RUN set -eux; \
 		>> /etc/apt/sources.list.d/llvm.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		g++ libssl-dev gcc clang-9 libclang-9-dev make \
-		git pkg-config curl time rhash; \
+		libssl-dev clang-9 lld-9 libclang-9-dev make \
+		git pkg-config curl time rhash ca-certificates; \
 # set a link to clang-9
 	ln -s /usr/bin/clang-9 /usr/bin/clang; \
+	ln -sf /usr/bin/clang-9 /usr/bin/cc;\
 # install cmake
 	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
+# install rustup
+	chmod +x rustup-init; \
+	./rustup-init -y --no-modify-path --default-toolchain stable; \
+	rm rustup-init; \
+	chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
 # install Rust nightly, default is stable
 	rustup install nightly; \
 # install cargo tools
@@ -69,10 +83,7 @@ RUN set -eux; \
 	rm -rf /var/lib/apt/lists/*; \
 	rm cmake.sh
 
-# compiler ENV
-ENV CC=gcc \
-	CXX=g++ \
 # cache handler
-	RUSTC_WRAPPER=sccache \
+ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
 	RUST_BACKTRACE=1

@@ -1,2 +1,9 @@
 [target.wasm32-unknown-unknown]
 runner = "node"
+linker="clang"
+
+[target.x86_64-unknown-linux-gnu]
+# Enables the aes-ni instructions for RustCrypto dependency.
+rustflags = ["-Ctarget-feature=+aes,+sse2,+ssse3"]
+# setup clang as Linker
+linker="clang"

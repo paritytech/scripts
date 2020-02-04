@@ -54,8 +54,9 @@ COPY utility/parity-ci-armhf-config /.cargo/config
 ENV CC=arm-linux-gnueabihf-gcc \
 	CXX=arm-linux-gnueabihf-g++ \
 	CARGO_TARGET=armv7-unknown-linux-gnueabihf \
-	HOST_CC=gcc \
-	HOST_CXX=g++ \
+	HOST_CC=clang \
+	HOST_CXX=clang \
+	RUSTFLAGS="" \
 	LDFLAGS="-L/usr/lib/arm-linix-gnueabihf" \
 	CPPFLAGS="-I/usr/include" \
 # cache handler

@@ -37,11 +37,11 @@ RUN set -eux; \
 	rm -rf /usr/local/rustup/toolchains/*/share;
 
 # set cross-compiler ENV
-ENV CC=gcc \
-	CXX=g++ \
+ENV CC=clang \
+	CXX=clang \
 	CARGO_TARGET=i686-unknown-linux-gnu \
-	HOST_CC=gcc \
-	HOST_CXX=g++ \
+	HOST_CC=clang \
+	HOST_CXX=clang \
 	LDFLAGS="-L/usr/lib32" \
 	CPPFLAGS="-I/usr/include" \
 # cache handler

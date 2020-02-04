@@ -7,8 +7,8 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/parity-ci-linux" \
-	io.parity.image.description="curl git make cmake ca-certificates g++ rhash gcc \
-pkg-config libudev-dev time libssl-dev libc6-dev clang-9 libclang-9-dev \
+	io.parity.image.description="curl git make cmake ca-certificates rhash \
+pkg-config libudev-dev time libssl-dev libc6-dev clang-9 lld-9 libclang-9-dev \
 rust stable/beta/nightly, cargo-audit, sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/parity-ci-linux/Dockerfile" \
@@ -18,11 +18,19 @@ dockerfiles/parity-ci-linux/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 WORKDIR /builds
-
-# rustup directory
+# config for clang
+COPY utility/parity-ci-linux-config /.cargo/config
+# rustup directory and compiler ENV
+#RUSTFLAGS Linker-plugin-LTO https://doc.rust-lang.org/rustc/linker-plugin-lto.html
+#RUSTDOCFLAGS issue https://github.com/rust-lang/cargo/issues/7529
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
-    PATH=/usr/local/cargo/bin:$PATH
+    PATH=/usr/local/cargo/bin:$PATH \
+	RUSTFLAGS="-C linker-plugin-lto -C linker=clang -C link-arg=-fuse-ld=lld" \
+	RUSTDOCFLAGS="-C linker-plugin-lto -C linker=clang -C link-arg=-fuse-ld=lld" \
+    CC=clang \
+	CXX=clang
+
 
 # download rustup
 ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" rustup-init
@@ -43,11 +51,12 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
-		gcc g++ clang-9 libclang-9-dev \
+		clang-9 lld-9 libclang-9-dev \
 		make libudev-dev ca-certificates \
 		git libssl-dev pkg-config curl time rhash; \
 # set a link to clang-9
 	ln -s /usr/bin/clang-9 /usr/bin/clang; \
+	ln -sf /usr/bin/clang-9 /usr/bin/cc; \
 # install cmake
 	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
 # install rustup
@@ -74,10 +83,7 @@ RUN set -eux; \
 	rm -rf /usr/doc/*; \
 	rm cmake.sh
 
-# compiler ENV
-ENV CC=gcc \
-	CXX=g++ \
 # cache handler
-	RUSTC_WRAPPER=sccache \
+ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
 	RUST_BACKTRACE=1
