@@ -26,7 +26,7 @@ COPY utility/parity-ci-linux-config /.cargo/config
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH \
-		RUSTFLAGS="-C linker-plugin-lto -C linker=clang -C link-arg=-fuse-ld=lld" \
+	RUSTFLAGS="-C linker-plugin-lto -C linker=clang -C link-arg=-fuse-ld=lld" \
 		RUSTDOCFLAGS="-C linker-plugin-lto -C linker=clang -C link-arg=-fuse-ld=lld" \
     CC=clang \
 	CXX=clang
