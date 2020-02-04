@@ -1,4 +1,4 @@
-# Ink-ci-linux
+# ink! CI for Linux Distributions
 
 Docker image based on our base CI image `<base-ci-linux:latest>`.
 
