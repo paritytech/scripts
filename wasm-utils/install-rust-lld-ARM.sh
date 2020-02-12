@@ -4,7 +4,7 @@
 # License: Apache-2.0
 
 # Set to the latest branch from: https://github.com/rust-lang/llvm-project
-RUST_LLVM_BRANCH="rustc/9.0-2019-12-19"
+RUST_LLVM_BRANCH="rustc/10.0-2020-02-05"
 
 if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "linux-gnueabihf" ]]; then
   set -e
