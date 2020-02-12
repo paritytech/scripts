@@ -53,21 +53,21 @@ if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "linux-gnueabihf" ]]; then
     echo "Building llvm-ld for: $ARCH"
 
     tmp=$(mktemp -d)
-    git clone https://github.com/rust-lang/llvm-project.git $tmp
-    pushd $tmp
+    git clone https://github.com/rust-lang/llvm-project.git "$tmp"
+    pushd "$tmp"
     git checkout -b $RUST_LLVM_BRANCH --track origin/$RUST_LLVM_BRANCH
     mkdir -p llvm/tools/lld
     cp -R lld/ llvm/tools/
-    mkdir -p $tmp/build/arm
-    cd $tmp/build/arm
+    mkdir -p "$tmp"/build/arm
+    cd "$tmp"/build/arm
     if [ "$ARCH" == "aarch64" ]; then
-      cmake -G Ninja $tmp/llvm \
+      cmake -G Ninja "$tmp"/llvm \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/opt/local/llvm \
         -DLLVM_TARGETS_TO_BUILD="AArch64" \
         -DLLVM_TARGET_ARCH="AArch64"
     else
-      cmake -G Ninja $tmp/llvm \
+      cmake -G Ninja "$tmp"/llvm \
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/opt/local/llvm \
         -DLLVM_TARGETS_TO_BUILD="ARM" \
