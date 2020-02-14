@@ -1,6 +1,6 @@
-# substrate-ci-linux
+# base-ci-linux
 
-Docker image based on [official Rust image](https://hub.docker.com/_/rust).
+Docker image based on [official Debian image](https://hub.docker.com/_/debian) debian:buster.
 
 Used as base for `Substrate`-based CI images.
 

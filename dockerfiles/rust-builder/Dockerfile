@@ -1,4 +1,3 @@
-# DockerHub's official https://hub.docker.com/_/rust
 FROM debian:buster
 
 # metadata
@@ -25,6 +24,8 @@ COPY utility/rust-builder-config /root/.cargo/config
 # gcc and clang are necessary to be able to compile crates that have build scripts
 # Most notably, clang 9 has WASM support enabled by default.
 COPY utility/debian-llvm-clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
+# Mozilla's Ubuntu PPA
+COPY utility/mozilla.key /etc/apt/trusted.gpg.d/ubuntu-mozilla.gpg
 
 # copy cmake
 COPY utility/cmake.sh cmake.sh
@@ -43,9 +44,11 @@ RUN set -eux; \
 		> /etc/apt/sources.list.d/llvm.list; \
 	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
 		>> /etc/apt/sources.list.d/llvm.list; \
+	echo "deb http://ppa.launchpad.net/ubuntu-mozilla-security/ppa/ubuntu bionic main" \
+		> /etc/apt/sources.list.d/mozilla.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		libssl-dev clang-9 lld-9 libclang-9-dev make \
+		libssl-dev clang-9 lld-9 libclang-9-dev make firefox \
 		git pkg-config curl time rhash ca-certificates; \
 # set a link to clang-9
 	ln -s /usr/bin/clang-9 /usr/bin/clang; \
