@@ -18,8 +18,18 @@ dockerfiles/rust-builder/README.md" \
 
 WORKDIR /builds
 
+# Mozilla's Ubuntu PPA key
+COPY utility/mozilla.key /etc/apt/trusted.gpg.d/ubuntu-mozilla.gpg
+
+# install tools and dependencies
+RUN set -eux; \
+	echo "deb http://ppa.launchpad.net/ubuntu-mozilla-security/ppa/ubuntu bionic main" \
+		> /etc/apt/sources.list.d/mozilla.list; \
+	apt-get -y update; \
+	apt-get install -y --no-install-recommends \
+		firefox; \
 # install cargo tools
-RUN cargo install cargo-audit cargo-web wasm-pack; \
+	cargo install cargo-audit cargo-web wasm-pack; \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
@@ -28,6 +38,10 @@ RUN cargo install cargo-audit cargo-web wasm-pack; \
 # versions
 	rustup show; \
 	cargo --version; \
+# apt clean up
+	apt-get autoremove -y; \
+	apt-get clean; \
+	rm -rf /var/lib/apt/lists/*; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf $CARGO_HOME/registry; \

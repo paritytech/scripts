@@ -6,6 +6,8 @@ Used to build and test Substrate-based projects.
 
 ## Dependencies and Tools
 
+- `firefox`
+
 **Inherited from `<base-ci-linux:latest>`:**
 
 - `clang-8`
