@@ -20,7 +20,9 @@ WORKDIR /builds
 
 # install specific Rust nightly toolchain
 # see on https://rust-lang.github.io/rustup-components-history/
-RUN	rustup default nightly-2020-02-17; \
+RUN	rustup install nightly-2020-02-01; \
+	rustup component add --toolchain nightly-2020-02-01 clippy; \
+	rustup default nightly-2020-02-17; \
 # install wasm32 target for this toolchain
     rustup target add wasm32-unknown-unknown; \
 # install cargo tools
