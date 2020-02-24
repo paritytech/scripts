@@ -27,7 +27,7 @@ RUN set -eux; \
 		apt-get install -y --no-install-recommends \
 		npm yarn wabt unzip; \
 # install wasm toolchain
-    rustup target add wasm32-unknown-unknown --toolchain nightly; \
+	rustup target add wasm32-unknown-unknown --toolchain nightly; \
 # install cargo tools
 	rustup component add rustfmt; \
 	rustup component add rust-src rustfmt --toolchain nightly; \
