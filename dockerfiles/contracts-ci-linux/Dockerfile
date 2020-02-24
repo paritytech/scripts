@@ -30,8 +30,8 @@ RUN set -eux; \
     rustup target add wasm32-unknown-unknown --toolchain nightly; \
 # install cargo tools
 	rustup component add rust-src rustfmt; \
-    cargo install pwasm-utils-cli --bin wasm-prune; \
-    cargo install --git https://github.com/paritytech/cargo-contract; \
+	cargo install pwasm-utils-cli --bin wasm-prune; \
+	cargo install --git https://github.com/paritytech/cargo-contract; \
 # versions
 	yarn --version; \
 	rustup show; \
