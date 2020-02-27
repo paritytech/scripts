@@ -135,12 +135,16 @@ cleanup() {
 ## MAIN ##
 
 cat << EOF
-[!] Parity Ethereum is now Open Ethereum! As a result, this script will no longer
-be maintained, and there are no guarantees about availability of the binaries.
-The new home for Open Ethereum is https://github.com/OpenEthereum/open-ethereum/
-Any further development of the project can be tracked from this page.
-For more information, see: https://www.parity.io/parity-ethereum-openethereum-dao/
++====================================================================================+
+| [!] Parity Ethereum is now Open Ethereum! As a result, this script will no longer  |
+| be maintained, and there are no guarantees about availability of the binaries.     |
+| The new home for Open Ethereum is https://github.com/OpenEthereum/open-ethereum/   |
+| Any further development of the project can be tracked from this page.              |
+| For more information, see: https://www.parity.io/parity-ethereum-openethereum-dao/ |
+=====================================================================================+
+
 EOF
+sleep 2
 
 ## curl installed? 
 which curl &> /dev/null 
