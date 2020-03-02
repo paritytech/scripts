@@ -1,5 +1,6 @@
 # DockerHub's official https://hub.docker.com/_/rust
-FROM parity/rust-builder:latest
+#FROM parity/rust-builder:latest
+FROM debian:buster
 
 # install tools and dependencies
 RUN apt -y update; apt -y install curl
@@ -15,6 +16,7 @@ RUN curl -O -L https://packages.microsoft.com/config/ubuntu/18.04/packages-micro
 
 RUN curl -O -L https://github.com/actions/runner/releases/download/v2.165.2/actions-runner-linux-x64-2.165.2.tar.gz
 RUN tar xzf ./actions-runner-linux-x64-2.165.2.tar.gz
+RUN apt -y install jq
 COPY entrypoint.sh /
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT /entrypoint.sh

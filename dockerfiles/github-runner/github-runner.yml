@@ -1,0 +1,48 @@
+# github-runner
+# github-runner.yaml
+---
+kind: Namespace
+apiVersion: v1
+metadata:
+  name: github-runner
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: github-runner
+  namespace: github-runner
+  labels:
+    app: github-runner
+spec:
+  replicas: 2
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: github-runner
+  template:
+    metadata:
+      labels:
+        app: github-runner
+        ref: github-runner-testing-env
+    spec:
+      containers:
+      - name: github-runner
+        imagePullPolicy: Always
+        image: gcr.io/test-installations-222013/github-runner:v0.1
+        env:
+          - name: ADMIN_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: github
+                key: token
+          - name: REPO
+            value: "s3krit/bottestingarena"
+        #resources:
+        #  requests:
+        #    memory: 2048Mi
+        #    cpu: 1500m
+        command: [ "/entrypoint.sh" ]
+        #volumeMounts:
+        #- name: builddir
+        #  mountPath: /actions-runner/builds
