@@ -27,9 +27,6 @@ COPY utility/debian-llvm-clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.g
 # Mozilla's Ubuntu PPA
 COPY utility/mozilla.key /etc/apt/trusted.gpg.d/ubuntu-mozilla.gpg
 
-# copy cmake
-COPY utility/cmake.sh cmake.sh
-
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo \
     PATH=/usr/local/cargo/bin:$PATH \
@@ -48,13 +45,11 @@ RUN set -eux; \
 		> /etc/apt/sources.list.d/mozilla.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		libssl-dev clang-9 lld-9 libclang-9-dev make firefox \
+		libssl-dev clang-9 lld-9 libclang-9-dev cmake make firefox \
 		git pkg-config curl time rhash ca-certificates; \
 # set a link to clang-9
 	ln -s /usr/bin/clang-9 /usr/bin/clang; \
 	ln -sf /usr/bin/clang-9 /usr/bin/cc;\
-# install cmake
-	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
 # install rustup
 	chmod +x rustup-init; \
 	./rustup-init -y --no-modify-path --default-toolchain stable; \
@@ -71,8 +66,6 @@ RUN set -eux; \
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
 # install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
 	cargo +nightly install --git https://github.com/alexcrichton/wasm-gc; \
-# versions
-	cmake --version; \
 	rustup show; \
 	cargo --version; \
 # cargo clean up
@@ -83,8 +76,7 @@ RUN set -eux; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*; \
-	rm cmake.sh
+	rm -rf /var/lib/apt/lists/*
 
 # cache handler
 ENV	RUSTC_WRAPPER=sccache \
