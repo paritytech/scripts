@@ -27,9 +27,6 @@ COPY utility/base-ci-linux-config /root/.cargo/config
 # Most notably, clang 9 has WASM support enabled by default.
 COPY utility/debian-llvm-clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
 
-# copy cmake
-COPY utility/cmake.sh cmake.sh
-
 ENV RUSTUP_HOME=/usr/local/rustup \
 	CARGO_HOME=/usr/local/cargo \
 	PATH=/usr/local/cargo/bin:$PATH \
@@ -47,13 +44,11 @@ RUN set -eux; \
 		>> /etc/apt/sources.list.d/llvm.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		libssl-dev clang-9 lld-9 libclang-9-dev make \
+		libssl-dev clang-9 lld-9 libclang-9-dev make cmake \
 		git pkg-config curl time rhash ca-certificates; \
 # set a link to clang-9
 	ln -s /usr/bin/clang-9 /usr/bin/clang; \
 	ln -sf /usr/bin/clang-9 /usr/bin/cc; \
-# install cmake
-	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
 # install rustup
   	chmod +x rustup-init; \
   	./rustup-init -y --no-modify-path --default-toolchain stable; \
@@ -64,7 +59,6 @@ RUN set -eux; \
 # install sccache
 	cargo install sccache --features redis; \
 # versions
-	cmake --version; \
 	rustup show; \
 	cargo --version; \
 # cargo clean up
@@ -75,9 +69,7 @@ RUN set -eux; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*; \
-	rm cmake.sh
-
+	rm -rf /var/lib/apt/lists/*
 # cache handler
 ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
