@@ -10,9 +10,9 @@ Used to build and test Substrate-based projects.
 
 **Dependencies and Tools:**
 
-- `clang-9`
-- `libclang-9-dev`
-- `lld-9`
+- `clang`
+- `libclang-dev`
+- `lld`
 - `cmake`
 - `curl`
 - `git`
