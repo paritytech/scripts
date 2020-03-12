@@ -7,7 +7,7 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="parity/rust-builder" \
-	io.parity.image.description="libssl-dev clang-9 libclang-9-dev lld-9 cmake make git pkg-config \
+	io.parity.image.description="libssl-dev clang libclang-dev lld cmake make git pkg-config \
 curl time rhash rust stable, rust nightly, cargo-audit, sccache, wasm-gc" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-builder/Dockerfile" \
@@ -21,9 +21,6 @@ WORKDIR /builds
 # config for wasm32-unknown-unknown
 COPY utility/rust-builder-config /root/.cargo/config
 
-# gcc and clang are necessary to be able to compile crates that have build scripts
-# Most notably, clang 9 has WASM support enabled by default.
-COPY utility/debian-llvm-clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
 # Mozilla's Ubuntu PPA
 COPY utility/mozilla.key /etc/apt/trusted.gpg.d/ubuntu-mozilla.gpg
 
@@ -37,19 +34,14 @@ ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-in
 
 # install tools and dependencies
 RUN set -eux; \
-	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
-		> /etc/apt/sources.list.d/llvm.list; \
-	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
-		>> /etc/apt/sources.list.d/llvm.list; \
 	echo "deb http://ppa.launchpad.net/ubuntu-mozilla-security/ppa/ubuntu bionic main" \
 		> /etc/apt/sources.list.d/mozilla.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		libssl-dev clang-9 lld-9 libclang-9-dev cmake make firefox \
+		libssl-dev clang lld libclang-dev cmake make firefox \
 		git pkg-config curl time rhash ca-certificates; \
-# set a link to clang-9
-	ln -s /usr/bin/clang-9 /usr/bin/clang; \
-	ln -sf /usr/bin/clang-9 /usr/bin/cc;\
+# set a link to clang
+	ln -sf /usr/bin/clang /usr/bin/cc;\
 # install rustup
 	chmod +x rustup-init; \
 	./rustup-init -y --no-modify-path --default-toolchain stable; \
