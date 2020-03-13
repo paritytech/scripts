@@ -22,6 +22,7 @@ Used to build and test Substrate-based projects.
 - `rhash`
 - `rust-builder`
 - `time`
+- `ca-certificates`
 
 **Rust versions:**
 

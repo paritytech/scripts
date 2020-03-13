@@ -6,7 +6,8 @@ Used to build and test Substrate-based projects.
 
 ## Dependencies and Tools
 
-- `firefox`
+- `firefox-esr`
+- `geckodriver`
 
 **Inherited from `<base-ci-linux:latest>`:**
 
@@ -22,6 +23,7 @@ Used to build and test Substrate-based projects.
 - `rhash`
 - `rust-builder`
 - `time`
+- `ca-certificates`
 
 **Rust versions:**
 
@@ -34,6 +36,7 @@ Used to build and test Substrate-based projects.
 - `cargo-web`
 - `sccache`
 - `wasm-pack`
+- `wasm-bindgen`
 - `wasm32-unknown-unknown` toolchain
 
 [Click here](https://registry.parity.io/parity/infrastructure/scripts/substrate-ci-linux) for the registry.

@@ -10,7 +10,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/base-ci-linux" \
 	io.parity.image.description="Layer 1 image with all dependencies for Rust and WASM compilation. \
 libssl-dev clang libclang-dev lld cmake make git pkg-config \
-curl time rhash rust stable, rust nightly, cargo-audit, sccache, wasm-gc" \
+curl time rhash rust stable, rust nightly, cargo-audit, sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-builder/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
