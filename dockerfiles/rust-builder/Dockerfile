@@ -39,7 +39,7 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		libssl-dev clang lld libclang-dev cmake make firefox \
-		git pkg-config curl time rhash ca-certificates; \
+		git pkg-config curl time rhash ca-certificates firefox-geckodriver; \
 # set a link to clang
 	ln -sf /usr/bin/clang /usr/bin/cc;\
 # install rustup
