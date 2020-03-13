@@ -18,18 +18,25 @@ Used to build and test `Substrate`-based projects.
 - `rhash`
 - `rust-builder`
 - `time`
-- `firefox`
+- `ca-certificates`
+- `firefox-esr`
+- `geckodriver`
 
 **Rust versions:**
 
 - stable (default)
 - nightly
 
-[Click here](https://registry.parity.io/parity/infrastructure/scripts/base-ci-linux) for the registry.
+[Click here](https://hub.docker.com/repository/docker/parity/rust-builder) for the registry.
 
 **Rust tools & toolchains:**
 
+- `cargo-audit`
+- `cargo-web`
 - `sccache`
+- `wasm-pack`
+- `wasm-bindgen`
+- `wasm32-unknown-unknown` toolchain
 
 ## Usage
 
