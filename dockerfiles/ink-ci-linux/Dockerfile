@@ -23,7 +23,7 @@ WORKDIR /builds
 RUN	rustup install nightly-2020-02-01; \
 	rustup component add --toolchain nightly-2020-02-01 clippy; \
 	rustup target add --toolchain nightly-2020-02-01 wasm32-unknown-unknown; \
-	rustup default nightly-2020-02-17; \
+	rustup default nightly-2020-03-12; \
 # install wasm32 target for this toolchain
     rustup target add wasm32-unknown-unknown; \
 # install cargo tools
