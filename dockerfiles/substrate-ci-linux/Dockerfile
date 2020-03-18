@@ -26,12 +26,12 @@ RUN set -eux; \
 # install geckodriver
 	curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest \
 		| grep 'browser_download_url.*linux64.tar.gz"' \
-		| cut -d : -f 2,3 | tr -d \" | xargs -n 1 curl -sSL \
-		| tar -xzC /usr/bin; \
+		| cut -d : -f 2,3 | sort -V | tail -n1 \
+		| xargs -n 1 curl -sSL | tar -xzC /usr/local/bin ; \
 # install cargo tools
 	cargo install cargo-audit cargo-web wasm-pack; \
 # TODO: install published version once 0.2.60 gets released
-	cargo install --git https://github.com/rustwasm/wasm-bindgen wasm-bindgen-cli; \
+	cargo install wasm-bindgen-cli; \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \

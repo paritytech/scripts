@@ -39,7 +39,7 @@ RUN set -eux; \
 		libssl-dev clang lld libclang-dev make cmake \
 		git pkg-config curl time rhash ca-certificates; \
 # set a link to clang
-	ln -sf /usr/bin/clang /usr/bin/cc; \
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
 # install rustup
   	chmod +x rustup-init; \
   	./rustup-init -y --no-modify-path --default-toolchain stable; \

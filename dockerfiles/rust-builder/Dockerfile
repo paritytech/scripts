@@ -39,10 +39,10 @@ RUN set -eux; \
 # install geckodriver
 	curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest \
 		| grep 'browser_download_url.*linux64.tar.gz"' \
-		| cut -d : -f 2,3 | tr -d \" | xargs -n 1 curl -sSL \
-		| tar -xzC /usr/bin; \
+		| cut -d : -f 2,3 | sort -V | tail -n1 \
+		| xargs -n 1 curl -sSL | tar -xzC /usr/local/bin ; \
 # set a link to clang
-	ln -sf /usr/bin/clang /usr/bin/cc; \
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
 # install rustup
 	chmod +x rustup-init; \
 	./rustup-init -y --no-modify-path --default-toolchain stable; \
@@ -55,7 +55,7 @@ RUN set -eux; \
 		cargo-audit cargo-web wasm-pack; \
 	cargo install sccache --features redis; \
 # TODO: install published version once 0.2.60 gets released
-	cargo install --git https://github.com/rustwasm/wasm-bindgen wasm-bindgen-cli; \
+	cargo install wasm-bindgen-cli; \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
