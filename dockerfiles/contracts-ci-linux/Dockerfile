@@ -33,6 +33,7 @@ RUN set -eux; \
 	rustup component add rust-src rustfmt --toolchain nightly; \
 	cargo install pwasm-utils-cli --bin wasm-prune; \
 	cargo install --git https://github.com/paritytech/cargo-contract; \
+	cargo install solang; \
 # versions
 	yarn --version; \
 	rustup show; \
