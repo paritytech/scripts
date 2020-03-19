@@ -1,4 +1,3 @@
-# DockerHub's official https://hub.docker.com/_/rust
 FROM debian:buster
 
 # metadata
