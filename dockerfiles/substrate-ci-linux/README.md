@@ -39,6 +39,7 @@ Used to build and test Substrate-based projects.
 - `sccache`
 - `wasm-pack`
 - `wasm-bindgen`
+- `cargo-deny`
 - `wasm32-unknown-unknown` toolchain
 
 [Click here](https://registry.parity.io/parity/infrastructure/scripts/substrate-ci-linux) for the registry.
