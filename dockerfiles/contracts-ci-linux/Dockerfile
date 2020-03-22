@@ -17,15 +17,24 @@ dockerfiles/contracts-ci-linux/README.md" \
 
 WORKDIR /builds
 
+COPY utility/debian-llvm-clang.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
 # copy yarn repo key
 COPY utility/yarn.key /etc/apt/trusted.gpg.d/debian-yarn.gpg
 
 # install tools and dependencies
 RUN set -eux; \
-	echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list; \
+	echo "deb https://dl.yarnpkg.com/debian/ stable main"  \
+		> /etc/apt/sources.list.d/yarn.list; \
+	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main" \
+		> /etc/apt/sources.list.d/llvm.list; \
+	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main" \
+		>> /etc/apt/sources.list.d/llvm.list; \
 	apt-get -y update; \
 		apt-get install -y --no-install-recommends \
-		npm yarn wabt unzip; \
+		llvm-8-dev clang-8 zlib1g-dev npm yarn wabt unzip; \
+# set a link to clang-8
+	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100; \
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-8 100; \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
 # install cargo tools
@@ -33,6 +42,7 @@ RUN set -eux; \
 	rustup component add rust-src rustfmt --toolchain nightly; \
 	cargo install pwasm-utils-cli --bin wasm-prune; \
 	cargo install --git https://github.com/paritytech/cargo-contract; \
+	cargo install solang; \
 # versions
 	yarn --version; \
 	rustup show; \

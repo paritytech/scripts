@@ -37,10 +37,7 @@ ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-in
 
 # gcc and clang are necessary to be able to compile crates that have build scripts
 # Most notably, clang 9 has WASM support enabled by default.
-COPY utility/debian-llvm-clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
-
-# copy cmake
-COPY utility/cmake.sh cmake.sh
+COPY utility/debian-llvm-clang.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
 
 # install tools and dependencies
 RUN set -eux; \
@@ -52,13 +49,11 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 # libssl-dev is needed for cargo-audit and sccache
 		clang-9 lld-9 libclang-9-dev \
-		make libudev-dev ca-certificates \
+		make cmake libudev-dev ca-certificates \
 		git libssl-dev pkg-config curl time rhash; \
 # set a link to clang-9
-	ln -s /usr/bin/clang-9 /usr/bin/clang; \
-	ln -sf /usr/bin/clang-9 /usr/bin/cc; \
-# install cmake
-	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
+	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-9 100; \
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-9 100; \
 # install rustup
 	chmod +x rustup-init; \
     ./rustup-init -y --no-modify-path --default-toolchain stable; \
@@ -81,8 +76,6 @@ RUN set -eux; \
 	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
 	rm -rf /usr/doc/*; \
-	rm cmake.sh
-
 # cache handler
 ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
