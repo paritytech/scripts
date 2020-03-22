@@ -9,7 +9,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.title="parity/rust-builder" \
 	io.parity.image.description="libssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config, \
 curl, time, rhash, ca-certificates, firefox-esr, geckodriver; \
-rust stable, rust nightly, cargo-audit, sccache, wasm-gc, wasm-bindgen" \
+rust stable, rust nightly, cargo-audit, sccache, wasm-gc, wasm-bindgen cargo-deny" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-builder/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -52,7 +52,7 @@ RUN set -eux; \
 	rustup install nightly; \
 # install cargo tools
 	cargo install \
-		cargo-audit cargo-web wasm-pack; \
+		cargo-audit cargo-web wasm-pack cargo-deny; \
 	cargo install sccache --features redis; \
 # TODO: install published version once 0.2.60 gets released
 	cargo install wasm-bindgen-cli; \

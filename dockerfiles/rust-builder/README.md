@@ -36,6 +36,7 @@ Used to build and test `Substrate`-based projects.
 - `sccache`
 - `wasm-pack`
 - `wasm-bindgen`
+- `cargo-deny`
 - `wasm32-unknown-unknown` toolchain
 
 ## Usage

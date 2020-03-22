@@ -8,7 +8,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/substrate-ci-linux" \
 	io.parity.image.description="Inherits from base-ci-linux; firefox-esr, geckodriver; \
-wasm-gc, wasm-bindgen" \
+wasm-gc, wasm-bindgen cargo-deny" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-builder/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -29,7 +29,7 @@ RUN set -eux; \
 		| cut -d : -f 2,3 | sort -V | tail -n1 \
 		| xargs -n 1 curl -sSL | tar -xzC /usr/local/bin ; \
 # install cargo tools
-	cargo install cargo-audit cargo-web wasm-pack; \
+	cargo install cargo-audit cargo-web wasm-pack cargo-deny; \
 # TODO: install published version once 0.2.60 gets released
 	cargo install wasm-bindgen-cli; \
 # install wasm toolchain
