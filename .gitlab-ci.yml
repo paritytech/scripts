@@ -269,7 +269,7 @@ terraform:
     CONTAINER_TAG:                 latest
     DOCKERFILE_DIR:                $CI_JOB_NAME
     # https://releases.hashicorp.com/terraform/
-    TERRAFORM_VERSION:            "0.12.21"
+    TERRAFORM_VERSION:            "0.12.24"
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
