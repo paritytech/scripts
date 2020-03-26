@@ -5,7 +5,7 @@
 
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
-	if [[ `whoami` == "root" ]]; then
+	if [[ $(whoami) == "root" ]]; then
 		MAKE_ME_ROOT=
 	else
 		MAKE_ME_ROOT=sudo
@@ -34,52 +34,51 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 	elif [ -f /etc/debian_version ]; then
 		echo "Ubuntu/Debian Linux detected."
 
-		function install_external_wabt() {
+		function install_external_source() {
 			set -e
 
 			if ! [ -x "$(command -v curl)" ] || ! [ -x "$(command -v jq)" ] || ! [ -x "$(command -v tar)" ]; then
-				echo "Installing missing OS packages.";
+				echo "Installing missing OS packages."
 				$MAKE_ME_ROOT apt update
 				$MAKE_ME_ROOT apt install -y curl jq tar
 			fi
 
-			BUILD_NUM=`curl -s https://storage.googleapis.com/wasm-llvm/builds/linux/lkgr.json | jq -r '.build'`
+			BUILD_NUM=$(curl -s https://storage.googleapis.com/wasm-llvm/builds/linux/lkgr.json | jq -r '.build')
 			if [ -z ${BUILD_NUM+x} ]; then
-				echo "Could not fetch the latest build number.";
+				echo "Could not fetch the latest build number."
 				exit 1
 			fi
 
-			tmp=`mktemp -d`
-			pushd $tmp > /dev/null
-			echo "Downloading wasm-binaries.tbz2";
+			tmp=$(mktemp -d)
+			pushd $tmp >/dev/null
+			echo "Downloading wasm-binaries.tbz2"
 			curl -L -o wasm-binaries.tbz2 https://storage.googleapis.com/wasm-llvm/builds/linux/$BUILD_NUM/wasm-binaries.tbz2
 
-			declare -a binaries=("wasm2wat" "wat2wasm") # Default binaries
+			declare -a binaries=("wasm-opt") # Default binaries
 			if [ "$#" -ne 0 ]; then
-				echo "Installing selected binaries.";
-				binaries=("$@");
+				echo "Installing selected binaries."
+				binaries=("$@")
 			else
-				echo "Installing default binaries.";
+				echo "Installing default binaries."
 			fi
 
-			for bin in "${binaries[@]}"
-			do
+			for bin in "${binaries[@]}"; do
 				echo "Installing $bin into ~/.cargo/bin"
-				tar -xvjf wasm-binaries.tbz2 wasm-install/bin/$bin > /dev/null
+				tar -xvjf wasm-binaries.tbz2 wasm-install/bin/$bin >/dev/null
 				cp -f wasm-install/bin/$bin ~/.cargo/bin/
 			done
-			popd > /dev/null
+			popd >/dev/null
 		}
 
-		apt-cache show wabt >/dev/null 2>&1
+		apt-cache show binaryen >/dev/null 2>&1
 		if [ $? == 0 ]; then
 			set -e
 			echo "Setting up Wabt from package manager."
 			$MAKE_ME_ROOT apt update
-			$MAKE_ME_ROOT apt install -y wabt
+			$MAKE_ME_ROOT apt install -y binaryen
 		else
 			echo "Setting up Wabt from external source."
-			install_external_wabt
+			install_external_source
 		fi
 
 	else
