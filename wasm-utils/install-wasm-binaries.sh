@@ -1,5 +1,5 @@
 #!/bin/bash
-# If there is no wabt package, it downloads the missing Wasm binaries.
+# If there is no binaryen package, it downloads the missing Wasm binaries.
 # Copyright (C) Parity Technologies <admin@parity.io>om>
 # License: Apache-2.0
 
@@ -73,11 +73,11 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 		apt-cache show binaryen >/dev/null 2>&1
 		if [ $? == 0 ]; then
 			set -e
-			echo "Setting up Wabt from package manager."
+			echo "Setting up Binaryen from package manager."
 			$MAKE_ME_ROOT apt update
 			$MAKE_ME_ROOT apt install -y binaryen
 		else
-			echo "Setting up Wabt from external source."
+			echo "Setting up wasm-opt from external source."
 			install_external_source
 		fi
 
