@@ -53,9 +53,8 @@ if [[ "$OSTYPE" == "linux-gnu" ]] || [[ "$OSTYPE" == "linux-gnueabihf" ]]; then
     echo "Building llvm-ld for: $ARCH"
 
     tmp=$(mktemp -d)
-    git clone https://github.com/rust-lang/llvm-project.git "$tmp"
+    git clone -b $RUST_LLVM_BRANCH --depth 1 https://github.com/rust-lang/llvm-project.git "$tmp"
     pushd "$tmp"
-    git checkout -b $RUST_LLVM_BRANCH --track origin/$RUST_LLVM_BRANCH
     mkdir -p llvm/tools/lld
     cp -R lld/ llvm/tools/
     mkdir -p "$tmp"/build/arm
