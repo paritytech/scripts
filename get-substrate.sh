@@ -1,6 +1,9 @@
+#!/bin/bash
+# Copyright 2015-2020 Parity Technologies (UK) Ltd.
+
 if [[ "$OSTYPE" == "linux-gnu" ]]; then
 	set -e
-	if [[ `whoami` == "root" ]]; then
+	if [[ $(whoami) == "root" ]]; then
 		MAKE_ME_ROOT=
 	else
 		MAKE_ME_ROOT=sudo
@@ -75,17 +78,12 @@ if [[ "$1" == "--fast" ]]; then
 	echo "You can install manually by cloning the https://github.com/paritytech/substrate repo,"
 	echo "and using cargo to install 'substrate' and 'subkey' from the repo path."
 else 
-	g=`mktemp -d`
-	git clone https://github.com/paritytech/substrate $g
-	pushd $g
+	g=$(mktemp -d)
+	git clone https://github.com/paritytech/substrate "$g"
+	pushd "$g"
 	cargo install --force --path ./bin/node/cli #substrate
 	cargo install --force --path ./bin/utils/subkey subkey
 	popd
 fi
-
-f=`mktemp -d`
-git clone https://github.com/paritytech/substrate-up $f
-cp -a $f/substrate-* ~/.cargo/bin
-cp -a $f/polkadot-* ~/.cargo/bin
 
 echo "Run source ~/.cargo/env now to update environment"
