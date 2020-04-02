@@ -34,13 +34,8 @@ ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-in
 RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		libssl-dev clang lld libclang-dev cmake make firefox-esr \
+		libssl-dev clang lld libclang-dev cmake make chromium-driver \
 		git pkg-config curl time rhash ca-certificates; \
-# install geckodriver
-	curl -s https://api.github.com/repos/mozilla/geckodriver/releases/latest \
-		| grep 'browser_download_url.*linux64.tar.gz"' \
-		| cut -d : -f 2,3 | sort -V | tail -n1 \
-		| xargs -n 1 curl -sSL | tar -xzC /usr/local/bin ; \
 # set a link to clang
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
 # install rustup
