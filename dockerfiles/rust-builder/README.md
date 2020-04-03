@@ -19,8 +19,7 @@ Used to build and test `Substrate`-based projects.
 - `rust-builder`
 - `time`
 - `ca-certificates`
-- `firefox-esr`
-- `geckodriver`
+- `chromium-driver
 
 **Rust versions:**
 
