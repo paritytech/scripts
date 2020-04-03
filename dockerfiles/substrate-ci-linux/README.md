@@ -6,8 +6,7 @@ Used to build and test Substrate-based projects.
 
 ## Dependencies and Tools
 
-- `firefox-esr`
-- `geckodriver`
+- `chromium-driver`
 
 **Inherited from `<base-ci-linux:latest>`:**
 
@@ -24,8 +23,6 @@ Used to build and test Substrate-based projects.
 - `rust-builder`
 - `time`
 - `ca-certificates`
-- `firefox-esr`
-- `geckodriver`
 
 **Rust versions:**
 
