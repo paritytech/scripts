@@ -47,7 +47,7 @@ elif [[ "$OSTYPE" == "darwin"* ]]; then
 		/usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 	fi
 
-	brew upgrade
+	brew update
 	brew install openssl cmake llvm
 elif [[ "$OSTYPE" == "freebsd"* ]]; then
 	echo "FreeBSD detected."
