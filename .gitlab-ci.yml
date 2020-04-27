@@ -222,7 +222,7 @@ tools:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
-# build k8s and helm on top of node 12-alphine 
+# build k8s on top of node 12-alphine 
 chaostools:
   <<: *docker_build
   variables:
@@ -231,9 +231,6 @@ chaostools:
     DOCKERFILE_DIR:                $CI_JOB_NAME
     # https://github.com/kubernetes/kubernetes/releases
     BUILD_KUBE_VERSION:            "1.14.6"
-    # https://github.com/kubernetes/helm/releases
-    # will be overwritten by the global variable at
-    # https://gitlab.parity.io/groups/parity/-/settings/ci_cd
   only:
     variables:
       - $DOCKERIMAGE == "chaostools"
