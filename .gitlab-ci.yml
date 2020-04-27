@@ -234,7 +234,6 @@ chaostools:
     # https://github.com/kubernetes/helm/releases
     # will be overwritten by the global variable at
     # https://gitlab.parity.io/groups/parity/-/settings/ci_cd
-    BUILD_HELM_VERSION:            "2.14.3"
   only:
     variables:
       - $DOCKERIMAGE == "chaostools"
@@ -245,7 +244,6 @@ chaostools:
       | # build of chaostools image
       |
       | KUBE_VERSION = ${BUILD_KUBE_VERSION}
-      | HELM_VERSION = ${BUILD_HELM_VERSION}
       |
       EOT
     - cd dockerfiles/
@@ -253,12 +251,9 @@ chaostools:
       --build-arg VCS_REF="${CI_COMMIT_SHA}"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg KUBE_VERSION="${BUILD_KUBE_VERSION}"
-      --build-arg HELM_VERSION="${BUILD_HELM_VERSION}"
       --tag parity/$CONTAINER_IMAGE:$CONTAINER_TAG
-      --tag parity/$CONTAINER_IMAGE:$BUILD_HELM_VERSION
       --file $DOCKERFILE_DIR/Dockerfile .
     - docker push parity/$CONTAINER_IMAGE:$CONTAINER_TAG
-    - docker push parity/$CONTAINER_IMAGE:$BUILD_HELM_VERSION
 
 # special case as version tags are introduced
 kubetools:
