@@ -260,11 +260,11 @@ kubetools:
     CONTAINER_TAG:                 latest
     DOCKERFILE_DIR:                $CI_JOB_NAME
     # https://github.com/kubernetes/kubernetes/releases
-    BUILD_KUBE_VERSION:            "1.14.6"
+    BUILD_KUBE_VERSION:            "1.18.2"
     # https://github.com/kubernetes/helm/releases
     # will be overwritten by the global variable at
     # https://gitlab.parity.io/groups/parity/-/settings/ci_cd
-    BUILD_HELM_VERSION:            "2.14.3"
+    BUILD_HELM_VERSION:            "2.16.6"
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
