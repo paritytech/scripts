@@ -4,24 +4,23 @@ Docker image based on [official Debian image](https://hub.docker.com/_/debian) d
 
 Used as base for `Substrate`-based CI images.
 
-Docker image based on our base CI image `<base-ci-linux:latest>`.
+Our base CI image `<base-ci-linux:latest>`.
 
 Used to build and test Substrate-based projects.
 
 **Dependencies and Tools:**
 
-- `clang`
-- `libclang-dev`
-- `lld`
-- `cmake`
-- `curl`
-- `git`
 - `libssl-dev`
+- `clang-7`
+- `lld`
+- `libclang-dev`
 - `make`
+- `cmake`
+- `git`
 - `pkg-config`
-- `rhash`
-- `rust-builder`
+- `curl`
 - `time`
+- `rhash`
 - `ca-certificates`
 
 **Rust versions:**
@@ -29,7 +28,7 @@ Used to build and test Substrate-based projects.
 - stable (default)
 - nightly
 
-[Click here](https://registry.parity.io/parity/infrastructure/scripts/base-ci-linux) for the registry.
+[Click here](https://hub.docker.com/repository/docker/paritytech/base-ci-linux) for the registry.
 
 **Rust tools & toolchains:**
 
@@ -38,5 +37,5 @@ Used to build and test Substrate-based projects.
 ## Usage
 
 ```Dockerfile
-FROM registry.parity.io/parity/infrastructure/scripts/base-ci-linux:latest
+FROM paritytech/base-ci-linux:latest
 ```

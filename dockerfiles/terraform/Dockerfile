@@ -1,13 +1,19 @@
 FROM alpine:latest
 
+# metadata
 ARG VCS_REF
 ARG BUILD_DATE
+ARG REGISTRY_PATH
 ARG TERRAFORM_VERSION
 
-# metadata
+ENV VCS_REF=${VCS_REF:-"master"}
+ENV BUILD_DATE=${BUILD_DATE:-""}
+ENV REGISTRY_PATH=${REGISTRY_PATH:-paritytech}
+ENV TERRAFORM_VERSION=${TERRAFORM_VERSION:-"0.12.24"}
+
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="parity/terraform" \
+	io.parity.image.title="${REGISTRY_PATH}/terraform" \
 	io.parity.image.description="ca-certificates git jq make curl gettext; terraform;" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/terraform/Dockerfile" \

@@ -2,13 +2,20 @@ FROM alpine:latest
 
 ARG VCS_REF
 ARG BUILD_DATE
+ARG REGISTRY_PATH
 ARG HELM_VERSION
 ARG KUBE_VERSION
 
 # metadata
+ENV VCS_REF=${VCS_REF:-"master"}
+ENV BUILD_DATE=${BUILD_DATE:-""}
+ENV REGISTRY_PATH=${REGISTRY_PATH:-paritytech}
+ENV HELM_VERSION=${HELM_VERSION:-"2.14.3"}
+ENV KUBE_VERSION=${KUBE_VERSION:-"1.14.6"}
+
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="parity/kubetools" \
+	io.parity.image.title="${REGISTRY_PATH}/kubetools" \
 	io.parity.image.description="ca-certificates git jq make curl gettext; kube helm;" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/kubetools/Dockerfile" \

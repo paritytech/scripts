@@ -2,235 +2,151 @@
 # paritytech/scripts
 #
 
-
 stages:
   - build
   - deploy
   - destroy
 
-
-
-
-
-
 variables:
-  # CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
-  # DOCKER_HOST: tcp://docker:2375
-  DOCKER_HOST: tcp://localhost:2375
-  DOCKER_DRIVER: overlay2
+  # CONTAINER_IMAGE:    registry.gitlab.com/$CI_PROJECT_PATH
+  # DOCKER_HOST:        tcp://docker:2375
+  DOCKER_HOST:          tcp://localhost:2375
+  DOCKER_DRIVER:        overlay2
+  CONTAINER_IMAGE:      $CI_JOB_NAME
+  CONTAINER_TAG:        latest
+  DOCKERFILE_DIR:       $CI_JOB_NAME
 
 
-
-.kubernetes-build:                 &kubernetes-build
+.kubernetes-build:      &kubernetes-build
   only:
     refs:
       - schedules
       - web
-    kubernetes: active
+    kubernetes:         active
   tags:
     - kubernetes-parity-build
 
 
-.build:                            &docker_build
-  stage: build
-  <<:                              *kubernetes-build
-  image:                           docker:stable
+.build:                 &docker_build
+  stage:                build
+  <<:                   *kubernetes-build
+  image:                docker:stable
+  variables:
+    REGISTRY_PATH:      paritytech
   services:
     - docker:dind
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
     - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
-  script:
-    # - docker pull $CONTAINER_IMAGE:$CONTAINER_TAG || true
-    # - docker build --cache-from $CONTAINER_IMAGE:$CONTAINER_TAG --tag $CONTAINER_IMAGE:$CI_BUILD_REF --tag $CONTAINER_IMAGE:$CONTAINER_TAG .
+  script:               &build_and_push_image
     - cd dockerfiles/
     - export CONTAINER_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
     - docker build --no-cache
         --build-arg VCS_REF="${CI_COMMIT_SHA}"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
-        --tag parity/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-        --tag parity/$CONTAINER_IMAGE:$CONTAINER_TAG
+        --build-arg REGISTRY_PATH=$REGISTRY_PATH
+        --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+        --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
         --file $DOCKERFILE_DIR/Dockerfile .
-    - docker push parity/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-    - docker push parity/$CONTAINER_IMAGE:$CONTAINER_TAG
+    - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+    - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
   after_script:
     - docker logout
   environment:
-    name: parity-build
+    name:               parity-build
 
-.build_to_own_reg:                 &docker_build_to_own_reg
-  <<:                              *docker_build
+.build_to_own_reg:      &docker_build_to_own_reg
+  <<:                   *docker_build
+  variables:
+    REGISTRY_PATH:      "registry.parity.io/parity/infrastructure/scripts"
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  script:
-    # $CI_REGISTRY_IMAGE == registry.parity.io/parity/infrastructure/scripts/
-    # $CI_REGISTRY == registry.parity.io/
-    # - docker pull $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_TAG || true
-    - CONTAINER_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
-    # - docker build --cache-from $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_TAG
-    - cd dockerfiles/
-    - docker build --no-cache
-        --build-arg VCS_REF="${CI_COMMIT_SHA}"
-        --build-arg BUILD_DATE="$(date +%Y%m%d)"
-        --tag $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-        --tag $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_TAG
-        --file $DOCKERFILE_DIR/Dockerfile .
-    - docker push $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-    - docker push $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE:$CONTAINER_TAG
+  <<:                   *build_and_push_image
 
+#Build to own registry
 
 base-ci-linux:
-  <<:                              *docker_build_to_own_reg
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-bridge-ci-linux:
-  <<:                              *docker_build_to_own_reg
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
+  <<:                   *docker_build_to_own_reg
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 substrate-ci-linux:
-  <<:                              *docker_build_to_own_reg
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-parity-ci-linux:
-  <<:                              *docker_build_to_own_reg
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-parity-ci-android:
-  <<:                              *docker_build_to_own_reg
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 stretch
-    DOCKERFILE_DIR:                $CI_JOB_NAME
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-parity-ci-i386:
-  <<:                              *docker_build_to_own_reg
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-parity-ci-arm64:
-  <<:                              *docker_build_to_own_reg
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-parity-ci-armhf:
-  <<:                              *docker_build_to_own_reg
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-parity-ci-docs:
-  <<:                              *docker_build_to_own_reg
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-rust-builder:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
+  <<:                   *docker_build_to_own_reg
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 ink-ci-linux:
-  <<:                              *docker_build_to_own_reg
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
+  <<:                   *docker_build_to_own_reg
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 contracts-ci-linux:
-  <<:                              *docker_build_to_own_reg
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
+  <<:                   *docker_build_to_own_reg
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
+#Build to docker hub
+
+base-ci-linux:
+  <<:                   *docker_build
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
+
+substrate-ci-linux:
+  <<:                   *docker_build
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
+
+ink-ci-linux:
+  <<:                   *docker_build
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
+
+contracts-ci-linux:
+  <<:                   *docker_build
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
 awscli:
-  <<:                              *docker_build_to_own_reg
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
+  <<:                   *docker_build
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 tools:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
+  <<:                   *docker_build
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
-# build k8s on top of node 12-alphine 
+query-exporter:
+  <<:                   *docker_build
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
+
+redis-exporter:
+  <<:                   *docker_build
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
+
+# build k8s on top of node 12-alphine
 chaostools:
-  <<: *docker_build
+  <<:                   *docker_build
   variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
     # https://github.com/kubernetes/kubernetes/releases
-    BUILD_KUBE_VERSION:            "1.14.6"
+    BUILD_KUBE_VERSION: "1.14.6"
   only:
     variables:
       - $DOCKERIMAGE == "chaostools"
@@ -247,24 +163,22 @@ chaostools:
     - docker build
       --build-arg VCS_REF="${CI_COMMIT_SHA}"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg REGISTRY_PATH=$REGISTRY_PATH
       --build-arg KUBE_VERSION="${BUILD_KUBE_VERSION}"
-      --tag parity/$CONTAINER_IMAGE:$CONTAINER_TAG
+      --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
       --file $DOCKERFILE_DIR/Dockerfile .
-    - docker push parity/$CONTAINER_IMAGE:$CONTAINER_TAG
+    - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
 
 # special case as version tags are introduced
 kubetools:
-  <<: *docker_build
+  <<:                   *docker_build
   variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
     # https://github.com/kubernetes/kubernetes/releases
-    BUILD_KUBE_VERSION:            "1.14.6"
+    BUILD_KUBE_VERSION: "1.14.6"
     # https://github.com/kubernetes/helm/releases
     # will be overwritten by the global variable at
     # https://gitlab.parity.io/groups/parity/-/settings/ci_cd
-    BUILD_HELM_VERSION:            "2.14.3"
+    BUILD_HELM_VERSION: "2.14.3"
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
@@ -283,23 +197,21 @@ kubetools:
     - docker build
       --build-arg VCS_REF="${CI_COMMIT_SHA}"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg REGISTRY_PATH=$REGISTRY_PATH
       --build-arg KUBE_VERSION="${BUILD_KUBE_VERSION}"
       --build-arg HELM_VERSION="${BUILD_HELM_VERSION}"
-      --tag parity/$CONTAINER_IMAGE:$CONTAINER_TAG
-      --tag parity/$CONTAINER_IMAGE:$BUILD_HELM_VERSION
+      --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
+      --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$BUILD_HELM_VERSION
       --file $DOCKERFILE_DIR/Dockerfile .
-    - docker push parity/$CONTAINER_IMAGE:$CONTAINER_TAG
-    - docker push parity/$CONTAINER_IMAGE:$BUILD_HELM_VERSION
+    - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
+    - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$BUILD_HELM_VERSION
 
 
 terraform:
-  <<: *docker_build
+  <<:                   *docker_build
   variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
     # https://releases.hashicorp.com/terraform/
-    TERRAFORM_VERSION:            "0.12.24"
+    TERRAFORM_VERSION:  "0.12.24"
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
@@ -316,36 +228,14 @@ terraform:
     - docker build
       --build-arg VCS_REF="${CI_COMMIT_SHA}"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg REGISTRY_PATH=$REGISTRY_PATH
       --build-arg TERRAFORM_VERSION="${TERRAFORM_VERSION}"
-      --tag parity/$CONTAINER_IMAGE:$CONTAINER_TAG
-      --tag parity/$CONTAINER_IMAGE:$TERRAFORM_VERSION
+      --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
+      --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$TERRAFORM_VERSION
       --file $DOCKERFILE_DIR/Dockerfile .
-    - docker push parity/$CONTAINER_IMAGE:$CONTAINER_TAG
-    - docker push parity/$CONTAINER_IMAGE:$TERRAFORM_VERSION
+    - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
+    - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$TERRAFORM_VERSION
 
 
 
-
-query-exporter:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-
-redis-exporter:
-  <<: *docker_build
-  variables:
-    CONTAINER_IMAGE:               $CI_JOB_NAME
-    CONTAINER_TAG:                 latest
-    DOCKERFILE_DIR:                $CI_JOB_NAME
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-
-# vim: expandtab sts=2
+# vim:                  expandtab sts=2
