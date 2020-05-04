@@ -174,7 +174,7 @@ kubetools:
   <<:                   *docker_build
   variables:
     # https://github.com/kubernetes/kubernetes/releases
-    UILD_KUBE_VERSION:            "1.18.2"
+    BUILD_KUBE_VERSION:            "1.18.2"
     # https://github.com/kubernetes/helm/releases
     # will be overwritten by the global variable at
     # https://gitlab.parity.io/groups/parity/-/settings/ci_cd
