@@ -2,7 +2,7 @@ ARG VCS_REF
 ARG BUILD_DATE
 ARG REGISTRY_PATH
 
-FROM ${REGISTRY_PATH}/base-ci-linux:latest AS builder
+FROM ${REGISTRY_PATH}/base-ci-linux:latest
 
 # metadata
 ENV VCS_REF=${VCS_REF:-"master"}
