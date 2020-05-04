@@ -10,8 +10,8 @@ ARG KUBE_VERSION
 ENV VCS_REF=${VCS_REF:-"master"}
 ENV BUILD_DATE=${BUILD_DATE:-""}
 ENV REGISTRY_PATH=${REGISTRY_PATH:-paritytech}
-ENV HELM_VERSION=${HELM_VERSION:-"2.14.3"}
-ENV KUBE_VERSION=${KUBE_VERSION:-"1.14.6"}
+ENV HELM_VERSION=${HELM_VERSION:-"2.16.6"}
+ENV KUBE_VERSION=${KUBE_VERSION:-"1.18.2"}
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
