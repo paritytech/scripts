@@ -23,7 +23,7 @@ WORKDIR /builds
 RUN	set -eux; \
 	rustup default nightly-2020-05-03; \
 # install wasm32 target for this toolchain
-	rustup target add --toolchain nightly-2020-05-03 wasm32-unknown-unknown; \
+	rustup target add wasm32-unknown-unknown; \
 # install cargo tools
 	rustup component add rustfmt clippy; \
 	cargo install grcov; \
