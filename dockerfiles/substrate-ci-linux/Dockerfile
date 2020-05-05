@@ -1,6 +1,6 @@
 ARG VCS_REF
 ARG BUILD_DATE
-ARG REGISTRY_PATH
+ARG REGISTRY_PATH=paritytech
 
 FROM ${REGISTRY_PATH}/base-ci-linux:latest
 

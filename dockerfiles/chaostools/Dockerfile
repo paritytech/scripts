@@ -3,7 +3,7 @@ FROM node:12-alpine
 # metadata
 ARG VCS_REF
 ARG BUILD_DATE
-ARG REGISTRY_PATH
+ARG REGISTRY_PATH=paritytech
 ARG KUBE_VERSION
 
 ENV VCS_REF=${VCS_REF:-"master"}

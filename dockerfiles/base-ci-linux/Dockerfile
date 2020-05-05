@@ -3,7 +3,7 @@ FROM debian:buster
 # metadata
 ARG VCS_REF
 ARG BUILD_DATE
-ARG REGISTRY_PATH
+ARG REGISTRY_PATH=paritytech
 
 ENV VCS_REF=${VCS_REF:-"master"}
 ENV BUILD_DATE=${BUILD_DATE:-""}
