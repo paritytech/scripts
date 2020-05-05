@@ -347,23 +347,23 @@ redis-exporter:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 
-container_scanning_own_reg:
-  stage:                           test
-  only:
-    variables:
-      - $DOCKERIMAGE
-  variables:
-    GIT_STRATEGY:                  fetch
-    # CI_APPLICATION_REPOSITORY:     $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE
-    CI_APPLICATION_REPOSITORY:     registry.parity.io/parity/infrastructure/scripts/awscli
-    # CI_APPLICATION_TAG:            $CONTAINER_DATE_TAG
-    CI_APPLICATION_TAG:            latest
-    # DOCKERFILE_PATH:               dockerfiles/$DOCKERFILE_DIR/Dockerfile
-    DOCKERFILE_PATH:               dockerfiles/awscli/Dockerfile
-    # DOCKER_USER:                   $Docker_Hub_User_Parity
-    # DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
+# container_scanning: # for own reg
+#   stage:                           test
+#   only:
+#     variables:
+#       - $DOCKERIMAGE
+#   variables:
+#     GIT_STRATEGY:                  fetch
+#     # CI_APPLICATION_REPOSITORY:     $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE
+#     CI_APPLICATION_REPOSITORY:     registry.parity.io/parity/infrastructure/scripts/awscli
+#     # CI_APPLICATION_TAG:            $CONTAINER_DATE_TAG
+#     CI_APPLICATION_TAG:            latest
+#     # DOCKERFILE_PATH:               dockerfiles/$DOCKERFILE_DIR/Dockerfile
+#     DOCKERFILE_PATH:               dockerfiles/awscli/Dockerfile
+#     # DOCKER_USER:                   $Docker_Hub_User_Parity
+#     # DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
 
-container_scanning_dockerhub:
+container_scanning: # for dockerhub
   stage:                           test
   only:
     variables:
