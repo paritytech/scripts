@@ -347,7 +347,7 @@ redis-exporter:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 
-container_scanning:
+container_scanning_own_reg:
   stage:                           test
   only:
     variables:
@@ -362,9 +362,22 @@ container_scanning:
     DOCKERFILE_PATH:               dockerfiles/awscli/Dockerfile
     # DOCKER_USER:                   $Docker_Hub_User_Parity
     # DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
-  # before_script:
-  #   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  # after_script:
-  #   - docker logout
+
+container_scanning_dockerhub:
+  stage:                           test
+  only:
+    variables:
+      - $DOCKERIMAGE
+  variables:
+    GIT_STRATEGY:                  fetch
+    # CI_APPLICATION_REPOSITORY:     $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE
+    CI_APPLICATION_REPOSITORY:     parity/tools
+    # CI_APPLICATION_TAG:            $CONTAINER_DATE_TAG
+    CI_APPLICATION_TAG:            latest
+    # DOCKERFILE_PATH:               dockerfiles/$DOCKERFILE_DIR/Dockerfile
+    DOCKERFILE_PATH:               dockerfiles/tools/Dockerfile
+    DOCKER_USER:                   $Docker_Hub_User_Parity
+    DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
+
 
  # vim: expandtab sts=2
