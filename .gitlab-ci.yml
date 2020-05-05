@@ -348,8 +348,13 @@ redis-exporter:
 
 
 container_scanning:
-  stage: scan
+  stage:                           scan
+  only:
+    variables:
+      - $DOCKERIMAGE
   variables:
-    GIT_STRATEGY: fetch
+    GIT_STRATEGY:                  fetch
+    CI_APPLICATION_REPOSITORY:     $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE
+    CI_APPLICATION_TAG:            $CONTAINER_DATE_TAG
 
  # vim: expandtab sts=2
