@@ -348,6 +348,7 @@ redis-exporter:
 
 
 container_scanning:
+  stage: scan
   variables:
     GIT_STRATEGY: fetch
 
