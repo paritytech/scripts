@@ -348,8 +348,3 @@ redis-exporter:
 
 
 # vim: expandtab sts=2
-
-### scan
-
-container_scanning:
-  stage:                           scan
