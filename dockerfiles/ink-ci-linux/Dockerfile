@@ -25,7 +25,7 @@ RUN	rustup default nightly-2020-05-03; \
 	rustup target add --toolchain nightly-2020-04-07 wasm32-unknown-unknown; \
 # install cargo tools
 	rustup component add rustfmt clippy; \
-	cargo install grcov; \
+	cargo install grcov rust-covfix; \
 	cargo install --git https://github.com/paritytech/cargo-contract; \
 # versions
 	rustup show; \
