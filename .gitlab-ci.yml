@@ -17,28 +17,24 @@ variables:
   DOCKERFILE_DIR:       $CI_JOB_NAME
 
 
-.kubernetes-build:      &kubernetes-build
+.build:                 &docker_build
+  stage:                build
+  image:                docker:stable
+  variables:
+    REGISTRY_PATH:      paritytech
   only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
     refs:
       - schedules
       - web
     kubernetes:         active
   tags:
     - kubernetes-parity-build
-
-
-.build:                 &docker_build
-  stage:                build
-  <<:                   *kubernetes-build
-  image:                docker:stable
-  variables:
-    REGISTRY_PATH:      paritytech
   services:
     - docker:dind
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
-    - docker info
   script:               &build_and_push_image
     - cd dockerfiles/
     - export CONTAINER_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
@@ -49,97 +45,49 @@ variables:
         --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
         --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
         --file $DOCKERFILE_DIR/Dockerfile .
+    # Push to Dockerhub
+    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker info
     - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
     - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
-  after_script:
+    - docker logout
+    # Push to CI registry
+    # TODO remove when fully switching to dockerhub
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - export REGISTRY_PATH="registry.parity.io/parity/infrastructure/scripts"
+    - docker tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+    - docker tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+    - docker push $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+    - docker push $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
     - docker logout
   environment:
     name:               parity-build
 
-.build_to_own_reg:      &docker_build_to_own_reg
-  <<:                   *docker_build
-  variables:
-    REGISTRY_PATH:      "registry.parity.io/parity/infrastructure/scripts"
-  before_script:
-    - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-  <<:                   *build_and_push_image
-
-#Build to own registry
-
-base-ci-linux:
-  <<:                   *docker_build_to_own_reg
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-substrate-ci-linux:
-  <<:                   *docker_build_to_own_reg
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-ink-ci-linux:
-  <<:                   *docker_build_to_own_reg
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-contracts-ci-linux:
-  <<:                   *docker_build_to_own_reg
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-
-#Build to docker hub
+#Build and push to docker hub and CI registry
 
 base-ci-linux:
   <<:                   *docker_build
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
 
 substrate-ci-linux:
   <<:                   *docker_build
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
 
 ink-ci-linux:
   <<:                   *docker_build
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
 
 contracts-ci-linux:
   <<:                   *docker_build
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
 
 awscli:
   <<:                   *docker_build
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
 
 tools:
   <<:                   *docker_build
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
 
 query-exporter:
   <<:                   *docker_build
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
 
 redis-exporter:
   <<:                   *docker_build
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
 
 # build k8s on top of node 12-alphine
 chaostools:
@@ -147,18 +95,7 @@ chaostools:
   variables:
     # https://github.com/kubernetes/kubernetes/releases
     BUILD_KUBE_VERSION: "1.14.6"
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
   script:
-    - |
-      cat <<-EOT
-      |
-      | # build of chaostools image
-      |
-      | KUBE_VERSION = ${BUILD_KUBE_VERSION}
-      |
-      EOT
     - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="${CI_COMMIT_SHA}"
@@ -167,7 +104,11 @@ chaostools:
       --build-arg KUBE_VERSION="${BUILD_KUBE_VERSION}"
       --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
       --file $DOCKERFILE_DIR/Dockerfile .
+    # Push to Dockerhub
+    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker info
     - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
+    - docker logout
 
 # special case as version tags are introduced
 kubetools:
@@ -179,20 +120,7 @@ kubetools:
     # will be overwritten by the global variable at
     # https://gitlab.parity.io/groups/parity/-/settings/ci_cd
     BUILD_HELM_VERSION:            "2.16.6"
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
-      - $DOCKERIMAGE == "kubetools"
   script:
-    - |
-      cat <<-EOT
-      |
-      | # build of kubetools image
-      |
-      | KUBE_VERSION = ${BUILD_KUBE_VERSION}
-      | HELM_VERSION = ${BUILD_HELM_VERSION}
-      |
-      EOT
     - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="${CI_COMMIT_SHA}"
@@ -203,8 +131,12 @@ kubetools:
       --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
       --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$BUILD_HELM_VERSION
       --file $DOCKERFILE_DIR/Dockerfile .
+    # Push to Dockerhub
+    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker info
     - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
     - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$BUILD_HELM_VERSION
+    - docker logout
 
 
 terraform:
@@ -212,18 +144,7 @@ terraform:
   variables:
     # https://releases.hashicorp.com/terraform/
     TERRAFORM_VERSION:  "0.12.24"
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
   script:
-    - |
-      cat <<-EOT
-      |
-      | # build of terraform image
-      |
-      | TERRAFORM_VERSION = ${TERRAFORM_VERSION}
-      |
-      EOT
     - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="${CI_COMMIT_SHA}"
@@ -233,8 +154,12 @@ terraform:
       --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
       --tag $REGISTRY_PATH/$CONTAINER_IMAGE:$TERRAFORM_VERSION
       --file $DOCKERFILE_DIR/Dockerfile .
+    # Push to Dockerhub
+    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker info
     - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
     - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$TERRAFORM_VERSION
+    - docker logout
 
 
 
