@@ -356,5 +356,9 @@ container_scanning:
     GIT_STRATEGY:                  fetch
     CI_APPLICATION_REPOSITORY:     $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE
     CI_APPLICATION_TAG:            $CONTAINER_DATE_TAG
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  after_script:
+    - docker logout
 
  # vim: expandtab sts=2
