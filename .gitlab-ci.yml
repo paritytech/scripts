@@ -358,8 +358,8 @@ container_scanning:
     CI_APPLICATION_REPOSITORY:     registry.parity.io/parity/infrastructure/scripts/awscli
     # CI_APPLICATION_TAG:            $CONTAINER_DATE_TAG
     CI_APPLICATION_TAG:            latest
-    # DOCKERFILE_PATH:               dockerfiles/$DOCKERFILE_DIR
-    DOCKERFILE_PATH:               dockerfiles/awscli
+    # DOCKERFILE_PATH:               dockerfiles/$DOCKERFILE_DIR/Dockerfile
+    DOCKERFILE_PATH:               dockerfiles/awscli/Dockerfile
     # DOCKER_USER:                   $Docker_Hub_User_Parity
     # DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
   # before_script:
