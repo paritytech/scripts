@@ -1,16 +1,11 @@
 FROM node:12-alpine
 
-# metadata
-ARG VCS_REF
-ARG BUILD_DATE
+ARG VCS_REF=master
+ARG BUILD_DATE=""
 ARG REGISTRY_PATH=paritytech
-ARG KUBE_VERSION
+ARG KUBE_VERSION="1.14.6"
 
-ENV VCS_REF=${VCS_REF:-"master"}
-ENV BUILD_DATE=${BUILD_DATE:-""}
-ENV REGISTRY_PATH=${REGISTRY_PATH:-paritytech}
-ENV KUBE_VERSION=${KUBE_VERSION:-"1.14.6"}
-
+# metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/kubetools" \

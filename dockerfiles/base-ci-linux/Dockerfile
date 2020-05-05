@@ -1,14 +1,10 @@
 FROM debian:buster
 
-# metadata
-ARG VCS_REF
-ARG BUILD_DATE
+ARG VCS_REF=master
+ARG BUILD_DATE=""
 ARG REGISTRY_PATH=paritytech
 
-ENV VCS_REF=${VCS_REF:-"master"}
-ENV BUILD_DATE=${BUILD_DATE:-""}
-ENV REGISTRY_PATH=${REGISTRY_PATH:-paritytech}
-
+# metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/base-ci-linux" \

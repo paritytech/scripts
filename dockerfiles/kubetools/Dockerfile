@@ -1,18 +1,12 @@
 FROM alpine:latest
 
-ARG VCS_REF
-ARG BUILD_DATE
+ARG VCS_REF=master
+ARG BUILD_DATE=""
 ARG REGISTRY_PATH=paritytech
-ARG HELM_VERSION
-ARG KUBE_VERSION
+ARG HELM_VERSION="2.16.6"
+ARG KUBE_VERSION="1.18.2"
 
 # metadata
-ENV VCS_REF=${VCS_REF:-"master"}
-ENV BUILD_DATE=${BUILD_DATE:-""}
-ENV REGISTRY_PATH=${REGISTRY_PATH:-paritytech}
-ENV HELM_VERSION=${HELM_VERSION:-"2.16.6"}
-ENV KUBE_VERSION=${KUBE_VERSION:-"1.18.2"}
-
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/kubetools" \

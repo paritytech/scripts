@@ -1,3 +1,4 @@
+#docker image from https://github.com/oliver006/redis_exporter
 FROM golang:1.13-alpine as builder
 
 RUN apk --no-cache add ca-certificates git
@@ -15,5 +16,3 @@ USER 59000:59000
 
 EXPOSE     9121
 ENTRYPOINT [ "/redis_exporter" ]
-
-
