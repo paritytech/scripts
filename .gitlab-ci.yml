@@ -348,16 +348,18 @@ redis-exporter:
 
 
 container_scanning:
-  stage:                           scan
+  stage:                           test
   only:
     variables:
       - $DOCKERIMAGE
   variables:
     GIT_STRATEGY:                  fetch
-    CI_APPLICATION_REPOSITORY:     $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE
-    CI_APPLICATION_TAG:            $CONTAINER_DATE_TAG
-    DOCKER_USER:                   $Docker_Hub_User_Parity
-    DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
+    # CI_APPLICATION_REPOSITORY:     $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE
+    CI_APPLICATION_REPOSITORY:     registry.parity.io/parity/infrastructure/scripts/awscli
+    # CI_APPLICATION_TAG:            $CONTAINER_DATE_TAG
+    CI_APPLICATION_TAG:            latest
+    # DOCKER_USER:                   $Docker_Hub_User_Parity
+    # DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
   # before_script:
   #   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   # after_script:
