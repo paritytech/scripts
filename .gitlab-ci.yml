@@ -347,4 +347,8 @@ redis-exporter:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 
-# vim: expandtab sts=2
+container_scanning:
+  variables:
+    GIT_STRATEGY: fetch
+
+ # vim: expandtab sts=2
