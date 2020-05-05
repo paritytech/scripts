@@ -346,7 +346,7 @@ redis-exporter:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
-
+# TODO: do not forget to unprotect a branch
 # container_scanning: # for own reg
 #   stage:                           test
 #   only:
@@ -356,7 +356,7 @@ redis-exporter:
 #     GIT_STRATEGY:                  fetch
 #     # CI_APPLICATION_REPOSITORY:     $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE
 #     CI_APPLICATION_REPOSITORY:     registry.parity.io/parity/infrastructure/scripts/awscli
-#     # CI_APPLICATION_TAG:            $CONTAINER_DATE_TAG
+#     # CI_APPLICATION_TAG:            $CONTAINER_DATE_TAG OR $CONTAINER_TAG
 #     CI_APPLICATION_TAG:            latest
 #     # DOCKERFILE_PATH:               dockerfiles/$DOCKERFILE_DIR/Dockerfile
 #     DOCKERFILE_PATH:               dockerfiles/awscli/Dockerfile
@@ -372,7 +372,7 @@ container_scanning: # for dockerhub
     GIT_STRATEGY:                  fetch
     # CI_APPLICATION_REPOSITORY:     $CI_REGISTRY_IMAGE/$CONTAINER_IMAGE
     CI_APPLICATION_REPOSITORY:     parity/tools
-    # CI_APPLICATION_TAG:            $CONTAINER_DATE_TAG
+    # CI_APPLICATION_TAG:            $CONTAINER_DATE_TAG OR $CONTAINER_TAG
     CI_APPLICATION_TAG:            latest
     # DOCKERFILE_PATH:               dockerfiles/$DOCKERFILE_DIR/Dockerfile
     DOCKERFILE_PATH:               dockerfiles/tools/Dockerfile
