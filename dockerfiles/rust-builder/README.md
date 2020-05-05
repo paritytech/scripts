@@ -1,20 +1,46 @@
 # Rust-builder
-Docker image based on [official Rust image](https://hub.docker.com/_/rust).
+
+Docker image based on [official Debian image](https://hub.docker.com/_/debian) debian:buster.
 
 Used to build and test `Substrate`-based projects.
 
-Dependencies and tools: `g++`, `libssl-dev`, `gcc`, `clang-9`,  
-`cmake`, `make`, `git`, `pkg-config`, `curl`, `time`, `rhash`.
+**Dependencies and Tools:**
 
-Rust versions: stable - default, nightly.
+- `clang`
+- `libclang-dev`
+- `lld`
+- `cmake`
+- `curl`
+- `git`
+- `libssl-dev`
+- `make`
+- `pkg-config`
+- `rhash`
+- `rust-builder`
+- `time`
+- `ca-certificates`
+- `chromium-driver
 
-Rust tools: `cargo-audit`, `sccache`, `cargo web` and `wasm-pack`,  
-`wasm32-unknown-unknown` target.
+**Rust versions:**
 
-Link to registry: https://registry.parity.io/v2/...
+- stable (default)
+- nightly
 
-## Usage:
-```
+[Click here](https://hub.docker.com/repository/docker/parity/rust-builder) for the registry.
+
+**Rust tools & toolchains:**
+
+- `cargo-audit`
+- `cargo-web`
+- `sccache`
+- `wasm-pack`
+- `wasm-bindgen`
+- `cargo-deny`
+- `wasm32-unknown-unknown` toolchain
+
+## Usage
+
+```yaml
 build-substrate:
     stage: build
         image: parity/rust-builder:latest

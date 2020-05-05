@@ -1,6 +1,6 @@
-# substrate-ci-linux
+# base-ci-linux
 
-Docker image based on [official Rust image](https://hub.docker.com/_/rust).
+Docker image based on [official Debian image](https://hub.docker.com/_/debian) debian:buster.
 
 Used as base for `Substrate`-based CI images.
 
@@ -10,11 +10,11 @@ Used to build and test Substrate-based projects.
 
 **Dependencies and Tools:**
 
-- `clang-9`
+- `clang`
+- `libclang-dev`
+- `lld`
 - `cmake`
 - `curl`
-- `g++`
-- `gcc`
 - `git`
 - `libssl-dev`
 - `make`
@@ -22,6 +22,7 @@ Used to build and test Substrate-based projects.
 - `rhash`
 - `rust-builder`
 - `time`
+- `ca-certificates`
 
 **Rust versions:**
 
@@ -29,6 +30,10 @@ Used to build and test Substrate-based projects.
 - nightly
 
 [Click here](https://registry.parity.io/parity/infrastructure/scripts/base-ci-linux) for the registry.
+
+**Rust tools & toolchains:**
+
+- `sccache`
 
 ## Usage
 

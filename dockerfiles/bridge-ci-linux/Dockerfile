@@ -22,21 +22,13 @@ WORKDIR /builds
 ADD "https://releases.parity.io/ethereum/stable/x86_64-unknown-linux-gnu/parity" /usr/bin/
 RUN chmod +x /usr/bin/parity; \
 #instal Solidity Compiler
-  set -eux; \
-	apt-get update -y; \
-  apt-get install -y --no-install-recommends software-properties-common apt-transport-https; \
-  add-apt-repository ppa:ethereum/ethereum -y; \
-  apt-get update -y; \
-  apt-get install solc -y; \
-# apt clean up
-	apt-get autoremove -y; \
-	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*
+	set -eux; \
+	snap install solc
 
 # compiler ENV
-ENV CC=gcc \
-		CXX=g++ \
-	# cache handler
-		RUSTC_WRAPPER=sccache \
-	# show backtraces
-		RUST_BACKTRACE=1
+ENV CC=clang \
+	CXX=clang \
+# cache handler
+	RUSTC_WRAPPER=sccache \
+# show backtraces
+	RUST_BACKTRACE=1

@@ -1,4 +1,4 @@
-# Ink-ci-linux
+# ink! CI for Linux Distributions
 
 Docker image based on our base CI image `<base-ci-linux:latest>`.
 
@@ -8,11 +8,11 @@ Used to build and test ink!.
 
 **Inherited from `<base-ci-linux:latest>`:**
 
-- `clang-8`
+- `clang-9`
 - `cmake`
 - `curl`
-- `g++`
-- `gcc`
+- `libclang-9-dev`
+- `lld-9`
 - `git`
 - `libssl-dev`
 - `make`
@@ -35,7 +35,6 @@ The [`rustup` component history](https://rust-lang.github.io/rustup-components-h
 
 - `clippy`
 - `rustfmt`
-- `sccache`
 - `grcov`
 - `cargo-contract`
 - `wasm32-unknown-unknown` toolchain

@@ -6,6 +6,8 @@ Used to build and test Substrate-based projects.
 
 ## Dependencies and Tools
 
+- `chromium-driver`
+
 **Inherited from `<base-ci-linux:latest>`:**
 
 - `clang-8`
@@ -20,6 +22,7 @@ Used to build and test Substrate-based projects.
 - `rhash`
 - `rust-builder`
 - `time`
+- `ca-certificates`
 
 **Rust versions:**
 
@@ -32,6 +35,8 @@ Used to build and test Substrate-based projects.
 - `cargo-web`
 - `sccache`
 - `wasm-pack`
+- `wasm-bindgen`
+- `cargo-deny`
 - `wasm32-unknown-unknown` toolchain
 
 [Click here](https://registry.parity.io/parity/infrastructure/scripts/substrate-ci-linux) for the registry.

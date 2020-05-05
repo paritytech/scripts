@@ -1,5 +1,4 @@
-# DockerHub's official https://hub.docker.com/_/rust
-FROM rust:slim-buster
+FROM debian:buster
 
 # metadata
 ARG VCS_REF
@@ -9,8 +8,8 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/base-ci-linux" \
 	io.parity.image.description="Layer 1 image with all dependencies for Rust and WASM compilation. \
-g++ libssl-dev gcc clang-9 libclang-9-dev cmake make git pkg-config curl time rhash \
-rust stable, rust nightly, cargo-audit, sccache, wasm-gc" \
+libssl-dev clang libclang-dev lld cmake make git pkg-config \
+curl time rhash rust stable, rust nightly, cargo-audit, sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-builder/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -20,32 +19,36 @@ dockerfiles/rust-builder/README.md" \
 
 WORKDIR /builds
 
-# config for wasm32-unknown-unknown
+# config for wasm32-unknown-unknown & clang
 COPY utility/base-ci-linux-config /root/.cargo/config
 
-# gcc and clang are necessary to be able to compile crates that have build scripts
-# Most notably, clang 9 has WASM support enabled by default.
-COPY utility/debian-llvm-clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
+ENV RUSTUP_HOME=/usr/local/rustup \
+	CARGO_HOME=/usr/local/cargo \
+	PATH=/usr/local/cargo/bin:$PATH \
+		CC=clang \
+		CXX=clang
 
-# copy cmake
-COPY utility/cmake.sh cmake.sh
+# download rustup
+ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" rustup-init
 
 # install tools and dependencies
 RUN set -eux; \
-	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
-		> /etc/apt/sources.list.d/llvm.list; \
-	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
-		>> /etc/apt/sources.list.d/llvm.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		g++ libssl-dev gcc clang-9 libclang-9-dev make \
-		git pkg-config curl time rhash; \
-# set a link to clang-9
-	ln -s /usr/bin/clang-9 /usr/bin/clang; \
-# install cmake
-	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
+		libssl-dev clang lld libclang-dev make cmake \
+		git pkg-config curl time rhash ca-certificates; \
+# set a link to clang
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
+# install rustup
+  	chmod +x rustup-init; \
+  	./rustup-init -y --no-modify-path --default-toolchain stable; \
+  	rm rustup-init; \
+  	chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+# install Rust nightly, default is stable
+	rustup install nightly; \
+# install sccache
+	cargo install sccache --features redis; \
 # versions
-	cmake --version; \
 	rustup show; \
 	cargo --version; \
 # cargo clean up
@@ -56,5 +59,8 @@ RUN set -eux; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*; \
-	rm cmake.sh
+	rm -rf /var/lib/apt/lists/*
+# cache handler
+ENV	RUSTC_WRAPPER=sccache \
+# show backtraces
+  	RUST_BACKTRACE=1

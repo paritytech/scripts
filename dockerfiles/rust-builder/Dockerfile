@@ -1,5 +1,4 @@
-# DockerHub's official https://hub.docker.com/_/rust
-FROM rust:slim-buster
+FROM debian:buster
 
 # metadata
 ARG VCS_REF
@@ -8,8 +7,9 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="parity/rust-builder" \
-	io.parity.image.description="g++ libssl-dev gcc clang-9 libclang-9-dev cmake make git pkg-config \
-curl time rhash rust stable, rust nightly, cargo-audit, sccache, wasm-gc" \
+	io.parity.image.description="libssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config, \
+curl, time, rhash, ca-certificates, chromium-driver; \
+rust stable, rust nightly, cargo-audit, sccache, wasm-gc, wasm-bindgen cargo-deny" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-builder/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -22,40 +22,40 @@ WORKDIR /builds
 # config for wasm32-unknown-unknown
 COPY utility/rust-builder-config /root/.cargo/config
 
-# gcc and clang are necessary to be able to compile crates that have build scripts
-# Most notably, clang 9 has WASM support enabled by default.
-COPY utility/debian-llvm-clang9.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
-
-# copy cmake
-COPY utility/cmake.sh cmake.sh
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo \
+    PATH=/usr/local/cargo/bin:$PATH \
+    CC=clang \
+	CXX=clang
+# download rustup
+ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" rustup-init
 
 # install tools and dependencies
 RUN set -eux; \
-	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
-		> /etc/apt/sources.list.d/llvm.list; \
-	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-9 main" \
-		>> /etc/apt/sources.list.d/llvm.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		g++ libssl-dev gcc clang-9 libclang-9-dev make \
-		git pkg-config curl time rhash; \
-# set a link to clang-9
-	ln -s /usr/bin/clang-9 /usr/bin/clang; \
-# install cmake
-	./cmake.sh --skip-license --prefix=/usr/ --exclude-subdir; \
+		libssl-dev clang lld libclang-dev cmake make chromium-driver \
+		git pkg-config curl time rhash ca-certificates; \
+# set a link to clang
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
+# install rustup
+	chmod +x rustup-init; \
+	./rustup-init -y --no-modify-path --default-toolchain stable; \
+	rm rustup-init; \
+	chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
 # install Rust nightly, default is stable
 	rustup install nightly; \
 # install cargo tools
 	cargo install \
-		cargo-audit cargo-web wasm-pack; \
+		cargo-audit cargo-web wasm-pack cargo-deny; \
 	cargo install sccache --features redis; \
+# TODO: install published version once 0.2.60 gets released
+	cargo install wasm-bindgen-cli; \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
 # install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
-	cargo +nightly install --git https://github.com/alexcrichton/wasm-gc; \
-# versions
-	cmake --version; \
+	cargo +nightly install wasm-gc; \
 	rustup show; \
 	cargo --version; \
 # cargo clean up
@@ -66,13 +66,9 @@ RUN set -eux; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*; \
-	rm cmake.sh
+	rm -rf /var/lib/apt/lists/*
 
-# compiler ENV
-ENV CC=gcc \
-	CXX=g++ \
 # cache handler
-	RUSTC_WRAPPER=sccache \
+ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
 	RUST_BACKTRACE=1

@@ -1,12 +1,11 @@
 #!/bin/bash
-# Copyright 2015-2019 Parity Technologies (UK) Ltd.
+# Copyright 2015-2020 Parity Technologies (UK) Ltd.
 
 ## Update this with any new relase!
-VERSION_STABLE="2.5.12"
-VERSION_BETA="2.6.7"
+VERSION_STABLE="2.7.2"
 ##
 
-RELEASE="beta"
+RELEASE="stable"
 ARCH=$(uname -m)
 VANITY_SERVICE_URL="https://vanity-service.parity.io/parity-binaries?architecture=$ARCH&format=markdown"
 
@@ -24,39 +23,35 @@ check_os() {
 		echo "Choices:"
 		echo "	     linux - any linux distro"
 		echo "	     darwin - MacOS"
-		read PKG
+		read -r PKG
 	fi
 }
 
 get_package() {
-	if [ "$RELEASE" = "beta" ]; then
-		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=v$VERSION_BETA"
-	elif [ "$RELEASE" = "stable" ]; then
+	if [ "$RELEASE" = "stable" ]; then
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=v$VERSION_STABLE"
 	else
 		LOOKUP_URL="$VANITY_SERVICE_URL&os=$PKG&version=$RELEASE"
 	fi
 
-  MD=$(curl -Ss ${LOOKUP_URL} | grep -v sha256 | grep " \[parity\]")
-  DOWNLOAD_FILE=$(echo $MD | grep -oE 'https://[^)]+')
+  MD=$(curl -Ss "${LOOKUP_URL}" | grep -v sha256 | grep " \[parity\]")
+  DOWNLOAD_FILE=$(echo "$MD" | grep -oE 'https://[^)]+')
 }
 
 check_upgrade() {
 
   # Determine new Version 
   case "$RELEASE" in
-    "beta")  NEW_VERSION=$VERSION_BETA
-        ;;
     "stable") NEW_VERSION=$VERSION_STABLE
         ;;
-    *) NEW_VERSION=$(echo $DOWNLOAD_FILE | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')   
+    *) NEW_VERSION=$(echo "$DOWNLOAD_FILE" | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')   
         ;;
   esac
 
   # Determine old (installed) Version 
   parity_bin=$(which parity)
 
-	if [ -z $parity_bin ] ; then
+	if [ -z "$parity_bin" ] ; then
 		OLD_VERSION="0.0.0"
 	else
 		OLD_VERSION=$(parity --version | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | tr -d 'v')
@@ -76,16 +71,16 @@ check_upgrade() {
 }
 
 install() {
-  TMPDIR=$(mktemp -d) && cd $TMPDIR
-	curl -Ss -O $DOWNLOAD_FILE
+  TMPDIR=$(mktemp -d) && cd "$TMPDIR" || exit
+	curl -Ss -O "$DOWNLOAD_FILE"
   check_sha256
 
 	if [ "$PKG" = "linux" ] ; then
-	  sudo cp $TMPDIR/parity /usr/bin && sudo chmod +x /usr/bin/parity
+	  sudo cp "$TMPDIR"/parity /usr/bin && sudo chmod +x /usr/bin/parity
 	fi
 
 	if [ "$PKG" = "darwin" ] ; then
-	  sudo cp $TMPDIR/parity /usr/local/bin && sudo chmod +x /usr/local/bin/parity
+	  sudo cp "$TMPDIR"/parity /usr/local/bin && sudo chmod +x /usr/local/bin/parity
 	fi
 }
 
@@ -121,11 +116,11 @@ check_sha256() {
   fi
 
   # $SHA256_CHECK $TMPDIR/$DOWNLOAD_FILE 
-  IS_CHECKSUM=$($SHA256_CHECK $TMPDIR/parity | awk '{print $1}')
-  MUST_CHECKSUM=$(curl -sS $LOOKUP_URL | grep ' \[parity\]' | awk '{print $NF'})
+  IS_CHECKSUM=$($SHA256_CHECK "$TMPDIR"/parity | awk '{print $1}')
+  MUST_CHECKSUM=$(curl -sS "$LOOKUP_URL" | grep ' \[parity\]' | awk '{print $NF}')
   # debug # echo -e "is checksum:\t $IS_CHECKSUM"
   # debug # echo -e "must checksum:\t $MUST_CHECKSUM"
-  if [[ $IS_CHECKSUM != $MUST_CHECKSUM ]]; then
+  if [[ $IS_CHECKSUM != "$MUST_CHECKSUM" ]]; then
     echo "SHA256 Checksum missmatch, aboarding installation"
     cleanup
     exit 1 
@@ -133,15 +128,26 @@ check_sha256() {
 }
 
 cleanup() {
-  rm $TMPDIR/*
-  rmdir $TMPDIR
+  rm "$TMPDIR"/*
+  rmdir "$TMPDIR"
 }
 
 ## MAIN ##
 
+cat << EOF
++====================================================================================+
+| [!] Parity Ethereum is now Open Ethereum! As a result, this script will no longer  |
+| be maintained, and there are no guarantees about availability of the binaries.     |
+| The new home for Open Ethereum is https://github.com/OpenEthereum/open-ethereum/   |
+| Any further development of the project can be tracked from this page.              |
+| For more information, see: https://www.parity.io/parity-ethereum-openethereum-dao/ |
+=====================================================================================+
+
+EOF
+sleep 2
+
 ## curl installed? 
-which curl &> /dev/null 
-if [[ $? -ne 0 ]] ; then
+if ! which curl &> /dev/null ; then
     echo '"curl" binary not found, please install and retry'
     exit 1
 fi
@@ -159,6 +165,10 @@ while [ "$1" != "" ]; do
 	done
 
 	echo "Release selected is: $RELEASE"
+  if [ "$RELEASE" == "beta" ]; then
+    echo "[!] As of v2.7.0, parity-ethereum now uses a single release track, 'stable'. All prior versions are now deprecated. In order to continue receiving updates to your parity-ethereum client, please switch to the 'stable' track."
+    exit 1
+  fi
 
 check_os
 get_package

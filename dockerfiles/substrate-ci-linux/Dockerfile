@@ -7,8 +7,8 @@ ARG BUILD_DATE
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/substrate-ci-linux" \
-	io.parity.image.description="Inherits from base-ci-linux. \
-rust stable, rust nightly, cargo-audit, sccache (redis), wasm-gc" \
+	io.parity.image.description="Inherits from base-ci-linux; chromium-driver; \
+wasm-gc, wasm-bindgen cargo-deny" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/rust-builder/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -18,29 +18,29 @@ dockerfiles/rust-builder/README.md" \
 
 WORKDIR /builds
 
-# install Rust nightly, default is stable
-RUN	rustup install nightly; \
+# install tools and dependencies
+RUN set -eux; \
+	apt-get -y update; \
+	apt-get install -y --no-install-recommends \
+		chromium-driver; \
 # install cargo tools
-	cargo install sccache --features redis; \
-	cargo install cargo-audit cargo-web wasm-pack; \
+	cargo install cargo-audit cargo-web wasm-pack cargo-deny; \
+# TODO: install published version once 0.2.60 gets released
+	cargo install wasm-bindgen-cli; \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
 # install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
-	cargo +nightly install --git https://github.com/alexcrichton/wasm-gc; \
+	cargo +nightly install wasm-gc; \
 # versions
 	rustup show; \
 	cargo --version; \
+# apt clean up
+	apt-get autoremove -y; \
+	apt-get clean; \
+	rm -rf /var/lib/apt/lists/*; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf $CARGO_HOME/registry; \
 # removes toolchain's html docs and autocompletions (>300M for each toolchain)
 	rm -rf /usr/local/rustup/toolchains/*/share
-
-# compiler ENV
-ENV CC=gcc \
-	CXX=g++ \
-# cache handler
-	RUSTC_WRAPPER=sccache \
-# show backtraces
-	RUST_BACKTRACE=1
