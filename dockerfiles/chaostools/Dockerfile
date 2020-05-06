@@ -22,7 +22,7 @@ ADD "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/
 
 RUN apk add --no-cache \
 		ca-certificates git jq make curl gettext; \
-	chmod +x /usr/local/bin/kubectl; \
+	chmod +x /usr/local/bin/kubectl;
 
 WORKDIR /config
 
