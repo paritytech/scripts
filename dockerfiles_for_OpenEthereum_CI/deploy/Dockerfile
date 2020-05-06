@@ -3,6 +3,11 @@ FROM ubuntu:xenial
 # metadata
 ARG VCS_REF
 ARG BUILD_DATE
+ARG REGISTRY_PATH
+
+ENV VCS_REF=${VCS_REF:-"master"}
+ENV BUILD_DATE=${BUILD_DATE:-""}
+ENV REGISTRY_PATH=${REGISTRY_PATH:-paritytech}
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
