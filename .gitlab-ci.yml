@@ -96,6 +96,14 @@ chaostools:
     # https://github.com/kubernetes/kubernetes/releases
     BUILD_KUBE_VERSION: "1.14.6"
   script:
+    - |
+      cat <<-EOT
+      |
+      | # build of chaostools image
+      |
+      | KUBE_VERSION = ${BUILD_KUBE_VERSION}
+      |
+      EOT
     - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="${CI_COMMIT_SHA}"
@@ -121,6 +129,15 @@ kubetools:
     # https://gitlab.parity.io/groups/parity/-/settings/ci_cd
     BUILD_HELM_VERSION:            "2.16.6"
   script:
+    - |
+      cat <<-EOT
+      |
+      | # build of kubetools image
+      |
+      | KUBE_VERSION = ${BUILD_KUBE_VERSION}
+      | HELM_VERSION = ${BUILD_HELM_VERSION}
+      |
+      EOT
     - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="${CI_COMMIT_SHA}"
@@ -145,6 +162,14 @@ terraform:
     # https://releases.hashicorp.com/terraform/
     TERRAFORM_VERSION:  "0.12.24"
   script:
+    - |
+      cat <<-EOT
+      |
+      | # build of terraform image
+      |
+      | TERRAFORM_VERSION = ${TERRAFORM_VERSION}
+      |
+      EOT
     - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="${CI_COMMIT_SHA}"
