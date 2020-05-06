@@ -236,6 +236,7 @@ container_scanning: # for dockerhub
       - $DOCKERIMAGE
   variables:
     GIT_STRATEGY:                  fetch
+    REGISTRY_PATH:                 paritytech
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$DOCKERIMAGE
     # CI_APPLICATION_REPOSITORY:     parity/tools
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
