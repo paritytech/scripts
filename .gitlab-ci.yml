@@ -18,6 +18,7 @@ variables:
     # Push to CI registry
     # TODO remove when fully switching to dockerhub
 .push_to_own_reg: &push_to_own_reg
+    - CONTAINER_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - export REGISTRY_PATH="registry.parity.io/parity/infrastructure/scripts"
     - docker tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
@@ -32,8 +33,6 @@ variables:
   variables:
     REGISTRY_PATH:      paritytech
   only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
     refs:
       - schedules
       - web
@@ -62,7 +61,9 @@ variables:
     - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
     - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
     - docker logout
-
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
 #Build and push to docker hub and CI registry
 
