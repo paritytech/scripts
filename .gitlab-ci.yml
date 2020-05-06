@@ -62,7 +62,6 @@ variables:
     name:               parity-build
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-  script:               &build_and_push_image
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
