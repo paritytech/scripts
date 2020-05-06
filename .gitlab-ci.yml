@@ -36,9 +36,8 @@ variables:
     # TODO remove when fully switching to dockerhub
 .push_to_own_reg: &push_to_own_reg
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - export REGISTRY_PATH="registry.parity.io/parity/infrastructure/scripts"
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+    - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker push $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker logout
@@ -48,6 +47,7 @@ variables:
   image:                docker:stable
   variables:
     REGISTRY_PATH:      paritytech
+    CI_REGISTRY_PATH:   "registry.parity.io/parity/infrastructure/scripts"
   only:
     refs:
       - schedules
