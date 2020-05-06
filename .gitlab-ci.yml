@@ -73,9 +73,7 @@ build-em-all:
   script:
     - *push_to_docker_hub
     - *push_to_own_reg
-  variables:
-    - $DOCKERIMAGE
-  
+
 
 # base-ci-linux:
 #   <<:                   *docker_build
@@ -241,12 +239,12 @@ container_scanning: # for dockerhub
       - $DOCKERIMAGE
   variables:
     GIT_STRATEGY:                  fetch
-    # CI_APPLICATION_REPOSITORY:     $CI_REGISTRY_IMAGE/$IMAGE_NAME
-    CI_APPLICATION_REPOSITORY:     parity/tools
-    # CI_APPLICATION_TAG:            $IMAGE_DATE_TAG OR $IMAGE_TAG
-    CI_APPLICATION_TAG:            latest
-    # DOCKERFILE_PATH:               dockerfiles/$DOCKERFILE_DIR/Dockerfile
-    DOCKERFILE_PATH:               dockerfiles/tools/Dockerfile
+    CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
+    # CI_APPLICATION_REPOSITORY:     parity/tools
+    CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
+    # CI_APPLICATION_TAG:            latest
+    DOCKERFILE_PATH:               "dockerfiles/$DOCKERFILE_DIR/Dockerfile"
+    # DOCKERFILE_PATH:               dockerfiles/tools/Dockerfile
     DOCKER_USER:                   $Docker_Hub_User_Parity
     DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
 
