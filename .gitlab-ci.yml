@@ -4,21 +4,7 @@
 
 stages:
   - build
-<<<<<<< HEAD
   - test
-
-
-variables:
-  # CONTAINER_IMAGE: registry.gitlab.com/$CI_PROJECT_PATH
-  # DOCKER_HOST: tcp://docker:2375
-  DOCKER_HOST: tcp://localhost:2375
-  DOCKER_DRIVER: overlay2
-
-
-.kubernetes-build:                 &kubernetes-build
-=======
-  - deploy
-  - destroy
 
 variables:
   # CONTAINER_IMAGE:    registry.gitlab.com/$CI_PROJECT_PATH
@@ -45,7 +31,6 @@ variables:
   image:                docker:stable
   variables:
     REGISTRY_PATH:      paritytech
->>>>>>> master
   only:
     variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
@@ -214,7 +199,6 @@ terraform:
     - docker logout
 
 
-<<<<<<< HEAD
 # TODO: do not forget to unprotect a branch
 # container_scanning: # for own reg
 #   stage:                           test
@@ -250,7 +234,3 @@ container_scanning: # for dockerhub
 
 
  # vim: expandtab sts=2
-=======
-
-# vim:                  expandtab sts=2
->>>>>>> master
