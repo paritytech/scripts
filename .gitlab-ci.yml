@@ -11,9 +11,9 @@ variables:
   # DOCKER_HOST:        tcp://docker:2375
   DOCKER_HOST:          tcp://localhost:2375
   DOCKER_DRIVER:        overlay2
-  IMAGE_NAME:           $DOCKERIMAGE
+  IMAGE_NAME:           $CI_JOB_NAME
   IMAGE_TAG:            latest
-  DOCKERFILE_DIR:       $DOCKERIMAGE
+  DOCKERFILE_DIR:       $CI_JOB_NAME
 
     # Push to Dockerhub
 .push_to_docker_hub: &push_to_docker_hub
@@ -71,39 +71,33 @@ variables:
 include:
   - template: Container-Scanning.gitlab-ci.yml
 
-build-em-all:
+
+base-ci-linux:
   <<:                   *docker_build
   script:
     - *push_to_docker_hub
     - *push_to_own_reg
 
-
-# base-ci-linux:
-#   <<:                   *docker_build
-#   script:
-#     - *push_to_docker_hub
-#     - *push_to_own_reg
-
-# substrate-ci-linux:
-#   <<:                   *docker_build
-#   script:
-#     - *push_to_docker_hub
-#     - *push_to_own_reg
-# ink-ci-linux:
-#   <<:                   *docker_build
-#   script:
-#     - *push_to_docker_hub
-#     - *push_to_own_reg
-# contracts-ci-linux:
-#   <<:                   *docker_build
-#   script:
-#     - *push_to_docker_hub
-#     - *push_to_own_reg
-# awscli:
-#   <<:                   *docker_build
-#   script:
-#     - *push_to_docker_hub
-#     - *push_to_own_reg
+substrate-ci-linux:
+  <<:                   *docker_build
+  script:
+    - *push_to_docker_hub
+    - *push_to_own_reg
+ink-ci-linux:
+  <<:                   *docker_build
+  script:
+    - *push_to_docker_hub
+    - *push_to_own_reg
+contracts-ci-linux:
+  <<:                   *docker_build
+  script:
+    - *push_to_docker_hub
+    - *push_to_own_reg
+awscli:
+  <<:                   *docker_build
+  script:
+    - *push_to_docker_hub
+    - *push_to_own_reg
 
 tools:
   <<:                   *docker_build
@@ -242,11 +236,11 @@ container_scanning: # for dockerhub
       - $DOCKERIMAGE
   variables:
     GIT_STRATEGY:                  fetch
-    CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
+    CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$DOCKERIMAGE
     # CI_APPLICATION_REPOSITORY:     parity/tools
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
     # CI_APPLICATION_TAG:            latest
-    DOCKERFILE_PATH:               "dockerfiles/$DOCKERFILE_DIR/Dockerfile"
+    DOCKERFILE_PATH:               "dockerfiles/${DOCKERFILE_DIR}/Dockerfile"
     # DOCKERFILE_PATH:               dockerfiles/tools/Dockerfile
     DOCKER_USER:                   $Docker_Hub_User_Parity
     DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
