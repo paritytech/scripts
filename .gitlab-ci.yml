@@ -16,6 +16,16 @@ variables:
   CONTAINER_TAG:        latest
   DOCKERFILE_DIR:       $CI_JOB_NAME
 
+    # Push to CI registry
+    # TODO remove when fully switching to dockerhub
+.push_to_own_reg: &push_to_own_reg
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - export REGISTRY_PATH="registry.parity.io/parity/infrastructure/scripts"
+    - docker tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+    - docker tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+    - docker push $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
+    - docker push $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
+    - docker logout
 
 .build:                 &docker_build
   stage:                build
@@ -33,6 +43,8 @@ variables:
     - kubernetes-parity-build
   services:
     - docker:dind
+  environment:
+    name:               parity-build
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
   script:               &build_and_push_image
@@ -51,35 +63,31 @@ variables:
     - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
     - docker push $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
     - docker logout
-    # Push to CI registry
-    # TODO remove when fully switching to dockerhub
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - export REGISTRY_PATH="registry.parity.io/parity/infrastructure/scripts"
-    - docker tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-    - docker tag $REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-    - docker push $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_DATE_TAG
-    - docker push $CI_REGISTRY_PATH/$CONTAINER_IMAGE:$CONTAINER_TAG
-    - docker logout
-  environment:
-    name:               parity-build
+
 
 #Build and push to docker hub and CI registry
 
 base-ci-linux:
   <<:                   *docker_build
+  after_script:
+    - *push_to_own_reg
 
 substrate-ci-linux:
   <<:                   *docker_build
-
+  after_script:
+    - *push_to_own_reg
 ink-ci-linux:
   <<:                   *docker_build
-
+  after_script:
+    - *push_to_own_reg
 contracts-ci-linux:
   <<:                   *docker_build
-
+  after_script:
+    - *push_to_own_reg
 awscli:
   <<:                   *docker_build
-
+  after_script:
+    - *push_to_own_reg
 tools:
   <<:                   *docker_build
 
