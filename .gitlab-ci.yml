@@ -63,7 +63,7 @@ variables:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
   only:
     variables:
-      - $DOCKERIMAGE
+      - $DOCKERIMAGE == $CI_JOB_NAME
 
 #Build and push to docker hub and CI registry
 
