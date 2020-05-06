@@ -1,15 +1,22 @@
-# ink! CI for Linux Distributions
+# contracts! CI for Linux Distributions
 
 Docker image based on our base CI image `<base-ci-linux:latest>`.
 
-Used to build and test ink!.
+Used to build and test contracts!.
 
 ## Dependencies and Tools
+
+- `llvm-8-dev`
+- `clang-8`
+- `zlib1g-dev`
+- `npm`
+- `yarn`
+- `wabt`
+- `unzip`
 
 **Inherited from `<base-ci-linux:latest>`:**
 
 - `libssl-dev`
-- `clang-7`
 - `lld`
 - `libclang-dev`
 - `make`
@@ -33,20 +40,20 @@ The [`rustup` component history](https://rust-lang.github.io/rustup-components-h
 
 **Rust tools & toolchains:**
 
-- `clippy`
 - `rustfmt`
-- `grcov`
 - `cargo-contract`
+- `pwasm-utils-cli`
+- `solang`
 - `wasm32-unknown-unknown` toolchain
 
-[Click here](https://hub.docker.com/repository/docker/paritytech/ink-ci-linux) for the registry.
+[Click here](https://hub.docker.com/repository/docker/paritytech/contracts-ci-linux) for the registry.
 
 ## Usage
 
 ```yaml
-test-ink:
+test-contracts:
     stage: test
-        image: paritytech/ink-ci-linux:latest
+        image: paritytech/contracts-ci-linux:latest
         script:
             - cargo build ...
 ```

@@ -1,19 +1,20 @@
 FROM debian:buster
 
-# metadata
-ARG VCS_REF
-ARG BUILD_DATE
+ARG VCS_REF=master
+ARG BUILD_DATE=""
+ARG REGISTRY_PATH=paritytech
 
+# metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/base-ci-linux" \
+	io.parity.image.title="${REGISTRY_PATH}/base-ci-linux" \
 	io.parity.image.description="Layer 1 image with all dependencies for Rust and WASM compilation. \
-libssl-dev clang libclang-dev lld cmake make git pkg-config \
-curl time rhash rust stable, rust nightly, cargo-audit, sccache" \
+libssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config \
+curl, time, rhash, rust stable, rust nightly, sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/rust-builder/Dockerfile" \
+dockerfiles/base-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/rust-builder/README.md" \
+dockerfiles/base-ci-linux/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
@@ -33,8 +34,8 @@ ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-in
 
 # install tools and dependencies
 RUN set -eux; \
-	apt-get -y update; \
-	apt-get install -y --no-install-recommends \
+	apt -y update; \
+	apt install -y --no-install-recommends \
 		libssl-dev clang lld libclang-dev make cmake \
 		git pkg-config curl time rhash ca-certificates; \
 # set a link to clang
@@ -57,8 +58,8 @@ RUN set -eux; \
 # removes toolchain's html docs and autocompletions (>300M for each toolchain)
 	rm -rf /usr/local/rustup/toolchains/*/share; \
 # apt clean up
-	apt-get autoremove -y; \
-	apt-get clean; \
+	apt autoremove -y; \
+	apt clean; \
 	rm -rf /var/lib/apt/lists/*
 # cache handler
 ENV	RUSTC_WRAPPER=sccache \

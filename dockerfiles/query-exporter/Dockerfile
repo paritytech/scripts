@@ -1,16 +1,15 @@
-# query-exporter Dockerfile
 FROM python:3-alpine
 
-# metadata                                                                                                                                                           
-ARG VCS_REF                                                                                                                                                          
-ARG BUILD_DATE
+ARG VCS_REF=master
+ARG BUILD_DATE=""
+ARG REGISTRY_PATH=paritytech
 
-
+# metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
   io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="parity/query-exporter" \
+	io.parity.image.title="${REGISTRY_PATH}/query-exporter" \
 	io.parity.image.source="https://github.com/paritytech/polkadot/blob/${VCS_REF}/scripts/docker/Dockerfile" \
-	io.parity.image.revision="${VCS_REF}" \                                                                                                                            
+	io.parity.image.revision="${VCS_REF}" \
   io.parity.image.created="${BUILD_DATE}"
 
 RUN \

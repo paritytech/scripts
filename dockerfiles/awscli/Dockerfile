@@ -1,12 +1,13 @@
 FROM python:3.6-alpine
 
 # metadata
-ARG VCS_REF
-ARG BUILD_DATE
+ARG VCS_REF=master
+ARG BUILD_DATE=""
+ARG REGISTRY_PATH=paritytech
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/awscli" \
+	io.parity.image.title="${REGISTRY_PATH}/awscli" \
 	io.parity.image.description="awscli" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/awscli/Dockerfile" \

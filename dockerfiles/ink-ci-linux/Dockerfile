@@ -1,22 +1,21 @@
-FROM registry.parity.io/parity/infrastructure/scripts/base-ci-linux:latest
+ARG VCS_REF=master
+ARG BUILD_DATE
+ARG REGISTRY_PATH=paritytech
+
+FROM ${REGISTRY_PATH}/base-ci-linux:latest
 
 # metadata
-ARG VCS_REF
-ARG BUILD_DATE
-
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="registry.parity.io/parity/infrastructure/scripts/ink-ci-linux" \
+	io.parity.image.title="${REGISTRY_PATH}/ink-ci-linux" \
 	io.parity.image.description="Inherits from base-ci-linux:latest. \
-libelf-dev libdw-dev zlib1g-dev; kcov; rust nightly clippy rustfmt cargo-kcov" \
+rust nightly, clippy, rustfmt, cargo-kcov, cargo-contract" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ink-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ink-ci-linux/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
-
-WORKDIR /builds
 
 # install specific Rust nightly toolchain
 # see on https://rust-lang.github.io/rustup-components-history/
@@ -35,8 +34,4 @@ RUN	set -eux; \
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf $CARGO_HOME/registry; \
 # removes toolchain's html docs and autocompletions (>300M for each toolchain)
-	rm -rf /usr/local/rustup/toolchains/*/share; \
-# apt clean up
-	apt-get autoremove -y; \
-	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*;
+	rm -rf /usr/local/rustup/toolchains/*/share;
