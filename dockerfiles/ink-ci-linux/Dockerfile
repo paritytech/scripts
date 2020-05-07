@@ -20,6 +20,14 @@ dockerfiles/ink-ci-linux/README.md" \
 # install specific Rust nightly toolchain
 # see on https://rust-lang.github.io/rustup-components-history/
 RUN	set -eux; \
+# The supported Rust nightly version must support the following components
+# to allow for a functioning CI pipeline:
+#
+#  - cargo
+#  - rustfmt
+#  - clippy
+#  - miri (in the future)
+#
 	rustup default nightly-2020-05-07; \
 # install wasm32 target for this toolchain
 	rustup target add wasm32-unknown-unknown; \
