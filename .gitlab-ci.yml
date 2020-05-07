@@ -228,4 +228,4 @@ container_scanning: # for dockerhub
     DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
 
 
- # vim: expandtab sts=2
+# vim: expandtab sts=2
