@@ -17,7 +17,6 @@ dockerfiles/ink-ci-linux/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-# install specific Rust nightly toolchain
 # see on https://rust-lang.github.io/rustup-components-history/
 RUN	set -eux; \
 # The supported Rust nightly version must support the following components
