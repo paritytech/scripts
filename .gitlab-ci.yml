@@ -17,14 +17,13 @@ variables:
   IMAGE_NAME:           $CI_JOB_NAME
   IMAGE_TAG:            latest
   DOCKERFILE_DIR:       $CI_JOB_NAME
+  REGISTRY_PATH:      paritytech
+  CI_REGISTRY_PATH:   "registry.parity.io/parity/infrastructure/scripts"
 
 
 .build:                 &docker_build
   stage:                build
   image:                docker:stable
-  variables:
-    REGISTRY_PATH:      paritytech
-    CI_REGISTRY_PATH:   "registry.parity.io/parity/infrastructure/scripts"
   only:
     refs:
       - schedules
@@ -223,7 +222,6 @@ container_scanning: # for dockerhub
       - $DOCKERIMAGE
   variables:
     GIT_STRATEGY:                  fetch
-    REGISTRY_PATH:                 paritytech
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$DOCKERIMAGE
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
     DOCKERFILE_PATH:               "dockerfiles/${DOCKERFILE_DIR}/Dockerfile"
