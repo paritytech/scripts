@@ -20,7 +20,7 @@ dockerfiles/ink-ci-linux/README.md" \
 # install specific Rust nightly toolchain
 # see on https://rust-lang.github.io/rustup-components-history/
 RUN	set -eux; \
-	rustup default nightly-2020-05-03; \
+	rustup default nightly-2020-05-07; \
 # install wasm32 target for this toolchain
 	rustup target add wasm32-unknown-unknown; \
 # install cargo tools
