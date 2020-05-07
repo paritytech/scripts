@@ -3,38 +3,37 @@
 #
 # triggers the container scanning built-in tool
 include:
-  - template: Container-Scanning.gitlab-ci.yml
+  - template:                      Container-Scanning.gitlab-ci.yml
 
 stages:
   - build
   - test
 
 variables:
-  # IMAGE_NAME:    registry.gitlab.com/$CI_PROJECT_PATH
-  # DOCKER_HOST:        tcp://docker:2375
-  DOCKER_HOST:          tcp://localhost:2375
-  DOCKER_DRIVER:        overlay2
-  IMAGE_NAME:           $CI_JOB_NAME
-  IMAGE_TAG:            latest
-  DOCKERFILE_DIR:       $CI_JOB_NAME
-  REGISTRY_PATH:      paritytech
-  CI_REGISTRY_PATH:   "registry.parity.io/parity/infrastructure/scripts"
+  # DOCKER_HOST:                     tcp://docker:2375
+  DOCKER_HOST:                     tcp://localhost:2375
+  DOCKER_DRIVER:                   overlay2
+  IMAGE_NAME:                      $CI_JOB_NAME
+  IMAGE_TAG:                       latest
+  DOCKERFILE_DIR:                  $CI_JOB_NAME
+  REGISTRY_PATH:                   paritytech
+  CI_REGISTRY_PATH:                "registry.parity.io/parity/infrastructure/scripts"
 
 
-.build:                 &docker_build
-  stage:                build
-  image:                docker:stable
+.build:                            &docker_build
+  stage:                           build
+  image:                           docker:stable
   only:
     refs:
       - schedules
       - web
-    kubernetes:         active
+    kubernetes:                    active
   tags:
     - kubernetes-parity-build
   services:
     - docker:dind
   environment:
-    name:               parity-build
+    name:                          parity-build
   before_script:
     - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
   only:
@@ -42,7 +41,7 @@ variables:
       - $DOCKERIMAGE == $CI_JOB_NAME
 
 # Push to Dockerhub
-.push_to_docker_hub:    &push_to_docker_hub
+.push_to_docker_hub:               &push_to_docker_hub
     - cd dockerfiles/
     - export IMAGE_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
     - docker build --no-cache
@@ -59,8 +58,8 @@ variables:
     - docker logout
 
 # Push to CI registry
-# TODO remove when fully switching to dockerhub
-.push_to_own_reg:       &push_to_own_reg
+# TODO: remove when fully switching to dockerhub
+.push_to_own_reg:                  &push_to_own_reg
     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
@@ -68,59 +67,59 @@ variables:
     - docker push $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker logout
 
-#Build and push to docker hub and CI registry
 
+#Build and push to docker hub and CI registry
 base-ci-linux:
-  <<:                   *docker_build
+  <<:                              *docker_build
   script:
     - *push_to_docker_hub
     - *push_to_own_reg
 
 substrate-ci-linux:
-  <<:                   *docker_build
+  <<:                              *docker_build
   script:
     - *push_to_docker_hub
     - *push_to_own_reg
 
 ink-ci-linux:
-  <<:                   *docker_build
+  <<:                              *docker_build
   script:
     - *push_to_docker_hub
     - *push_to_own_reg
 
 contracts-ci-linux:
-  <<:                   *docker_build
+  <<:                              *docker_build
   script:
     - *push_to_docker_hub
     - *push_to_own_reg
 
 awscli:
-  <<:                   *docker_build
+  <<:                              *docker_build
   script:
     - *push_to_docker_hub
     - *push_to_own_reg
 
 tools:
-  <<:                   *docker_build
+  <<:                              *docker_build
   script:
     - *push_to_docker_hub
 
 query-exporter:
-  <<:                   *docker_build
+  <<:                              *docker_build
   script:
     - *push_to_docker_hub
 
 redis-exporter:
-  <<:                   *docker_build
+  <<:                              *docker_build
   script:
     - *push_to_docker_hub
 
 # build k8s on top of node 12-alpine
 chaostools:
-  <<:                   *docker_build
+  <<:                              *docker_build
   variables:
     # https://github.com/kubernetes/kubernetes/releases
-    BUILD_KUBE_VERSION: "1.14.6"
+    BUILD_KUBE_VERSION:            "1.14.6"
   script:
     - |
       cat <<-EOT
@@ -146,7 +145,7 @@ chaostools:
 
 # special case as version tags are introduced
 kubetools:
-  <<:                   *docker_build
+  <<:                              *docker_build
   variables:
     # https://github.com/kubernetes/kubernetes/releases
     BUILD_KUBE_VERSION:            "1.18.2"
@@ -183,10 +182,10 @@ kubetools:
 
 
 terraform:
-  <<:                   *docker_build
+  <<:                              *docker_build
   variables:
     # https://releases.hashicorp.com/terraform/
-    TERRAFORM_VERSION:  "0.12.24"
+    TERRAFORM_VERSION:             "0.12.24"
   script:
     - |
       cat <<-EOT
