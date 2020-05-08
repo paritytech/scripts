@@ -99,6 +99,11 @@ awscli:
     - *push_to_docker_hub
     - *push_to_own_reg
 
+musl-ci-linux:
+    <<:                              *docker_build
+    script:
+      - *push_to_docker_hub
+      
 tools:
   <<:                              *docker_build
   script:
