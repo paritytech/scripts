@@ -49,8 +49,7 @@ RUN set -eux; \
 	cargo install \
 		cargo-audit cargo-web wasm-pack cargo-deny; \
 	cargo install sccache --features redis; \
-# TODO: install published version once 0.2.60 gets released
-	cargo install wasm-bindgen-cli; \
+	cargo install wasm-bindgen-cli --version 0.2.62; \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
