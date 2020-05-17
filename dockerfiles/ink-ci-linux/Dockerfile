@@ -21,23 +21,28 @@ RUN	set -eux; \
 # The supported Rust nightly version must support the following components
 # to allow for a functioning CI pipeline:
 #
-#  - cargo
-#  - rustfmt
-#  - clippy
-#  - miri (in the future)
-# see on https://rust-lang.github.io/rustup-components-history/
-	rustup default nightly-2020-05-07; \
-# install wasm32 target for this toolchain
+#  - cargo: General build tool.
+#  - rustfmt: Rust formatting tool.
+#  - clippy: Rust linter.
+#  - miri: Rust interpreter with additional safety checks.
+#
+# We also need to install the wasm32-unknown-unknown target to test
+# ink! smart contracts compilation for this target architecture.
+#
+# Only Rust nightly builds supporting all of the above mentioned components
+# and targets can be used for this docker image.
+#
+# Visit https://rust-lang.github.io/rustup-components-history/ to see which
+# components are available for which nightly build.
+	rustup default nightly-2020-05-14; \
+	# Install wasm32 target for this toolchain
 	rustup target add wasm32-unknown-unknown; \
-# install cargo tools
-	rustup component add rustfmt clippy; \
+	rustup component add rustfmt clippy miri; \
 	cargo install grcov rust-covfix; \
 	cargo install --git https://github.com/paritytech/cargo-contract; \
-# versions
 	rustup show; \
 	cargo --version; \
-# cargo clean up
-# removes compilation artifacts cargo install creates (>250M)
+	# Clean up and remove compilation artifacts that a cargo install creates (>250M).
+	# Also removes toolchain's HTML, docs and autocompletions (>300M for each toolchain).
 	rm -rf $CARGO_HOME/registry; \
-# removes toolchain's html docs and autocompletions (>300M for each toolchain)
 	rm -rf /usr/local/rustup/toolchains/*/share;
