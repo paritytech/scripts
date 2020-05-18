@@ -15,7 +15,6 @@ variables:
   DOCKER_DRIVER:                   overlay2
   IMAGE_NAME:                      $CI_JOB_NAME
   IMAGE_TAG:                       latest
-  DOCKERFILE_DIR:                  $CI_JOB_NAME
   REGISTRY_PATH:                   paritytech
   CI_REGISTRY_PATH:                "registry.parity.io/parity/infrastructure/scripts"
 
@@ -50,7 +49,7 @@ variables:
         --build-arg REGISTRY_PATH=$REGISTRY_PATH
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-        --file $DOCKERFILE_DIR/Dockerfile .
+        --file $IMAGE_NAME/Dockerfile .
     - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
@@ -136,7 +135,7 @@ chaostools:
       --build-arg REGISTRY_PATH=$REGISTRY_PATH
       --build-arg KUBE_VERSION="${BUILD_KUBE_VERSION}"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-      --file $DOCKERFILE_DIR/Dockerfile .
+      --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
     - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
@@ -172,7 +171,7 @@ kubetools:
       --build-arg HELM_VERSION="${BUILD_HELM_VERSION}"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --tag $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
-      --file $DOCKERFILE_DIR/Dockerfile .
+      --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
     - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
@@ -203,7 +202,7 @@ terraform:
       --build-arg TERRAFORM_VERSION="${TERRAFORM_VERSION}"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --tag $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
-      --file $DOCKERFILE_DIR/Dockerfile .
+      --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
     - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
     - docker info
@@ -214,7 +213,7 @@ terraform:
 
 # triggers on $DOCKERIMAGE
 # in order to be scanned, EVERY docker build HAS to have $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-container_scanning: # for dockerhub
+container_scanning:
   stage:                           test
   only:
     variables:
@@ -223,7 +222,7 @@ container_scanning: # for dockerhub
     GIT_STRATEGY:                  fetch
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$DOCKERIMAGE
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
-    DOCKERFILE_PATH:               "dockerfiles/${DOCKERFILE_DIR}/Dockerfile"
+    DOCKERFILE_PATH:               "dockerfiles/${DOCKERIMAGE}"
     DOCKER_USER:                   $Docker_Hub_User_Parity
     DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
 
