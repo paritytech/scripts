@@ -1,9 +1,6 @@
 # .gitlab-ci.yml
 # paritytech/scripts
 #
-# triggers the container scanning built-in tool
-include:
-  - template:                      Container-Scanning.gitlab-ci.yml
 
 stages:
   - build
@@ -23,9 +20,11 @@ variables:
   stage:                           build
   image:                           docker:stable
   rules:
+    # same as only: variables: $x
     - if:                          '$DOCKERIMAGE == $CI_JOB_NAME'
-    - changes:                     
-      - dockerfiles/${IMAGE_NAME}'
+    # triggers rebuild when Dockerfile is changed
+    - changes:
+      - 'dockerfiles/${IMAGE_NAME}/Dockerfile'
   tags:
     - kubernetes-parity-build
   services:
@@ -208,18 +207,37 @@ terraform:
 # triggers on $DOCKERIMAGE
 # in order to be scanned, EVERY docker build HAS to have $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
 container_scanning:
+  # Template does not work, had to reimplement its config from
+  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml
   stage:                           test
-  rules:
-    # this is similar to only: variables: $x
-    - if:                          '$DOCKERIMAGE'
-      when:                        always
+  image:                           $SECURE_ANALYZERS_PREFIX/klar:$CS_MAJOR_VERSION
   variables:
+    SECURE_ANALYZERS_PREFIX:       "registry.gitlab.com/gitlab-org/security-products/analyzers"
+    CS_MAJOR_VERSION:              2
+    CLAIR_DB_IMAGE_TAG:            "latest"
+    CLAIR_DB_IMAGE:                "$SECURE_ANALYZERS_PREFIX/clair-vulnerabilities-db:$CLAIR_DB_IMAGE_TAG"
     GIT_STRATEGY:                  fetch
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$DOCKERIMAGE
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
     DOCKERFILE_PATH:               "dockerfiles/${DOCKERIMAGE}"
     DOCKER_USER:                   $Docker_Hub_User_Parity
     DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
-
+  allow_failure:                   true
+  services:
+    - name:                        $CLAIR_DB_IMAGE
+      alias:                       clair-vulnerabilities-db
+  script:
+    - /analyzer run
+  artifacts:
+    reports:
+      container_scanning:          gl-container-scanning-report.json
+  dependencies: []
+  rules:
+    # same as only: variables: $x
+    - if:                          '$DOCKERIMAGE'
+      when:                        always
+    # triggers rebuild when Dockerfile is changed
+    - changes:
+      - 'dockerfiles/${IMAGE_NAME}/Dockerfile'
 
 # vim: expandtab sts=2
