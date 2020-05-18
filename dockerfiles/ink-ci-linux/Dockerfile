@@ -38,7 +38,7 @@ RUN	set -eux; \
 	# Install wasm32 target for this toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup component add rustfmt clippy miri; \
-	cargo install grcov rust-covfix; \
+	cargo install grcov rust-covfix cargo-contract; \
 	cargo install cargo-contract; \
 	rustup show; \
 	cargo --version; \
