@@ -43,7 +43,7 @@ variables:
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
         --file $IMAGE_NAME/Dockerfile .
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
@@ -130,7 +130,7 @@ chaostools:
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker logout
@@ -166,7 +166,7 @@ kubetools:
       --tag $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
@@ -197,7 +197,7 @@ terraform:
       --tag $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
@@ -222,8 +222,6 @@ container_scanning:
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$DOCKERIMAGE
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
     DOCKERFILE_PATH:               "dockerfiles/${DOCKERIMAGE}"
-    DOCKER_USER:                   $Docker_Hub_User_Parity
-    DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
   allow_failure:                   true
   services:
     - name:                        $CLAIR_DB_IMAGE
