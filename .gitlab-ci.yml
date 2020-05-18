@@ -212,10 +212,12 @@ container_scanning:
   stage:                           test
   image:                           $SECURE_ANALYZERS_PREFIX/klar:$CS_MAJOR_VERSION
   variables:
+    # these variables are from the template
     SECURE_ANALYZERS_PREFIX:       "registry.gitlab.com/gitlab-org/security-products/analyzers"
     CS_MAJOR_VERSION:              2
     CLAIR_DB_IMAGE_TAG:            "latest"
     CLAIR_DB_IMAGE:                "$SECURE_ANALYZERS_PREFIX/clair-vulnerabilities-db:$CLAIR_DB_IMAGE_TAG"
+    # these are our custom variables
     GIT_STRATEGY:                  fetch
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$DOCKERIMAGE
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
