@@ -22,22 +22,16 @@ variables:
 .build:                            &docker_build
   stage:                           build
   image:                           docker:stable
-  only:
-    refs:
-      - schedules
-      - web
-    kubernetes:                    active
+  rules:
+    - if:                          '$DOCKERIMAGE == $CI_JOB_NAME'
+    - changes:                     
+      - dockerfiles/${IMAGE_NAME}'
   tags:
     - kubernetes-parity-build
   services:
     - docker:dind
   environment:
     name:                          parity-build
-  before_script:
-    - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
 
 # Push to Dockerhub
 .push_to_docker_hub:               &push_to_docker_hub
@@ -215,9 +209,10 @@ terraform:
 # in order to be scanned, EVERY docker build HAS to have $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
 container_scanning:
   stage:                           test
-  only:
-    variables:
-      - $DOCKERIMAGE
+  rules:
+    # this is similar to only: variables: $x
+    - if:                          '$DOCKERIMAGE'
+      when:                        always
   variables:
     GIT_STRATEGY:                  fetch
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$DOCKERIMAGE
