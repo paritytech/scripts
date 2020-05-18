@@ -39,7 +39,6 @@ RUN	set -eux; \
 	rustup target add wasm32-unknown-unknown; \
 	rustup component add rustfmt clippy miri; \
 	cargo install grcov rust-covfix cargo-contract; \
-	cargo install cargo-contract; \
 	rustup show; \
 	cargo --version; \
 	# Clean up and remove compilation artifacts that a cargo install creates (>250M).
