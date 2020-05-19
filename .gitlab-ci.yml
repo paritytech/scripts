@@ -230,7 +230,7 @@ container_scanning:
     DOCKERFILE_PATH:               dockerfiles/$IMAGE_NAME
   only:
     variables:
-      - $IMAGE_NAME == $CI_JOB_NAME
+      - $IMAGE_NAME
     changes:
       - dockerfiles/$IMAGE_NAME/Dockerfile
   tags:
