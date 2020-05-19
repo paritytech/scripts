@@ -5,6 +5,7 @@
 stages:
   - build
   - test
+  - stable
 
 variables:
   # DOCKER_HOST:                     tcp://docker:2375
@@ -55,6 +56,7 @@ variables:
     - docker push $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker logout
 
+#### stage:                        build
 
 #Build and push to docker hub and CI registry
 base-ci-linux:
@@ -66,8 +68,21 @@ base-ci-linux:
 substrate-ci-linux:
   <<:                              *docker_build
   script:
-    - *push_to_docker_hub
-    - *push_to_own_reg
+    # - *push_to_docker_hub
+    - cd dockerfiles/
+    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
+    - docker build --no-cache
+        --build-arg VCS_REF="$CI_COMMIT_SHA"
+        --build-arg BUILD_DATE="$(date +%Y%m%d)"
+        --build-arg REGISTRY_PATH=$REGISTRY_PATH
+        --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+        --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+        --file $IMAGE_NAME/Dockerfile .
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+    - docker info
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:nightly
+    # - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+    - docker logout
 
 ink-ci-linux:
   <<:                              *docker_build
@@ -199,6 +214,7 @@ terraform:
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
     - docker logout
 
+#### stage:                        test
 
 # triggers on $IMAGE_NAME
 # in order to be scanned, EVERY docker build HAS to have $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
@@ -235,5 +251,52 @@ container_scanning:
       - dockerfiles/$IMAGE_NAME/Dockerfile
   tags:
     - kubernetes-parity-build
+
+test-substrate-ci-linux:
+  stage:                           test
+  image:                           $REGISTRY_PATH/substrate-ci-linux:nightly
+  only:
+    - schedules
+  dependencies:                    []
+  interruptible:                   true
+  needs:
+    - job:                         substrate-ci-linux
+      artifacts:                   false
+  variables:
+      RUSTFLAGS: "-Cdebug-assertions=y -Dwarnings"
+  before_script:
+    - rustup show
+    - cargo --version
+    - sccache -s
+  script:
+    # test-linux-stable:
+    - WASM_BUILD_NO_COLOR=1 time cargo test --all --release --locked
+    # check-web-wasm:
+    - time cargo build --target=wasm32-unknown-unknown -p sp-io
+    - time cargo build --target=wasm32-unknown-unknown -p sp-runtime
+    - time cargo build --target=wasm32-unknown-unknown -p sp-std
+    - time cargo build --target=wasm32-unknown-unknown -p sc-consensus-aura
+    - time cargo build --target=wasm32-unknown-unknown -p sc-consensus-babe
+    - time cargo build --target=wasm32-unknown-unknown -p sp-consensus
+    - time cargo build --target=wasm32-unknown-unknown -p sc-telemetry
+    - time cargo +nightly build --manifest-path=bin/node/cli/Cargo.toml --no-default-features --features browser --target=wasm32-unknown-unknown -Z features=itarget
+  tags:
+    - linux-docker
+
+#### stage:                        stable
+
+stable-substrate-ci-linux:
+  <<:                              *docker_build
+  stage:                           stable
+  needs:
+    - job:                         test-substrate-ci-linux
+      artifacts:                   false
+  script:
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+    - docker info
+    - docker pull $REGISTRY_PATH/$IMAGE_NAME:nightly
+    - docker tag $REGISTRY_PATH/$IMAGE_NAME:nightly $REGISTRY_PATH/$IMAGE_NAME:stable
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:stable
+    - docker logout
 
 # vim: expandtab sts=2
