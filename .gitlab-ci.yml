@@ -231,8 +231,7 @@ container_scanning:
   rules:
     # same as only: variables: $x
     - if:                          $IMAGE_NAME
-      when:                        always
-    # triggers rebuild when Dockerfile is changed
+    # triggers when Dockerfile is changed
     - changes:
       - dockerfiles/${IMAGE_NAME}/Dockerfile
 
