@@ -39,7 +39,7 @@ variables:
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
         --file $IMAGE_NAME/Dockerfile .
-    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
+    - cat "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USER}" --password-stdin
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
@@ -48,7 +48,7 @@ variables:
 # Push to CI registry
 # TODO: remove when fully switching to dockerhub
 .push_to_own_reg:                  &push_to_own_reg
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - cat "${CI_REGISTRY_PASSWORD}" | docker login -u "${CI_REGISTRY_USER}" --password-stdin "${CI_REGISTRY}"
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
@@ -126,7 +126,7 @@ chaostools:
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
+    - cat "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USER}" --password-stdin
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker logout
@@ -162,7 +162,7 @@ kubetools:
       --tag $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
+    - cat "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USER}" --password-stdin
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
@@ -193,7 +193,7 @@ terraform:
       --tag $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
+    - cat "${DOCKER_PASSWORD}" | docker login -u "${DOCKER_USER}" --password-stdin
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
