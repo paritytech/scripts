@@ -286,7 +286,6 @@ test-substrate-ci-linux:
 #### stage:                        stable
 
 stable-substrate-ci-linux:
-  <<:                              *docker_build
   stage:                           stable
   image:                           docker:stable
   services:
