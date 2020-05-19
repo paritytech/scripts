@@ -1,9 +1,6 @@
 # .gitlab-ci.yml
 # paritytech/scripts
 #
-# triggers the container scanning built-in tool
-include:
-  - template:                      Container-Scanning.gitlab-ci.yml
 
 stages:
   - build
@@ -13,7 +10,6 @@ variables:
   # DOCKER_HOST:                     tcp://docker:2375
   DOCKER_HOST:                     tcp://localhost:2375
   DOCKER_DRIVER:                   overlay2
-  IMAGE_NAME:                      $CI_JOB_NAME
   IMAGE_TAG:                       latest
   REGISTRY_PATH:                   paritytech
   CI_REGISTRY_PATH:                "registry.parity.io/parity/infrastructure/scripts"
@@ -22,35 +18,28 @@ variables:
 .build:                            &docker_build
   stage:                           build
   image:                           docker:stable
-  only:
-    refs:
-      - schedules
-      - web
-    kubernetes:                    active
-  tags:
-    - kubernetes-parity-build
   services:
     - docker:dind
-  environment:
-    name:                          parity-build
-  before_script:
-    - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
   only:
     variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
+      - $IMAGE_NAME == $CI_JOB_NAME
+    changes:
+      - dockerfiles/$IMAGE_NAME/Dockerfile
+  tags:
+    - kubernetes-parity-build
 
 # Push to Dockerhub
 .push_to_docker_hub:               &push_to_docker_hub
     - cd dockerfiles/
-    - export IMAGE_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
+    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
     - docker build --no-cache
-        --build-arg VCS_REF="${CI_COMMIT_SHA}"
+        --build-arg VCS_REF="$CI_COMMIT_SHA"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --build-arg REGISTRY_PATH=$REGISTRY_PATH
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
         --file $IMAGE_NAME/Dockerfile .
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
@@ -59,7 +48,7 @@ variables:
 # Push to CI registry
 # TODO: remove when fully switching to dockerhub
 .push_to_own_reg:                  &push_to_own_reg
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
@@ -125,19 +114,19 @@ chaostools:
       |
       | # build of chaostools image
       |
-      | KUBE_VERSION = ${BUILD_KUBE_VERSION}
+      | KUBE_VERSION = $BUILD_KUBE_VERSION
       |
       EOT
     - cd dockerfiles/
     - docker build
-      --build-arg VCS_REF="${CI_COMMIT_SHA}"
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH=$REGISTRY_PATH
-      --build-arg KUBE_VERSION="${BUILD_KUBE_VERSION}"
+      --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker logout
@@ -158,22 +147,22 @@ kubetools:
       |
       | # build of kubetools image
       |
-      | KUBE_VERSION = ${BUILD_KUBE_VERSION}
-      | HELM_VERSION = ${BUILD_HELM_VERSION}
+      | KUBE_VERSION = $BUILD_KUBE_VERSION
+      | HELM_VERSION = $BUILD_HELM_VERSION
       |
       EOT
     - cd dockerfiles/
     - docker build
-      --build-arg VCS_REF="${CI_COMMIT_SHA}"
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH=$REGISTRY_PATH
-      --build-arg KUBE_VERSION="${BUILD_KUBE_VERSION}"
-      --build-arg HELM_VERSION="${BUILD_HELM_VERSION}"
+      --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
+      --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --tag $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
@@ -191,40 +180,60 @@ terraform:
       |
       | # build of terraform image
       |
-      | TERRAFORM_VERSION = ${TERRAFORM_VERSION}
+      | TERRAFORM_VERSION = $TERRAFORM_VERSION
       |
       EOT
     - cd dockerfiles/
     - docker build
-      --build-arg VCS_REF="${CI_COMMIT_SHA}"
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH=$REGISTRY_PATH
-      --build-arg TERRAFORM_VERSION="${TERRAFORM_VERSION}"
+      --build-arg TERRAFORM_VERSION="$TERRAFORM_VERSION"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --tag $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
     - docker logout
 
 
-# triggers on $DOCKERIMAGE
+# triggers on $IMAGE_NAME
 # in order to be scanned, EVERY docker build HAS to have $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
 container_scanning:
+  # Template does not work, had to override its config from
+  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml
+  # these settings are from the template
   stage:                           test
+  image:                           $SECURE_ANALYZERS_PREFIX/klar:$CS_MAJOR_VERSION
+  services:
+    - name:                        $CLAIR_DB_IMAGE
+      alias:                       clair-vulnerabilities-db
+  allow_failure:                   true
+  script:
+    - /analyzer run
+  artifacts:
+    reports:
+      container_scanning:          gl-container-scanning-report.json
+  dependencies: []
+  variables:
+    SECURE_ANALYZERS_PREFIX:       "registry.gitlab.com/gitlab-org/security-products/analyzers"
+    CS_MAJOR_VERSION:              2
+    CLAIR_DB_IMAGE_TAG:            "latest"
+    CLAIR_DB_IMAGE:                "$SECURE_ANALYZERS_PREFIX/clair-vulnerabilities-db:$CLAIR_DB_IMAGE_TAG"
+  # these are our overrides
+    GIT_STRATEGY:                  fetch
+    CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
+    CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
+    DOCKERFILE_PATH:               dockerfiles/$IMAGE_NAME
   only:
     variables:
-      - $DOCKERIMAGE
-  variables:
-    GIT_STRATEGY:                  fetch
-    CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$DOCKERIMAGE
-    CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
-    DOCKERFILE_PATH:               "dockerfiles/${DOCKERIMAGE}"
-    DOCKER_USER:                   $Docker_Hub_User_Parity
-    DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
-
+      - $IMAGE_NAME
+    changes:
+      - dockerfiles/$IMAGE_NAME/Dockerfile
+  tags:
+    - kubernetes-parity-build
 
 # vim: expandtab sts=2
