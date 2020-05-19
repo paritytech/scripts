@@ -24,22 +24,22 @@ variables:
     variables:
       - $IMAGE_NAME == $CI_JOB_NAME
     changes:
-      - dockerfiles/${IMAGE_NAME}/Dockerfile
+      - dockerfiles/$IMAGE_NAME/Dockerfile
   tags:
     - kubernetes-parity-build
 
 # Push to Dockerhub
 .push_to_docker_hub:               &push_to_docker_hub
     - cd dockerfiles/
-    - export IMAGE_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
+    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
     - docker build --no-cache
-        --build-arg VCS_REF="${CI_COMMIT_SHA}"
+        --build-arg VCS_REF="$CI_COMMIT_SHA"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --build-arg REGISTRY_PATH=$REGISTRY_PATH
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
         --file $IMAGE_NAME/Dockerfile .
-    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
@@ -48,7 +48,7 @@ variables:
 # Push to CI registry
 # TODO: remove when fully switching to dockerhub
 .push_to_own_reg:                  &push_to_own_reg
-    - docker login -u "${CI_REGISTRY_USER}" -p "${CI_REGISTRY_PASSWORD}" "${CI_REGISTRY}"
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
@@ -114,19 +114,19 @@ chaostools:
       |
       | # build of chaostools image
       |
-      | KUBE_VERSION = ${BUILD_KUBE_VERSION}
+      | KUBE_VERSION = $BUILD_KUBE_VERSION
       |
       EOT
     - cd dockerfiles/
     - docker build
-      --build-arg VCS_REF="${CI_COMMIT_SHA}"
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH=$REGISTRY_PATH
-      --build-arg KUBE_VERSION="${BUILD_KUBE_VERSION}"
+      --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker logout
@@ -147,22 +147,22 @@ kubetools:
       |
       | # build of kubetools image
       |
-      | KUBE_VERSION = ${BUILD_KUBE_VERSION}
-      | HELM_VERSION = ${BUILD_HELM_VERSION}
+      | KUBE_VERSION = $BUILD_KUBE_VERSION
+      | HELM_VERSION = $BUILD_HELM_VERSION
       |
       EOT
     - cd dockerfiles/
     - docker build
-      --build-arg VCS_REF="${CI_COMMIT_SHA}"
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH=$REGISTRY_PATH
-      --build-arg KUBE_VERSION="${BUILD_KUBE_VERSION}"
-      --build-arg HELM_VERSION="${BUILD_HELM_VERSION}"
+      --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
+      --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --tag $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
@@ -180,20 +180,20 @@ terraform:
       |
       | # build of terraform image
       |
-      | TERRAFORM_VERSION = ${TERRAFORM_VERSION}
+      | TERRAFORM_VERSION = $TERRAFORM_VERSION
       |
       EOT
     - cd dockerfiles/
     - docker build
-      --build-arg VCS_REF="${CI_COMMIT_SHA}"
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH=$REGISTRY_PATH
-      --build-arg TERRAFORM_VERSION="${TERRAFORM_VERSION}"
+      --build-arg TERRAFORM_VERSION="$TERRAFORM_VERSION"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --tag $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
@@ -217,7 +217,7 @@ container_scanning:
     GIT_STRATEGY:                  fetch
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
-    DOCKERFILE_PATH:               dockerfiles/${IMAGE_NAME}
+    DOCKERFILE_PATH:               dockerfiles/$IMAGE_NAME
   allow_failure:                   true
   services:
     - name:                        $CLAIR_DB_IMAGE
@@ -230,9 +230,12 @@ container_scanning:
   dependencies: []
   rules:
     # same as only: variables: $x
-    - if:                          $IMAGE_NAME != ""
+    - if:                          '$IMAGE_NAME != ""'
+      when:                        always
     # triggers when Dockerfile is changed
     - changes:
-      - dockerfiles/${IMAGE_NAME}/Dockerfile
+      - dockerfiles/$IMAGE_NAME/Dockerfile
+      when:                        always
+    - when:                        never
 
 # vim: expandtab sts=2
