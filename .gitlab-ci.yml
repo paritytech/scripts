@@ -77,12 +77,12 @@ substrate-ci-linux:
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --build-arg REGISTRY_PATH=$REGISTRY_PATH
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-        --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+        --tag $REGISTRY_PATH/$IMAGE_NAME:nightly
         --file $IMAGE_NAME/Dockerfile .
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:nightly
-    # - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker logout
 
 ink-ci-linux:
