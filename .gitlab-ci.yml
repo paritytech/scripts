@@ -71,7 +71,8 @@ substrate-ci-linux:
     # - *push_to_docker_hub
     - cd dockerfiles/
     - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-    - docker build --no-cache
+    # - docker build --no-cache
+    - docker build
         --build-arg VCS_REF="$CI_COMMIT_SHA"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --build-arg REGISTRY_PATH=$REGISTRY_PATH
@@ -263,12 +264,14 @@ test-substrate-ci-linux:
     - job:                         substrate-ci-linux
       artifacts:                   false
   variables:
-      RUSTFLAGS: "-Cdebug-assertions=y -Dwarnings"
+    GIT_STRATEGY:                  none
+    RUSTFLAGS: "-Cdebug-assertions=y -Dwarnings"
   before_script:
     - rustup show
     - cargo --version
     - sccache -s
   script:
+    - git clone https://github.com/paritytech/substrate .
     # test-linux-stable:
     - WASM_BUILD_NO_COLOR=1 time cargo test --all --release --locked
     # check-web-wasm:
