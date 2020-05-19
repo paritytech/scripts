@@ -288,6 +288,9 @@ test-substrate-ci-linux:
 stable-substrate-ci-linux:
   <<:                              *docker_build
   stage:                           stable
+  image:                           docker:stable
+  services:
+    - docker:dind
   needs:
     - job:                         test-substrate-ci-linux
       artifacts:                   false
@@ -298,5 +301,7 @@ stable-substrate-ci-linux:
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:nightly $REGISTRY_PATH/$IMAGE_NAME:stable
     - docker push $REGISTRY_PATH/$IMAGE_NAME:stable
     - docker logout
+  tags:
+    - kubernetes-parity-build
 
 # vim: expandtab sts=2
