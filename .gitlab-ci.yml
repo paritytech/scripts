@@ -22,6 +22,7 @@ variables:
   rules:
     # same as only: variables: $x
     - if:                          '$DOCKERIMAGE == $CI_JOB_NAME'
+      when: always
     # triggers rebuild when Dockerfile is changed
     - changes:
       - 'dockerfiles/${IMAGE_NAME}/Dockerfile'
