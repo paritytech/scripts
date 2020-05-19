@@ -19,21 +19,13 @@ variables:
 .build:                            &docker_build
   stage:                           build
   image:                           docker:stable
-  variables:
-    CI_DEBUG_TRACE: "true"
-  # rules:
-  #   # same as only: variables: $x
-  #   - if: $CI_JOB_NAME == $DOCKERIMAGE && $CI_JOB_NAME == $IMAGE_NAME
-  #     when: always
-  #   # triggers rebuild when Dockerfile is changed
-  #   - changes:
-  #     - 'dockerfiles/${IMAGE_NAME}/Dockerfile'
-  tags:
-    - kubernetes-parity-build
   services:
     - docker:dind
-  environment:
-    name:                          parity-build
+  only:
+    variables:
+      - $DOCKERIMAGE == $CI_JOB_NAME
+  tags:
+    - kubernetes-parity-build
 
 # Push to Dockerhub
 .push_to_docker_hub:               &push_to_docker_hub
@@ -46,7 +38,7 @@ variables:
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
         --file $IMAGE_NAME/Dockerfile .
-    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
+    - docker login -u "${DCKR_USER}" -p "${DCKR_PASSWORD}"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
@@ -90,20 +82,12 @@ contracts-ci-linux:
 
 awscli:
   <<:                              *docker_build
-  rules:
-    # same as only: variables: $x
-    - if: $CI_JOB_NAME == $DOCKERIMAGE
-      when: always
   script:
     - *push_to_docker_hub
     - *push_to_own_reg
 
 tools:
   <<:                              *docker_build
-  rules:
-    # same as only: variables: $x
-    - if: $CI_JOB_NAME == $DOCKERIMAGE && $CI_JOB_NAME == $IMAGE_NAME
-      when: always
   script:
     - *push_to_docker_hub
 
@@ -114,10 +98,6 @@ query-exporter:
 
 redis-exporter:
   <<:                              *docker_build
-  rules:
-    # same as only: variables: $x
-    - if: $CI_JOB_NAME == $IMAGE_NAME
-      when: always
   script:
     - *push_to_docker_hub
 
@@ -145,7 +125,7 @@ chaostools:
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
+    - docker login -u "${DCKR_USER}" -p "${DCKR_PASSWORD}"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker logout
@@ -181,7 +161,7 @@ kubetools:
       --tag $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
+    - docker login -u "${DCKR_USER}" -p "${DCKR_PASSWORD}"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
@@ -212,7 +192,7 @@ terraform:
       --tag $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
       --file $IMAGE_NAME/Dockerfile .
     # Push to Dockerhub
-    - docker login -u "${DOCKER_USER}" -p "${DOCKER_PASSWORD}"
+    - docker login -u "${DCKR_USER}" -p "${DCKR_PASSWORD}"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
