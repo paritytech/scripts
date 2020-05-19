@@ -23,9 +23,7 @@ variables:
     CI_DEBUG_TRACE: "true"
   rules:
     # same as only: variables: $x
-    - if:                          $DOCKERIMAGE == ""
-      when: never
-    - if:                          $DOCKERIMAGE == $CI_JOB_NAME
+    - if:                          $CI_JOB_NAME == $DOCKERIMAGE
       when: always
     # triggers rebuild when Dockerfile is changed
     - changes:
