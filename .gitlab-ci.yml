@@ -31,7 +31,6 @@ variables:
 
 # Push to Dockerhub
 .push_to_docker_hub:               &push_to_docker_hub
-    - cd dockerfiles/
     - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
     - docker build --no-cache
         --build-arg VCS_REF="$CI_COMMIT_SHA"
@@ -39,7 +38,7 @@ variables:
         --build-arg REGISTRY_PATH=$REGISTRY_PATH
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-        --file $IMAGE_NAME/Dockerfile .
+        --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
@@ -69,7 +68,6 @@ substrate-ci-linux:
   <<:                              *docker_build
   script:
     # - *push_to_docker_hub
-    - cd dockerfiles/
     - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
     # - docker build --no-cache
     - docker build
@@ -78,7 +76,7 @@ substrate-ci-linux:
         --build-arg REGISTRY_PATH=$REGISTRY_PATH
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
         --tag $REGISTRY_PATH/$IMAGE_NAME:nightly
-        --file $IMAGE_NAME/Dockerfile .
+        --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
@@ -133,14 +131,13 @@ chaostools:
       | KUBE_VERSION = $BUILD_KUBE_VERSION
       |
       EOT
-    - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH=$REGISTRY_PATH
       --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-      --file $IMAGE_NAME/Dockerfile .
+      --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
     # Push to Dockerhub
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
@@ -167,7 +164,6 @@ kubetools:
       | HELM_VERSION = $BUILD_HELM_VERSION
       |
       EOT
-    - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -176,7 +172,7 @@ kubetools:
       --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --tag $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
-      --file $IMAGE_NAME/Dockerfile .
+      --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
     # Push to Dockerhub
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
@@ -199,7 +195,6 @@ terraform:
       | TERRAFORM_VERSION = $TERRAFORM_VERSION
       |
       EOT
-    - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -207,7 +202,7 @@ terraform:
       --build-arg TERRAFORM_VERSION="$TERRAFORM_VERSION"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --tag $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
-      --file $IMAGE_NAME/Dockerfile .
+      --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
     # Push to Dockerhub
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
@@ -244,7 +239,7 @@ container_scanning:
     GIT_STRATEGY:                  fetch
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
-    DOCKERFILE_PATH:               dockerfiles/$IMAGE_NAME
+    DOCKERFILE_PATH:               dockerfiles/$IMAGE_NAME/Dockerfile
   only:
     variables:
       - $IMAGE_NAME
@@ -253,7 +248,7 @@ container_scanning:
   tags:
     - kubernetes-parity-build
 
-test-substrate-ci-linux:
+test-substrate:
   stage:                           test
   image:                           $REGISTRY_PATH/substrate-ci-linux:nightly
   only:
@@ -265,7 +260,7 @@ test-substrate-ci-linux:
       artifacts:                   false
   variables:
     GIT_STRATEGY:                  none
-    RUSTFLAGS: "-Cdebug-assertions=y -Dwarnings"
+    # RUSTFLAGS: "-Cdebug-assertions=y -Dwarnings"
   before_script:
     - rustup show
     - cargo --version
@@ -288,13 +283,13 @@ test-substrate-ci-linux:
 
 #### stage:                        stable
 
-stable-substrate-ci-linux:
+stable-substrate:
   stage:                           stable
   image:                           docker:stable
   services:
     - docker:dind
   needs:
-    - job:                         test-substrate-ci-linux
+    - job:                         test-substrate
       artifacts:                   false
   script:
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
