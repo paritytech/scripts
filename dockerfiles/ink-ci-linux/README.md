@@ -25,20 +25,21 @@ Used to build and test ink!.
 
 We always try to use the latest possible `nightly` version that supports our required `rustup` components:
 
-- `clippy`
-- `rust-src`
-- `miri`
-- `cargo`
-- `rustfmt`
+- `clippy`: The Rust linter.
+- `rust-src`: The Rust sources of the standard library.
+- `miri`: The Rust MIR interpreter that interprets the test suite with additional checks.
+- `cargo`: The Rust build system.
+- `rustfmt`: The Rust code formatter.
 
 The [`rustup` component history](https://rust-lang.github.io/rustup-components-history/) provides a decent overview to decide upon a new version update.
 
 **Rust tools & toolchains:**
 
-- `grcov`
-- `rust-covfix`
-- `cargo-contract`
-- `wasm32-unknown-unknown` toolchain
+- `grcov`: Required for general Rust code coverage reports.
+- `rust-covfix`: Required to polish the coverage reports by `grcov`.
+- `cargo-contract`: Required to build ink! Wasm smart contracts.
+- `xargo`: Required so that `miri` runs properly.
+- `wasm32-unknown-unknown`: The toolchain to compile Rust codebases for Wasm.
 
 [Click here](https://hub.docker.com/repository/docker/paritytech/ink-ci-linux) for the registry.
 
