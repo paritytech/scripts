@@ -38,7 +38,9 @@ RUN	set -eux; \
 	# Install wasm32 target for this toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup component add rustfmt clippy miri rust-src; \
-	cargo install grcov rust-covfix cargo-contract; \
+	# We require `xargo` so that `miri` runs properly
+	# We require `grcov` for coverage reporting and `rust-covfix` to improve it.
+	cargo install grcov rust-covfix cargo-contract xargo; \
 	rustup show; \
 	cargo --version; \
 	# Clean up and remove compilation artifacts that a cargo install creates (>250M).
