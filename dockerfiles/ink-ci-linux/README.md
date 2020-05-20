@@ -26,6 +26,8 @@ Used to build and test ink!.
 We always try to use the latest possible `nightly` version that supports our required `rustup` components:
 
 - `clippy`
+- `rust-src`
+- `miri`
 - `cargo`
 - `rustfmt`
 
@@ -33,9 +35,8 @@ The [`rustup` component history](https://rust-lang.github.io/rustup-components-h
 
 **Rust tools & toolchains:**
 
-- `clippy`
-- `rustfmt`
 - `grcov`
+- `rust-covfix`
 - `cargo-contract`
 - `wasm32-unknown-unknown` toolchain
 

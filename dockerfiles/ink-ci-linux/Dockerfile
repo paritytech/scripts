@@ -37,7 +37,7 @@ RUN	set -eux; \
 	rustup default nightly-2020-05-14; \
 	# Install wasm32 target for this toolchain
 	rustup target add wasm32-unknown-unknown; \
-	rustup component add rustfmt clippy miri; \
+	rustup component add rustfmt clippy miri rust-src; \
 	cargo install grcov rust-covfix cargo-contract; \
 	rustup show; \
 	cargo --version; \
