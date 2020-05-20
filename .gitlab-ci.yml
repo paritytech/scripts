@@ -24,8 +24,6 @@ variables:
   only:
     variables:
       - $IMAGE_NAME == $CI_JOB_NAME
-    changes:
-      - dockerfiles/$IMAGE_NAME/Dockerfile
   tags:
     - kubernetes-parity-build
 
@@ -243,8 +241,6 @@ container_scanning:
   only:
     variables:
       - $IMAGE_NAME
-    changes:
-      - dockerfiles/$IMAGE_NAME/Dockerfile
   tags:
     - kubernetes-parity-build
 
