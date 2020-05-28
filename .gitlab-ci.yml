@@ -5,7 +5,7 @@
 stages:
   - build
   - test
-  - stable
+  - prod
 
 variables:
   # DOCKER_HOST:                     tcp://docker:2375
@@ -65,20 +65,15 @@ base-ci-linux:
 substrate-ci-linux:
   <<:                              *docker_build
   script:
-    # - *push_to_docker_hub
-    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-    # - docker build --no-cache
-    - docker build
+    - docker build --no-cache
         --build-arg VCS_REF="$CI_COMMIT_SHA"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --build-arg REGISTRY_PATH=$REGISTRY_PATH
-        --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-        --tag $REGISTRY_PATH/$IMAGE_NAME:nightly
+        --tag $REGISTRY_PATH/$IMAGE_NAME:staging
         --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:nightly
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:staging
     - docker logout
 
 ink-ci-linux:
@@ -227,7 +222,6 @@ container_scanning:
   artifacts:
     reports:
       container_scanning:          gl-container-scanning-report.json
-  dependencies: []
   variables:
     SECURE_ANALYZERS_PREFIX:       "registry.gitlab.com/gitlab-org/security-products/analyzers"
     CS_MAJOR_VERSION:              2
@@ -246,17 +240,16 @@ container_scanning:
 
 test-substrate:
   stage:                           test
-  image:                           $REGISTRY_PATH/substrate-ci-linux:nightly
+  image:                           $REGISTRY_PATH/$IMAGE_NAME:staging
   only:
     - schedules
-  dependencies:                    []
   interruptible:                   true
   needs:
     - job:                         substrate-ci-linux
       artifacts:                   false
   variables:
     GIT_STRATEGY:                  none
-    # RUSTFLAGS: "-Cdebug-assertions=y -Dwarnings"
+    RUSTFLAGS: "-Cdebug-assertions=y"
   before_script:
     - rustup show
     - cargo --version
@@ -277,22 +270,27 @@ test-substrate:
   tags:
     - linux-docker
 
-#### stage:                        stable
+#### stage:                        prod
 
-stable-substrate:
-  stage:                           stable
+production-substrate:
+  stage:                           prod
   image:                           docker:stable
   services:
     - docker:dind
   needs:
     - job:                         test-substrate
       artifacts:                   false
+    - job:                         substrate-ci-linux
+      artifacts:                   false
   script:
+    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
-    - docker pull $REGISTRY_PATH/$IMAGE_NAME:nightly
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:nightly $REGISTRY_PATH/$IMAGE_NAME:stable
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:stable
+    - docker pull $REGISTRY_PATH/$IMAGE_NAME:staging
+    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:production
+    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:production
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker logout
   tags:
     - kubernetes-parity-build
