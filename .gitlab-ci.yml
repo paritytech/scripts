@@ -5,8 +5,9 @@
 stages:
   - build
   - test
+  - prod
 
-variables:
+variables:                         &default-vars
   # DOCKER_HOST:                     tcp://docker:2375
   DOCKER_HOST:                     tcp://localhost:2375
   DOCKER_DRIVER:                   overlay2
@@ -14,23 +15,23 @@ variables:
   REGISTRY_PATH:                   paritytech
   CI_REGISTRY_PATH:                "registry.parity.io/parity/infrastructure/scripts"
 
+default:
+  cache:                           {}
 
 .build:                            &docker_build
   stage:                           build
   image:                           docker:stable
+  dependencies:                    []
   services:
     - docker:dind
   only:
     variables:
       - $IMAGE_NAME == $CI_JOB_NAME
-    changes:
-      - dockerfiles/$IMAGE_NAME/Dockerfile
   tags:
     - kubernetes-parity-build
 
 # Push to Dockerhub
 .push_to_docker_hub:               &push_to_docker_hub
-    - cd dockerfiles/
     - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
     - docker build --no-cache
         --build-arg VCS_REF="$CI_COMMIT_SHA"
@@ -38,7 +39,7 @@ variables:
         --build-arg REGISTRY_PATH=$REGISTRY_PATH
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
         --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-        --file $IMAGE_NAME/Dockerfile .
+        --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
@@ -55,6 +56,7 @@ variables:
     - docker push $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker logout
 
+#### stage:                        build
 
 #Build and push to docker hub and CI registry
 base-ci-linux:
@@ -66,8 +68,16 @@ base-ci-linux:
 substrate-ci-linux:
   <<:                              *docker_build
   script:
-    - *push_to_docker_hub
-    - *push_to_own_reg
+    - docker build --no-cache
+        --build-arg VCS_REF="$CI_COMMIT_SHA"
+        --build-arg BUILD_DATE="$(date +%Y%m%d)"
+        --build-arg REGISTRY_PATH=$REGISTRY_PATH
+        --tag $REGISTRY_PATH/$IMAGE_NAME:staging
+        --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+    - docker info
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:staging
+    - docker logout
 
 ink-ci-linux:
   <<:                              *docker_build
@@ -106,6 +116,7 @@ redis-exporter:
 chaostools:
   <<:                              *docker_build
   variables:
+    <<:                            *default-vars
     # https://github.com/kubernetes/kubernetes/releases
     BUILD_KUBE_VERSION:            "1.14.6"
   script:
@@ -117,14 +128,13 @@ chaostools:
       | KUBE_VERSION = $BUILD_KUBE_VERSION
       |
       EOT
-    - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH=$REGISTRY_PATH
       --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-      --file $IMAGE_NAME/Dockerfile .
+      --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
     # Push to Dockerhub
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
@@ -135,6 +145,7 @@ chaostools:
 kubetools:
   <<:                              *docker_build
   variables:
+    <<:                            *default-vars
     # https://github.com/kubernetes/kubernetes/releases
     BUILD_KUBE_VERSION:            "1.18.2"
     # https://github.com/kubernetes/helm/releases
@@ -151,7 +162,6 @@ kubetools:
       | HELM_VERSION = $BUILD_HELM_VERSION
       |
       EOT
-    - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -160,7 +170,7 @@ kubetools:
       --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --tag $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
-      --file $IMAGE_NAME/Dockerfile .
+      --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
     # Push to Dockerhub
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
@@ -172,6 +182,7 @@ kubetools:
 terraform:
   <<:                              *docker_build
   variables:
+    <<:                            *default-vars
     # https://releases.hashicorp.com/terraform/
     TERRAFORM_VERSION:             "0.12.24"
   script:
@@ -183,7 +194,6 @@ terraform:
       | TERRAFORM_VERSION = $TERRAFORM_VERSION
       |
       EOT
-    - cd dockerfiles/
     - docker build
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -191,7 +201,7 @@ terraform:
       --build-arg TERRAFORM_VERSION="$TERRAFORM_VERSION"
       --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
       --tag $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
-      --file $IMAGE_NAME/Dockerfile .
+      --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
     # Push to Dockerhub
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
@@ -199,6 +209,7 @@ terraform:
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
     - docker logout
 
+#### stage:                        test
 
 # triggers on $IMAGE_NAME
 # in order to be scanned, EVERY docker build HAS to have $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
@@ -212,28 +223,81 @@ container_scanning:
     - name:                        $CLAIR_DB_IMAGE
       alias:                       clair-vulnerabilities-db
   allow_failure:                   true
+  dependencies:                    []
   script:
     - /analyzer run
   artifacts:
     reports:
       container_scanning:          gl-container-scanning-report.json
-  dependencies: []
   variables:
     SECURE_ANALYZERS_PREFIX:       "registry.gitlab.com/gitlab-org/security-products/analyzers"
     CS_MAJOR_VERSION:              2
     CLAIR_DB_IMAGE_TAG:            "latest"
     CLAIR_DB_IMAGE:                "$SECURE_ANALYZERS_PREFIX/clair-vulnerabilities-db:$CLAIR_DB_IMAGE_TAG"
   # these are our overrides
+    <<:                            *default-vars
     GIT_STRATEGY:                  fetch
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
-    DOCKERFILE_PATH:               dockerfiles/$IMAGE_NAME
+    DOCKERFILE_PATH:               dockerfiles/$IMAGE_NAME/Dockerfile
   only:
     variables:
       - $IMAGE_NAME
-    changes:
-      - dockerfiles/$IMAGE_NAME/Dockerfile
   tags:
     - kubernetes-parity-build
 
-# vim: expandtab sts=2
+test-substrate:
+  stage:                           test
+  image:                           $REGISTRY_PATH/$IMAGE_NAME:staging
+  interruptible:                   true
+  dependencies:                    []
+  only:
+    variables:
+      - $IMAGE_NAME == "substrate-ci-linux"
+  variables:
+    <<:                            *default-vars
+    GIT_STRATEGY:                  none
+    RUSTFLAGS: "-Cdebug-assertions=y"
+  before_script:
+    - rustup show
+    - cargo --version
+    - sccache -s
+  script:
+    - git clone https://github.com/paritytech/substrate .
+    # test-linux-stable:
+    - WASM_BUILD_NO_COLOR=1 time cargo test --all --release --locked
+    # check-web-wasm:
+    - time cargo build --target=wasm32-unknown-unknown -p sp-io
+    - time cargo build --target=wasm32-unknown-unknown -p sp-runtime
+    - time cargo build --target=wasm32-unknown-unknown -p sp-std
+    - time cargo build --target=wasm32-unknown-unknown -p sc-consensus-aura
+    - time cargo build --target=wasm32-unknown-unknown -p sc-consensus-babe
+    - time cargo build --target=wasm32-unknown-unknown -p sp-consensus
+    - time cargo build --target=wasm32-unknown-unknown -p sc-telemetry
+    - time cargo +nightly build --manifest-path=bin/node/cli/Cargo.toml --no-default-features --features browser --target=wasm32-unknown-unknown -Z features=itarget
+  tags:
+    - linux-docker
+
+#### stage:                        prod
+
+production-substrate:
+  stage:                           prod
+  image:                           docker:stable
+  dependencies:                    []
+  services:
+    - docker:dind
+  only:
+    variables:
+      - $IMAGE_NAME == "substrate-ci-linux"
+  script:
+    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+    - docker info
+    - docker pull $REGISTRY_PATH/$IMAGE_NAME:staging
+    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:production
+    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:production
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+    - docker logout
+  tags:
+    - kubernetes-parity-build
