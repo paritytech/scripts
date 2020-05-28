@@ -5,9 +5,9 @@
 stages:
   - build
   - test
-  - stable
+  - prod
 
-variables:
+variables:                         &default-vars
   # DOCKER_HOST:                     tcp://docker:2375
   DOCKER_HOST:                     tcp://localhost:2375
   DOCKER_DRIVER:                   overlay2
@@ -15,10 +15,13 @@ variables:
   REGISTRY_PATH:                   paritytech
   CI_REGISTRY_PATH:                "registry.parity.io/parity/infrastructure/scripts"
 
+default:
+  cache:                           {}
 
 .build:                            &docker_build
   stage:                           build
   image:                           docker:stable
+  dependencies:                    []
   services:
     - docker:dind
   only:
@@ -65,20 +68,15 @@ base-ci-linux:
 substrate-ci-linux:
   <<:                              *docker_build
   script:
-    # - *push_to_docker_hub
-    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-    # - docker build --no-cache
-    - docker build
+    - docker build --no-cache
         --build-arg VCS_REF="$CI_COMMIT_SHA"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --build-arg REGISTRY_PATH=$REGISTRY_PATH
-        --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-        --tag $REGISTRY_PATH/$IMAGE_NAME:nightly
+        --tag $REGISTRY_PATH/$IMAGE_NAME:staging
         --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:nightly
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:staging
     - docker logout
 
 ink-ci-linux:
@@ -118,6 +116,7 @@ redis-exporter:
 chaostools:
   <<:                              *docker_build
   variables:
+    <<:                            *default-vars
     # https://github.com/kubernetes/kubernetes/releases
     BUILD_KUBE_VERSION:            "1.14.6"
   script:
@@ -146,6 +145,7 @@ chaostools:
 kubetools:
   <<:                              *docker_build
   variables:
+    <<:                            *default-vars
     # https://github.com/kubernetes/kubernetes/releases
     BUILD_KUBE_VERSION:            "1.18.2"
     # https://github.com/kubernetes/helm/releases
@@ -182,6 +182,7 @@ kubetools:
 terraform:
   <<:                              *docker_build
   variables:
+    <<:                            *default-vars
     # https://releases.hashicorp.com/terraform/
     TERRAFORM_VERSION:             "0.12.24"
   script:
@@ -222,18 +223,19 @@ container_scanning:
     - name:                        $CLAIR_DB_IMAGE
       alias:                       clair-vulnerabilities-db
   allow_failure:                   true
+  dependencies:                    []
   script:
     - /analyzer run
   artifacts:
     reports:
       container_scanning:          gl-container-scanning-report.json
-  dependencies: []
   variables:
     SECURE_ANALYZERS_PREFIX:       "registry.gitlab.com/gitlab-org/security-products/analyzers"
     CS_MAJOR_VERSION:              2
     CLAIR_DB_IMAGE_TAG:            "latest"
     CLAIR_DB_IMAGE:                "$SECURE_ANALYZERS_PREFIX/clair-vulnerabilities-db:$CLAIR_DB_IMAGE_TAG"
   # these are our overrides
+    <<:                            *default-vars
     GIT_STRATEGY:                  fetch
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
@@ -246,17 +248,16 @@ container_scanning:
 
 test-substrate:
   stage:                           test
-  image:                           $REGISTRY_PATH/substrate-ci-linux:nightly
-  only:
-    - schedules
-  dependencies:                    []
+  image:                           $REGISTRY_PATH/$IMAGE_NAME:staging
   interruptible:                   true
-  needs:
-    - job:                         substrate-ci-linux
-      artifacts:                   false
+  dependencies:                    []
+  only:
+    variables:
+      - $IMAGE_NAME == "substrate-ci-linux"
   variables:
+    <<:                            *default-vars
     GIT_STRATEGY:                  none
-    # RUSTFLAGS: "-Cdebug-assertions=y -Dwarnings"
+    RUSTFLAGS: "-Cdebug-assertions=y"
   before_script:
     - rustup show
     - cargo --version
@@ -277,24 +278,26 @@ test-substrate:
   tags:
     - linux-docker
 
-#### stage:                        stable
+#### stage:                        prod
 
-stable-substrate:
-  stage:                           stable
+production-substrate:
+  stage:                           prod
   image:                           docker:stable
+  dependencies:                    []
   services:
     - docker:dind
-  needs:
-    - job:                         test-substrate
-      artifacts:                   false
+  only:
+    variables:
+      - $IMAGE_NAME == "substrate-ci-linux"
   script:
+    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
     - docker info
-    - docker pull $REGISTRY_PATH/$IMAGE_NAME:nightly
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:nightly $REGISTRY_PATH/$IMAGE_NAME:stable
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:stable
+    - docker pull $REGISTRY_PATH/$IMAGE_NAME:staging
+    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:production
+    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:production
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker logout
   tags:
     - kubernetes-parity-build
-
-# vim: expandtab sts=2
