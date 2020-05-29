@@ -1,9 +1,6 @@
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=paritytech
-# taking a binary from https://github.com/hyperledger-labs/solang/blob/master/Dockerfile#L26
-# since that image is based on debian:buster
-FROM docker.io/hyperledgerlabs/solang:latest as solang
 
 FROM ${REGISTRY_PATH}/base-ci-linux:latest
 
@@ -23,7 +20,6 @@ dockerfiles/contracts-ci-linux/README.md" \
 # copy llvm and yarn repo key
 COPY utility/debian-llvm-clang.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
 COPY utility/yarn.key /etc/apt/trusted.gpg.d/debian-yarn.gpg
-COPY --from=solang /usr/bin/solang /usr/bin/solang
 
 # install tools and dependencies
 RUN set -eux; \
@@ -47,6 +43,7 @@ RUN set -eux; \
 	rustup component add rust-src rustfmt --toolchain nightly; \
 	cargo install pwasm-utils-cli --bin wasm-prune; \
 	cargo install cargo-contract; \
+	cargo install --git https://github.com/hyperledger-labs/solang --tag m6; \
 # versions
 	yarn --version; \
 	rustup show; \
