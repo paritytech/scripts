@@ -34,7 +34,7 @@ RUN	set -eux; \
 #
 # Visit https://rust-lang.github.io/rustup-components-history/ to see which
 # components are available for which nightly build.
-	rustup default nightly-2020-05-30; \
+	rustup default nightly-2020-05-31; \
 	# Install wasm32 target for this toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup component add rustfmt clippy miri rust-src; \
