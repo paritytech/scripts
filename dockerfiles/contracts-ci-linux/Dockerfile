@@ -43,7 +43,7 @@ RUN set -eux; \
 	rustup component add rust-src rustfmt --toolchain nightly; \
 	cargo install pwasm-utils-cli --bin wasm-prune; \
 	cargo install cargo-contract; \
-	cargo install --git https://github.com/hyperledger-labs/solang --tag m6; \
+	cargo install --git https://github.com/hyperledger-labs/solang --tag m7; \
 # versions
 	yarn --version; \
 	rustup show; \
