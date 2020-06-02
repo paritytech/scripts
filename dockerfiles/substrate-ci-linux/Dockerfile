@@ -29,6 +29,8 @@ RUN set -eux; \
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
 # install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
 	cargo +nightly install wasm-gc; \
+# FIXME: TEMPORARY OVERRIDE
+	cargo install --git https://github.com/mozilla/sccache; \
 # versions
 	rustup show; \
 	cargo --version; \
