@@ -19,9 +19,13 @@ dockerfiles/substrate-ci-linux/README.md" \
 
 # install tools and dependencies
 RUN set -eux; \
-	apt -y update; \
-	apt install -y --no-install-recommends \
+	apt-get -y update; \
+	apt-get install -y --no-install-recommends \
 		chromium-driver; \
+# use minimum components
+	rustup set profile minimal; \
+# install Rust nightly, default is stable
+	rustup install nightly; \
 # install cargo tools
 	cargo install cargo-audit cargo-web wasm-pack cargo-deny wasm-bindgen-cli; \
 # install wasm toolchain
@@ -33,8 +37,8 @@ RUN set -eux; \
 	rustup show; \
 	cargo --version; \
 # apt clean up
-	apt autoremove -y; \
-	apt clean; \
+	apt-get autoremove -y; \
+	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)

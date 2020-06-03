@@ -34,6 +34,8 @@ RUN	set -eux; \
 #
 # Visit https://rust-lang.github.io/rustup-components-history/ to see which
 # components are available for which nightly build.
+# use minimum components
+	rustup set profile minimal; \
 	rustup default nightly-2020-05-31; \
 	# Install wasm32 target for this toolchain
 	rustup target add wasm32-unknown-unknown; \
@@ -45,5 +47,5 @@ RUN	set -eux; \
 	cargo --version; \
 	# Clean up and remove compilation artifacts that a cargo install creates (>250M).
 	# Also removes toolchain's HTML, docs and autocompletions (>300M for each toolchain).
-	rm -rf $CARGO_HOME/registry; \
+	rm -rf "$CARGO_HOME/registry"; \
 	rm -rf /usr/local/rustup/toolchains/*/share;
