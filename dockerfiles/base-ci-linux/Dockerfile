@@ -1,16 +1,17 @@
-FROM debian:buster
+FROM debian:buster-slim
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=paritytech
 
 # metadata
-LABEL io.parity.image.authors="devops-team@parity.io" \
-	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="${REGISTRY_PATH}/base-ci-linux" \
-	io.parity.image.description="Layer 1 image with all dependencies for Rust and WASM compilation. \
-libssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config \
+LABEL summary="Layer 1 image with all dependencies for Rust and WASM compilation." \
+	name="${REGISTRY_PATH}/base-ci-linux" \
+	maintainer="devops-team@parity.io" \
+	version="1.0" \
+	description="libssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config \
 curl, time, rhash, rust stable, rust nightly, sccache" \
+	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/base-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -34,21 +35,21 @@ ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-in
 
 # install tools and dependencies
 RUN set -eux; \
-	apt -y update; \
-	apt install -y --no-install-recommends \
+	apt-get -y update; \
+	apt-get install -y --no-install-recommends \
 		libssl-dev clang lld libclang-dev make cmake \
 		git pkg-config curl time rhash ca-certificates; \
 # set a link to clang
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
-# install rustup
+# install rustup, use minimum components
   	chmod +x rustup-init; \
-  	./rustup-init -y --no-modify-path --default-toolchain stable; \
+  	./rustup-init -y --no-modify-path --profile minimal --default-toolchain stable; \
   	rm rustup-init; \
   	chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
-# install Rust nightly, default is stable
-	rustup install nightly; \
 # install sccache
-	cargo install sccache --features redis; \
+	# FIXME: TEMPORARY OVERRIDE
+	# cargo install sccache --features redis; \
+	cargo install --git https://github.com/mozilla/sccache --features redis; \
 # versions
 	rustup show; \
 	cargo --version; \
@@ -58,8 +59,8 @@ RUN set -eux; \
 # removes toolchain's html docs and autocompletions (>300M for each toolchain)
 	rm -rf /usr/local/rustup/toolchains/*/share; \
 # apt clean up
-	apt autoremove -y; \
-	apt clean; \
+	apt-get autoremove -y; \
+	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*
 # cache handler
 ENV	RUSTC_WRAPPER=sccache \

@@ -23,15 +23,11 @@ Used to build and test Substrate-based projects.
 - `rhash`
 - `ca-certificates`
 
-**Rust versions:**
-
-- stable (default)
-- nightly
-
 [Click here](https://hub.docker.com/repository/docker/paritytech/base-ci-linux) for the registry.
 
 **Rust tools & toolchains:**
 
+- stable (default)
 - `sccache`
 
 ## Usage
