@@ -19,9 +19,11 @@ dockerfiles/substrate-ci-linux/README.md" \
 
 # install tools and dependencies
 RUN set -eux; \
-	apt -y update; \
-	apt install -y --no-install-recommends \
+	apt-get -y update; \
+	apt-get install -y --no-install-recommends \
 		chromium-driver; \
+# install Rust nightly, default is stable
+	rustup install nightly; \
 # install cargo tools
 	cargo install cargo-audit cargo-web wasm-pack cargo-deny wasm-bindgen-cli; \
 # install wasm toolchain
@@ -29,14 +31,12 @@ RUN set -eux; \
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
 # install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
 	cargo +nightly install wasm-gc; \
-# FIXME: TEMPORARY OVERRIDE
-	cargo install --git https://github.com/mozilla/sccache; \
 # versions
 	rustup show; \
 	cargo --version; \
 # apt clean up
-	apt autoremove -y; \
-	apt clean; \
+	apt-get autoremove -y; \
+	apt-get clean; \
 	rm -rf /var/lib/apt/lists/*; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
