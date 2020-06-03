@@ -22,6 +22,8 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		chromium-driver; \
+# use minimum components
+	rustup set profile minimal; \
 # install Rust nightly, default is stable
 	rustup install nightly; \
 # install cargo tools

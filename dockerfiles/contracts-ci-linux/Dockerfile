@@ -36,6 +36,8 @@ RUN set -eux; \
 # set a link to clang-8
 	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100; \
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-8 100; \
+# use minimum components
+	rustup set profile minimal; \
 # install nightly Rust
 	rustup install nightly; \
 # install wasm toolchain
