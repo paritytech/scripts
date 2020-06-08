@@ -5,15 +5,17 @@ ARG REGISTRY_PATH=paritytech
 FROM ${REGISTRY_PATH}/base-ci-linux:latest
 
 # metadata
-LABEL io.parity.image.authors="devops-team@parity.io" \
-	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="${REGISTRY_PATH}/substrate-ci-linux" \
-	io.parity.image.description="Inherits from base-ci-linux; chromium-driver, \
+LABEL summary="Image for Substrate-based projects." \
+	name="${REGISTRY_PATH}/ci-linux" \
+	maintainer="devops-team@parity.io" \
+	version="1.0" \
+	description="Inherits from base-ci-linux; chromium-driver, \
 wasm-gc, wasm-bindgen-cli, wasm-pack, cargo-audit, cargo-web, cargo-deny " \
+	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/substrate-ci-linux/Dockerfile" \
+dockerfiles/ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/substrate-ci-linux/README.md" \
+dockerfiles/ci-linux/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 

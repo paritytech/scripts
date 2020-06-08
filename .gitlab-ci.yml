@@ -65,7 +65,7 @@ base-ci-linux:
     - *push_to_docker_hub
     - *push_to_own_reg
 
-substrate-ci-linux:
+ci-linux:
   <<:                              *docker_build
   script:
     - docker build --no-cache
@@ -246,14 +246,14 @@ container_scanning:
   tags:
     - kubernetes-parity-build
 
-test-substrate:
+ci-linux-test:
   stage:                           test
   image:                           $REGISTRY_PATH/$IMAGE_NAME:staging
   interruptible:                   true
   dependencies:                    []
   only:
     variables:
-      - $IMAGE_NAME == "substrate-ci-linux"
+      - $IMAGE_NAME == "ci-linux"
   variables:
     <<:                            *default-vars
     GIT_STRATEGY:                  none
@@ -280,7 +280,7 @@ test-substrate:
 
 #### stage:                        prod
 
-production-substrate:
+ci-linux-production:
   stage:                           prod
   image:                           docker:stable
   dependencies:                    []
@@ -288,7 +288,7 @@ production-substrate:
     - docker:dind
   only:
     variables:
-      - $IMAGE_NAME == "substrate-ci-linux"
+      - $IMAGE_NAME == "ci-linux"
   script:
     - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
@@ -296,6 +296,7 @@ production-substrate:
     - docker pull $REGISTRY_PATH/$IMAGE_NAME:staging
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:production
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+    - docker tag parity/rust-builder:latest
     - docker push $REGISTRY_PATH/$IMAGE_NAME:production
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker logout

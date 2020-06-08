@@ -1,4 +1,4 @@
-# substrate-ci-linux
+# ci-linux
 
 Docker image based on our base CI image `<base-ci-linux:latest>`.
 
@@ -38,14 +38,14 @@ Used to build and test Substrate-based projects.
 - `cargo-deny`
 - `wasm32-unknown-unknown` toolchain
 
-[Click here](https://hub.docker.com/repository/docker/paritytech/substrate-ci-linux) for the registry.
+[Click here](https://hub.docker.com/repository/docker/paritytech/ci-linux) for the registry.
 
 ## Usage
 
 ```yaml
 test-substrate:
     stage: test
-        image: paritytech/substrate-ci-linux
+        image: paritytech/ci-linux
         script:
             - cargo build ...
 ```
