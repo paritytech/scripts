@@ -36,7 +36,7 @@ RUN	set -eux; \
 # components are available for which nightly build.
 # use minimum components
 	rustup set profile minimal; \
-	rustup default nightly-2020-06-09; \
+	rustup default nightly-2020-06-23; \
 	# Install wasm32 target for this toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup component add rustfmt clippy miri rust-src; \
