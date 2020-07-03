@@ -13,7 +13,6 @@ variables:                         &default-vars
   DOCKER_DRIVER:                   overlay2
   IMAGE_TAG:                       latest
   REGISTRY_PATH:                   paritytech
-  CI_REGISTRY_PATH:                "registry.parity.io/parity/infrastructure/scripts"
 
 default:
   cache:                           {}
@@ -46,16 +45,6 @@ default:
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     - docker logout
 
-# Push to CI registry
-# TODO: remove when fully switching to dockerhub
-.push_to_own_reg:                  &push_to_own_reg
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-    - docker push $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker push $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-    - docker logout
-
 #### stage:                        build
 
 #Build and push to docker hub and CI registry
@@ -63,7 +52,6 @@ base-ci-linux:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
-    - *push_to_own_reg
 
 ci-linux:
   <<:                              *docker_build
@@ -83,19 +71,16 @@ ink-ci-linux:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
-    - *push_to_own_reg
 
 contracts-ci-linux:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
-    - *push_to_own_reg
 
 awscli:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
-    - *push_to_own_reg
 
 tools:
   <<:                              *docker_build
