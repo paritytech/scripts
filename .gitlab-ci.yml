@@ -242,7 +242,8 @@ ci-linux-test:
   variables:
     <<:                            *default-vars
     GIT_STRATEGY:                  none
-    RUSTFLAGS: "-Cdebug-assertions=y"
+    RUSTFLAGS:                     "-Cdebug-assertions=y"
+    WASM_BUILD_NO_COLOR:           1
   before_script:
     - rustup show
     - cargo --version
@@ -250,7 +251,7 @@ ci-linux-test:
   script:
     - git clone https://github.com/paritytech/substrate .
     # test-linux-stable:
-    - WASM_BUILD_NO_COLOR=1 time cargo test --all --release --locked
+    - time cargo test --workspace --locked --release --verbose --features runtime-benchmarks --manifest-path bin/node/cli/Cargo.toml
     # check-web-wasm:
     - time cargo build --target=wasm32-unknown-unknown -p sp-io
     - time cargo build --target=wasm32-unknown-unknown -p sp-runtime
