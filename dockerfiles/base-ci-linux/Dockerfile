@@ -38,7 +38,7 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		libssl-dev clang lld libclang-dev make cmake \
-		git pkg-config curl time rhash ca-certificates; \
+		git pkg-config curl time rhash ca-certificates jq; \
 # set a link to clang
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
 # install rustup, use minimum components
