@@ -283,6 +283,7 @@ ci-linux-production:
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:production
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging parity/rust-builder:latest
+    - docker push parity/rust-builder:latest
     - docker push $REGISTRY_PATH/$IMAGE_NAME:production
     - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
     - docker logout
