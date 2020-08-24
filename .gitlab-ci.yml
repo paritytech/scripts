@@ -169,7 +169,7 @@ terraform:
   variables:
     <<:                            *default-vars
     # https://releases.hashicorp.com/terraform/
-    TERRAFORM_VERSION:             "0.12.26"
+    TERRAFORM_VERSION:             "0.12.29"
   script:
     - |
       cat <<-EOT
