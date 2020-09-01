@@ -1,11 +1,6 @@
 # scripts
 
-Various helpful scripts 
-
-## get-parity.sh
-
-Download, verify and install
-[parity-ethereum](https://github.com/paritytech/parity-ethereum/).
+Various helpful scripts
 
 ## Dockerfiles for images used in GitLab CI
 
@@ -13,7 +8,6 @@ Download, verify and install
 Rust and tools for:
 
 - Substrate-based projects CIs
-- parity-ethereum
 - android
 - arm64
 - armv7
@@ -26,5 +20,5 @@ Rust and tools for:
 
 Pipelines are triggered by schedule. Can be launched manually though.
 To launch the pipeline go to the project's CI/CD -> Schedules menu.
-To change, edit/create the new schedule: 
+To change, edit/create the new schedule:
     set the required variable and cron schedule.
