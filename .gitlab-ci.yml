@@ -103,7 +103,7 @@ chaostools:
   variables:
     <<:                            *default-vars
     # https://github.com/kubernetes/kubernetes/releases
-    BUILD_KUBE_VERSION:            "1.14.6"
+    BUILD_KUBE_VERSION:            "1.18.2"
   script:
     - |
       cat <<-EOT
