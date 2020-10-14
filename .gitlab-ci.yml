@@ -136,7 +136,7 @@ kubetools:
     # https://github.com/kubernetes/helm/releases
     # will be overwritten by the global variable at
     # https://gitlab.parity.io/groups/parity/-/settings/ci_cd
-    BUILD_HELM_VERSION:            "2.16.6"
+    BUILD_HELM_VERSION:            "2.16.11"
   script:
     - |
       cat <<-EOT
