@@ -78,11 +78,17 @@ if [[ "$1" == "--fast" ]]; then
 	echo "You can install manually by cloning the https://github.com/paritytech/substrate repo,"
 	echo "and using cargo to install 'substrate' and 'subkey' from the repo path."
 else 
+	BOLD_RED='\033[1;31m'
+	NO_COLOR='\033[0m'
+	ERROR_MSG="\n\n${BOLD_RED}Build failed:${NO_COLOR} This can be due to latest rust nightly \
+breaking substrate, for more precise guidelines go to \
+https://substrate.dev/docs/en/knowledgebase/getting-started/\n"
+
 	g=$(mktemp -d)
 	git clone https://github.com/paritytech/substrate "$g"
 	pushd "$g"
-	cargo install --force --path ./bin/node/cli #substrate
-	cargo install --force --path ./bin/utils/subkey subkey
+	cargo install --force --path ./bin/node/cli || echo -e "${ERROR_MSG}" #substrate
+	cargo install --force --path ./bin/utils/subkey subkey || echo -e "${ERROR_MSG}"
 	popd
 fi
 
