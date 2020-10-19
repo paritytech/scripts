@@ -3,7 +3,7 @@ FROM alpine:latest
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=paritytech
-ARG TERRAFORM_VERSION="0.13.4"
+ARG TERRAFORM_VERSION
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
