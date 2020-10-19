@@ -17,6 +17,7 @@ dockerfiles/awscli/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 RUN pip install awscli
+RUN apk add bash
 
 COPY utility/awscli-config /etc/aws.config
 ENV AWS_CONFIG_FILE /etc/aws.config
