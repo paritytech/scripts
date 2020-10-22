@@ -39,12 +39,12 @@ RUN set -eux; \
 # use minimum components
 	rustup set profile minimal; \
 # install nightly Rust
-	rustup install nightly; \
+	rustup install nightly-2020-10-01; \
 # install wasm toolchain
-	rustup target add wasm32-unknown-unknown --toolchain nightly; \
+	rustup target add wasm32-unknown-unknown --toolchain nightly-2020-10-01; \
 # install cargo tools
 	rustup component add rustfmt; \
-	rustup component add rust-src rustfmt --toolchain nightly; \
+	rustup component add rust-src rustfmt --toolchain nightly-2020-10-01; \
 	cargo install pwasm-utils-cli --bin wasm-prune; \
 	cargo install cargo-contract; \
 	cargo install --git https://github.com/hyperledger-labs/solang --tag m7; \
