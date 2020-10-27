@@ -39,7 +39,7 @@ RUN set -eux; \
 # use minimum components
 	rustup set profile minimal; \
 # install nightly Rust
-	rustup install nightly-2020-10-01; \
+	rustup default nightly-2020-10-01; \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown --toolchain nightly-2020-10-01; \
 # install cargo tools
