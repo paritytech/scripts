@@ -17,15 +17,14 @@ dockerfiles/terraform/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-ADD "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" /tmp
-RUN unzip /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin/ terraform && \
-	rm /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-
-
 RUN apk add --no-cache \
 		ca-certificates git jq make curl gettext; \
+	curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
+		-o terraform.zip; \
+	unzip terraform.zip	-d /usr/local/bin/ terraform; \
+	rm terraform.zip; \
 	chmod +x /usr/local/bin/terraform
 
 WORKDIR /config
 
-CMD /bin/sh
+CMD ["/bin/sh"]
