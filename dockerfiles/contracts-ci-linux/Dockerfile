@@ -42,7 +42,6 @@ RUN set -eux; \
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
 			--profile minimal --component rustfmt rust-src; \
 	rustup default nightly; \
-	# rustup component add rustfmt; \
 	cargo install pwasm-utils-cli --bin wasm-prune; \
 	cargo install cargo-contract; \
 	cargo install --git https://github.com/hyperledger-labs/solang --tag m7; \

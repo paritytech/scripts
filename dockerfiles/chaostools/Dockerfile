@@ -9,7 +9,7 @@ ARG KUBE_VERSION="1.18.2"
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/chaostools" \
-	io.parity.image.description="ca-certificates git jq make curl gettext; kube helm;" \
+	io.parity.image.description="ca-certificates git jq make curl gettext; kube" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/chaostools/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\

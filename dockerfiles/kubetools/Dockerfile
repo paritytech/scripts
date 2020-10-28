@@ -18,6 +18,7 @@ dockerfiles/kubetools/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 RUN apk add --no-cache \
 		ca-certificates git jq make curl gettext; \
 		tar xvz linux-amd64/helm > /usr/local/bin/helm; \
