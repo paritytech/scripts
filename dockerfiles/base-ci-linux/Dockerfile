@@ -39,8 +39,8 @@ RUN set -eux; \
 # set a link to clang
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
 # install rustup, use minimum components
-	curl "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" \
-		-Lo rustup-init; \
+	curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" \
+		-o rustup-init; \
   	chmod +x rustup-init; \
   	./rustup-init -y --no-modify-path --profile minimal --default-toolchain stable; \
   	rm rustup-init; \

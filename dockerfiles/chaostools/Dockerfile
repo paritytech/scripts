@@ -19,8 +19,8 @@ dockerfiles/chaostools/README.md" \
 
 RUN apk add --no-cache \
 		ca-certificates git jq make curl gettext; \
-	curl "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl" \
-		-Lo /usr/local/bin/kubectl; \
+	curl -L "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl" \
+		-o /usr/local/bin/kubectl; \
 	chmod +x /usr/local/bin/kubectl;
 
 WORKDIR /config
