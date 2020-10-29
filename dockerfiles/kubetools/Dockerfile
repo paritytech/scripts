@@ -21,7 +21,6 @@ dockerfiles/kubetools/README.md" \
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 RUN apk add --no-cache \
 		ca-certificates git jq make curl gettext; \
-		tar xvz linux-amd64/helm > /usr/local/bin/helm; \
 	curl "https://storage.googleapis.com/kubernetes-release/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl" \
 		-Lo /usr/local/bin/kubectl; \
 	curl -L0 "https://storage.googleapis.com/kubernetes-helm/helm-v${HELM_VERSION}-linux-amd64.tar.gz" | \

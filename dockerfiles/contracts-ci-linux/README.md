@@ -30,7 +30,7 @@ Used to build and test contracts!.
 
 **Rust versions:**
 
-We always use the latest possible `nightly` version that supports our required `rustup` components:
+We always try to use the [latest possible](https://rust-lang.github.io/rustup-components-history/) `nightly` version that supports our required `rustup` components:
 
 - `rustfmt`: The Rust code formatter.
 - `rust-src`: The Rust sources of the standard library.
