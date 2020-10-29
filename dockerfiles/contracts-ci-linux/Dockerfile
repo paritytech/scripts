@@ -48,6 +48,7 @@ RUN set -eux; \
 	cargo install pwasm-utils-cli --bin wasm-prune; \
 	cargo install cargo-contract; \
 	cargo install --git https://github.com/hyperledger-labs/solang --tag m7; \
+	cargo install --git https://github.com/paritytech/canvas-node --tag v0.1.2; \
 # versions
 	yarn --version; \
 	rustup show; \
