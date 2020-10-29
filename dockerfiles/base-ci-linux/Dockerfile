@@ -30,9 +30,6 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 		CC=clang \
 		CXX=clang
 
-# download rustup
-ADD "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" rustup-init
-
 # install tools and dependencies
 RUN set -eux; \
 	apt-get -y update; \
@@ -42,22 +39,20 @@ RUN set -eux; \
 # set a link to clang
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
 # install rustup, use minimum components
+	curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" \
+		-o rustup-init; \
   	chmod +x rustup-init; \
   	./rustup-init -y --no-modify-path --profile minimal --default-toolchain stable; \
   	rm rustup-init; \
-  	chmod -R a+w $RUSTUP_HOME $CARGO_HOME; \
+  	chmod -R a+w ${RUSTUP_HOME} ${CARGO_HOME}; \
 # install sccache
-	# FIXME: TEMPORARY OVERRIDE
-	# cargo install sccache --features redis; \
-	cargo install --git https://github.com/mozilla/sccache --features redis; \
+	cargo install sccache --features redis; \
 # versions
 	rustup show; \
 	cargo --version; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
-	rm -rf $CARGO_HOME/registry; \
-# removes toolchain's html docs and autocompletions (>300M for each toolchain)
-	rm -rf /usr/local/rustup/toolchains/*/share; \
+	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \

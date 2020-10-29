@@ -21,10 +21,10 @@ dockerfiles/tools/README.md" \
 
 RUN apk add --no-cache curl git jq rsync make gettext gnupg bash
 
-RUN curl -sS -L https://github.com/prometheus/prometheus/releases/download/v${PROM_VERSION}/prometheus-${PROM_VERSION}.linux-amd64.tar.gz \
-  --output prometheus.tar.gz && \
+RUN curl -sS -L "https://github.com/prometheus/prometheus/releases/download/v${PROM_VERSION}/prometheus-${PROM_VERSION}.linux-amd64.tar.gz" \
+  		--output prometheus.tar.gz && \
 	tar -xzf prometheus.tar.gz prometheus-${PROM_VERSION}.linux-amd64/promtool && \
 	mv prometheus-${PROM_VERSION}.linux-amd64/promtool /usr/local/bin && \
 	rm -rf prometheus.tar.gz prometheus-${PROM_VERSION}.linux-amd64
 
-CMD /bin/sh
+CMD ["/bin/sh"]

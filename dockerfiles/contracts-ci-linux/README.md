@@ -30,21 +30,17 @@ Used to build and test contracts!.
 
 **Rust versions:**
 
-We always try to use the latest possible `nightly` version that supports our required `rustup` components:
+We always try to use the [latest possible](https://rust-lang.github.io/rustup-components-history/) `nightly` version that supports our required `rustup` components:
 
-- `clippy`
-- `cargo`
-- `rustfmt`
-
-The [`rustup` component history](https://rust-lang.github.io/rustup-components-history/) provides a decent overview to decide upon a new version update.
+- `rustfmt`: The Rust code formatter.
+- `rust-src`: The Rust sources of the standard library.
 
 **Rust tools & toolchains:**
 
-- `rustfmt`
 - `cargo-contract`
 - `pwasm-utils-cli`
 - `solang`
-- `wasm32-unknown-unknown` toolchain
+- `wasm32-unknown-unknown`: The toolchain to compile Rust codebases for Wasm.
 
 [Click here](https://hub.docker.com/repository/docker/paritytech/contracts-ci-linux) for the registry.
 

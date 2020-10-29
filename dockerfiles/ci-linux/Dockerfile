@@ -24,15 +24,13 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		chromium-driver; \
-# use minimum components
-	rustup set profile minimal; \
-# install Rust nightly, default is stable
-	rustup install nightly; \
-# install cargo tools
-	cargo install cargo-audit cargo-web wasm-pack cargo-deny wasm-bindgen-cli; \
+# install Rust nightly, default is stable, use minimum components
+	rustup toolchain install nightly --profile minimal; \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown; \
 	rustup target add wasm32-unknown-unknown --toolchain nightly; \
+# install cargo tools
+	cargo install cargo-audit cargo-web wasm-pack cargo-deny wasm-bindgen-cli; \
 # install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
 	cargo +nightly install wasm-gc; \
 # versions
@@ -44,6 +42,4 @@ RUN set -eux; \
 	rm -rf /var/lib/apt/lists/*; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
-	rm -rf $CARGO_HOME/registry; \
-# removes toolchain's html docs and autocompletions (>300M for each toolchain)
-	rm -rf /usr/local/rustup/toolchains/*/share
+	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache;

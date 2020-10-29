@@ -8,8 +8,9 @@ FROM ${REGISTRY_PATH}/base-ci-linux:latest
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/contracts-ci-linux" \
-	io.parity.image.description="Inherits from base-ci-linux:latest. rust nightly, \
-llvm-8-dev, clang-8, zlib1g-dev, npm, yarn, wabt, unzip" \
+	io.parity.image.description="Inherits from base-ci-linux:latest. \
+llvm-8-dev, clang-8, zlib1g-dev, npm, yarn, wabt, unzip. \
+rust nightly, rustfmt, rust-src" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/contracts-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -36,15 +37,11 @@ RUN set -eux; \
 # set a link to clang-8
 	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100; \
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-8 100; \
-# use minimum components
-	rustup set profile minimal; \
-# install nightly Rust
-	rustup default nightly-2020-10-01; \
-# install wasm toolchain
-	rustup target add wasm32-unknown-unknown --toolchain nightly-2020-10-01; \
-# install cargo tools
-	rustup component add rustfmt; \
-	rustup component add rust-src rustfmt --toolchain nightly-2020-10-01; \
+# Installs the latest common nightly for the listed components,
+# adds those components, wasm target and sets the profile to minimal
+	rustup toolchain install nightly --target wasm32-unknown-unknown \
+			--profile minimal --component rustfmt rust-src; \
+	rustup default nightly; \
 	cargo install pwasm-utils-cli --bin wasm-prune; \
 	cargo install cargo-contract; \
 	cargo install --git https://github.com/hyperledger-labs/solang --tag m7; \
@@ -56,9 +53,7 @@ RUN set -eux; \
 	solang --version; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
-	rm -rf "$CARGO_HOME/registry"; \
-# removes toolchain's html docs and autocompletions (>300M for each toolchain)
-	rm -rf /usr/local/rustup/toolchains/*/share; \
+	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \

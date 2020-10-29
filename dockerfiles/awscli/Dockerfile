@@ -16,10 +16,10 @@ dockerfiles/awscli/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-RUN pip install awscli
-RUN apk add --no-cache bash
+RUN pip install awscli; \
+	apk add --no-cache bash
 
 COPY utility/awscli-config /etc/aws.config
 ENV AWS_CONFIG_FILE /etc/aws.config
 
-CMD /bin/sh
+CMD ["/bin/sh"]
