@@ -17,10 +17,11 @@ dockerfiles/ink-ci-linux/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-RUN	set -eux; \
 # Necessary for building binaryen-sys, which is part of cargo-contract's
 # binaryen dependency
-  export CXX="/usr/bin/clang++-8" \
+ENV CXX="/usr/bin/clang++-8"
+
+RUN	set -eux; \
 # The supported Rust nightly version must support the following components
 # to allow for a functioning CI pipeline:
 #
