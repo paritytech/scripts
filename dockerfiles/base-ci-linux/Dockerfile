@@ -49,7 +49,7 @@ RUN set -eux; \
 	# cargo install sccache --features redis; \
 	# FIXME: TEMPORARY OVERRIDE due to the sccache issue
 	# https://github.com/mozilla/sccache/issues/663
-	cargo install --git https://github.com/mozilla/sccache --features redis; \
+	cargo install --git https://github.com/mozilla/sccache  --rev 6628e1f70db3d583cb5e79210603ad878de3d315 --features redis; \
 # versions
 	rustup show; \
 	cargo --version; \
