@@ -46,7 +46,10 @@ RUN set -eux; \
   	rm rustup-init; \
   	chmod -R a+w ${RUSTUP_HOME} ${CARGO_HOME}; \
 # install sccache
-	cargo install sccache --features redis; \
+	# cargo install sccache --features redis; \
+	# FIXME: TEMPORARY OVERRIDE due to the sccache issue
+	# https://github.com/mozilla/sccache/issues/663
+	cargo install --git https://github.com/mozilla/sccache --features redis; \
 # versions
 	rustup show; \
 	cargo --version; \
