@@ -22,6 +22,10 @@ dockerfiles/contracts-ci-linux/README.md" \
 COPY utility/debian-llvm-clang.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
 COPY utility/yarn.key /etc/apt/trusted.gpg.d/debian-yarn.gpg
 
+# Necessary for building binaryen-sys, which is part of cargo-contract's
+# binaryen dependency
+ENV CXX="/usr/bin/clang++-8"
+
 # install tools and dependencies
 RUN set -eux; \
 	echo "deb https://dl.yarnpkg.com/debian/ stable main"  \
