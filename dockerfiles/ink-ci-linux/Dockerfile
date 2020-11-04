@@ -17,6 +17,8 @@ dockerfiles/ink-ci-linux/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
+WORKDIR /builds
+
 RUN	set -eux; \
 # The supported Rust nightly version must support the following components
 # to allow for a functioning CI pipeline:
