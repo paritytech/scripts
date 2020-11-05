@@ -20,6 +20,8 @@ dockerfiles/contracts-ci-linux/README.md" \
 
 WORKDIR /builds
 
+ENV CXX="/usr/bin/clang++-8"
+
 # copy llvm and yarn repo key
 COPY utility/yarn.key /etc/apt/trusted.gpg.d/debian-yarn.gpg
 
@@ -27,18 +29,25 @@ COPY utility/yarn.key /etc/apt/trusted.gpg.d/debian-yarn.gpg
 RUN set -eux; \
 	echo "deb https://dl.yarnpkg.com/debian/ stable main"  \
 		> /etc/apt/sources.list.d/yarn.list; \
+	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main" \
+		> /etc/apt/sources.list.d/llvm.list; \
+	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main" \
+		>> /etc/apt/sources.list.d/llvm.list; \
 	apt-get -y update; \
 	apt-get remove -y --purge clang; \
 	apt-get install -y --no-install-recommends \
-		npm yarn wabt; \
+		llvm-8-dev clang-8 npm yarn wabt; \
+# set a link to clang-8
+	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100; \
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-8 100; \
+	update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-8 100; \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
-			--profile minimal --component rustfmt rust-src; \
+		--profile minimal --component rustfmt rust-src; \
 	rustup default nightly; \
 	cargo install pwasm-utils-cli --bin wasm-prune; \
 	cargo install cargo-contract; \
-	cargo install --git https://github.com/paritytech/canvas-node --tag v0.1.2; \
 # versions
 	yarn --version; \
 	rustup show; \
