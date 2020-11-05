@@ -9,7 +9,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/contracts-ci-linux" \
 	io.parity.image.description="Inherits from base-ci-linux:latest. \
-zlib1g-dev, npm, yarn, wabt, unzip. \
+llvm-8-dev, clang-8, npm, yarn, wabt. \
 rust nightly, rustfmt, rust-src" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/contracts-ci-linux/Dockerfile" \
