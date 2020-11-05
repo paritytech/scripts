@@ -31,19 +31,31 @@ default:
 
 # Push to Dockerhub
 .push_to_docker_hub:               &push_to_docker_hub
-    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-    - docker build --no-cache
+  - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
+  - docker build --no-cache
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date +%Y%m%d)"
+      --build-arg REGISTRY_PATH=$REGISTRY_PATH
+      --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+      --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+      --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
+  - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+  - docker info
+  - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+  - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+  - docker logout
+
+.push_to_staging:                  &push_to_staging
+  - docker build
         --build-arg VCS_REF="$CI_COMMIT_SHA"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --build-arg REGISTRY_PATH=$REGISTRY_PATH
-        --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-        --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+        --tag $REGISTRY_PATH/$IMAGE_NAME:staging
         --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
-    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-    - docker info
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-    - docker logout
+  - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+  - docker info
+  - docker push $REGISTRY_PATH/$IMAGE_NAME:staging
+  - docker logout
 
 #### stage:                        build
 
@@ -56,16 +68,7 @@ base-ci-linux:
 ci-linux:
   <<:                              *docker_build
   script:
-    - docker build --no-cache
-        --build-arg VCS_REF="$CI_COMMIT_SHA"
-        --build-arg BUILD_DATE="$(date +%Y%m%d)"
-        --build-arg REGISTRY_PATH=$REGISTRY_PATH
-        --tag $REGISTRY_PATH/$IMAGE_NAME:staging
-        --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
-    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-    - docker info
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:staging
-    - docker logout
+    - *push_to_staging
 
 ink-ci-linux:
   <<:                              *docker_build
@@ -75,7 +78,7 @@ ink-ci-linux:
 contracts-ci-linux:
   <<:                              *docker_build
   script:
-    - *push_to_docker_hub
+    - *push_to_staging
 
 awscli:
   <<:                              *docker_build
@@ -264,17 +267,48 @@ ci-linux-test:
   tags:
     - linux-docker
 
+contracts-ci-linux-test:
+  stage:                           test
+  needs:
+    - job:                         contracts-ci-linux
+      artifacts:                   false
+  trigger:
+    project:                       parity/cargo-contracts
+    branch:                        master
+    strategy:                      depend
+
 #### stage:                        prod
 
 ci-linux-production:
   stage:                           prod
   image:                           docker:stable
-  dependencies:                    []
   services:
     - docker:dind
   only:
     variables:
       - $IMAGE_NAME == "ci-linux"
+  script:
+    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
+    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+    - docker info
+    - docker pull $REGISTRY_PATH/$IMAGE_NAME:staging
+    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:production
+    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging parity/rust-builder:latest
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:production
+    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+    - docker logout
+  tags:
+    - kubernetes-parity-build
+
+contracts-ci-linux-production:
+  stage:                           prod
+  image:                           docker:stable
+  services:
+    - docker:dind
+  needs:
+    - job:                         contracts-ci-linux-test
+      artifacts:                   false
   script:
     - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
     - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
