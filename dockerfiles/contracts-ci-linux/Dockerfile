@@ -10,7 +10,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.title="${REGISTRY_PATH}/contracts-ci-linux" \
 	io.parity.image.description="Inherits from base-ci-linux:latest. \
 llvm-8-dev, clang-8, npm, yarn, wabt. \
-rust nightly, rustfmt, rust-src" \
+rust nightly, rustfmt, rust-src, solang, canvas-node" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/contracts-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -49,10 +49,17 @@ RUN set -eux; \
 	rustup default nightly; \
 	cargo install pwasm-utils-cli --bin wasm-prune; \
 	cargo install cargo-contract; \
+	cargo install --git https://github.com/hyperledger-labs/solang --tag v0.1.2; \
+# download the latest canvas-node binary
+	curl -L "https://gitlab.parity.io/parity/canvas-node/-/jobs/artifacts/master/raw/artifacts/canvas/canvas?job=build" \
+		-o /usr/local/cargo/bin/canvas; \
+	chmod +x /usr/local/cargo/bin/canvas; \
 # versions
 	yarn --version; \
 	rustup show; \
 	cargo --version; \
+	solang --version; \
+	canvas --version; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache; \
