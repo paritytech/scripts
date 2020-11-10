@@ -9,7 +9,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/contracts-ci-linux" \
 	io.parity.image.description="Inherits from base-ci-linux:latest. \
-llvm-8-dev, clang-8, npm, yarn, wabt. \
+llvm-8-dev, clang-8,  zlib1g-dev, npm, yarn, wabt. \
 rust nightly, rustfmt, rust-src, solang, canvas-node" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/contracts-ci-linux/Dockerfile" \
@@ -37,7 +37,7 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get remove -y --purge clang; \
 	apt-get install -y --no-install-recommends \
-		llvm-8-dev clang-8 npm yarn wabt; \
+		 zlib1g-dev llvm-8-dev clang-8 npm yarn wabt; \
 # set a link to clang-8
 	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100; \
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-8 100; \

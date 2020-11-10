@@ -12,7 +12,6 @@ Used to build and test contracts!.
 - `npm`
 - `yarn`
 - `wabt`
-- `unzip`
 
 **Inherited from `<base-ci-linux:latest>`:**
 
