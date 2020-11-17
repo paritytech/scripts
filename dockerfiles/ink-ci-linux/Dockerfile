@@ -43,8 +43,8 @@ RUN	set -eux; \
 # We require `xargo` so that `miri` runs properly
 # We require `grcov` for coverage reporting and `rust-covfix` to improve it.
 	cargo install grcov rust-covfix xargo; \
-# download the latest cargo-contracts binary
-	curl -L "https://gitlab.parity.io/parity/cargo-contract/-/jobs/artifacts/master/raw/artifacts/cargo-contract/cargo-contract?job=build" \
+# download the cargo-contracts binary tagged v0.8-ink-ci
+	curl -L "https://gitlab.parity.io/parity/cargo-contract/-/jobs/artifacts/v0.8-ink-ci/raw/artifacts/cargo-contract/cargo-contract?job=build" \
 		-o /usr/local/cargo/bin/cargo-contract; \
 	chmod +x /usr/local/cargo/bin/cargo-contract; \
 # versions
