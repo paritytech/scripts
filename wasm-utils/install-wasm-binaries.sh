@@ -66,7 +66,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]; then
 
 			for bin in "${binaries[@]}"; do
 				echo "Installing $bin into ~/.cargo/bin"
-				tar -xvjf "wasm-binaries.tbz2 wasm-install/bin/$bin" >/dev/null
+				tar -xvjf "wasm-binaries.tbz2" "wasm-install/bin/$bin" >/dev/null
 				cp -f "wasm-install/bin/$bin" ~/.cargo/bin/
 			done
 			popd >/dev/null
