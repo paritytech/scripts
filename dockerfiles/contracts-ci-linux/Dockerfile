@@ -20,6 +20,8 @@ dockerfiles/contracts-ci-linux/README.md" \
 
 WORKDIR /builds
 
+ENV SHELL /bin/bash
+
 ENV CXX="/usr/bin/clang++-8"
 
 # copy llvm and yarn repo key
