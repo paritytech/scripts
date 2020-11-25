@@ -21,24 +21,6 @@ dockerfiles/sccache-ci-linux/README.md" \
 
 WORKDIR /builds
 
-# [x] gcc
-# [x] clang
-# [x] rustc +stable
-# [x] rustc +nightly
-# [x] nvcc
-# [x] broot (cargo)
-# [x] ripgrep (cargo)
-# [x] sd (cargo)
-# [x] binutils
-# [x] coreutils
-# [x] gdbserver (or something for remote debugging, not sure if needed)
-
-# Libs (including headers and devel):
-# miniz
-# [x] zlib
-# [x] openssl (for unit tests)
-
-
 # config for wasm32-unknown-unknown & clang
 COPY utility/base-ci-linux-config /root/.cargo/config
 
@@ -56,30 +38,19 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		linux-headers-5.8.0-29 libssl-dev clang libclang-dev gcc binutils coreutils gdbserver \
-        zlib1g-dev curl gnupg2 \
+        zlib1g-dev librust-zip+deflate-miniz-dev curl gnupg2 docker \
         lld make cmake git pkg-config time rhash ca-certificates; \
-		# software-properties-common
-# setup CUDA
-    # curl -L "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin" \
-    #     -o /etc/apt/preferences.d/cuda-repository-pin-600; \
-    # apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub; \
-    # add-apt-repository -y "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"; \
-    # apt-get update; \
-    # apt-get -y install cuda; \
+# setup nvcc
     curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub | apt-key add -; \
     echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64 /" > /etc/apt/sources.list.d/cuda.list; \
-    echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu2004/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         cuda-command-line-tools-11-1=11.1.1-1; \
     ln -s cuda-11.1 /usr/local/cuda; \
-    # export PATH=/usr/local/cuda-11.1/bin${PATH:+:${PATH}}
-    # export LD_LIBRARY_PATH=/usr/local/cuda-11.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 # set a link to clang
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
 # install rustup, use minimum components
-	curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" \
-		-o rustup-init; \
+	curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" -o rustup-init; \
   	chmod +x rustup-init; \
   	./rustup-init -y --no-modify-path --profile minimal --default-toolchain nightly --component clippy rustfmt; \
   	rm rustup-init; \
@@ -95,6 +66,10 @@ RUN set -eux; \
 	rustup show; \
 	cargo --version; \
     nvcc --version; \
+	gcc --version; \
+	clang --version; \
+	gdbserver --version; \
+	openssl version; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache; \
