@@ -48,24 +48,31 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 	CC=clang \
 	CXX=clang \
     LD_LIBRARY_PATH=/usr/local/cuda-11.1/lib64 \
-    DEBIAN_FRONTEND=noninteractive
+    DEBIAN_FRONTEND=noninteractive \
+    TERM=xterm-256color
 
 # install tools and dependencies
 RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		linux-headers-5.8.0-29 libssl-dev clang libclang-dev gcc binutils coreutils gdbserver \
-        zlib1g-dev \
-        curl software-properties-common gnupg2 \
-        lld make cmake \
-		git pkg-config time rhash ca-certificates; \
+        zlib1g-dev curl gnupg2 \
+        lld make cmake git pkg-config time rhash ca-certificates; \
+		# software-properties-common
 # setup CUDA
-    curl -L "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin" \
-        -o /etc/apt/preferences.d/cuda-repository-pin-600; \
-    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub; \
-    add-apt-repository "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"; \
+    # curl -L "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin" \
+    #     -o /etc/apt/preferences.d/cuda-repository-pin-600; \
+    # apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub; \
+    # add-apt-repository -y "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/ /"; \
+    # apt-get update; \
+    # apt-get -y install cuda; \
+    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub | apt-key add -; \
+    echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64 /" > /etc/apt/sources.list.d/cuda.list; \
+    echo "deb https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu2004/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list; \
     apt-get update; \
-    apt-get -y install cuda; \
+    apt-get install -y --no-install-recommends \
+        cuda-command-line-tools-11-1=11.1.1-1; \
+    ln -s cuda-11.1 /usr/local/cuda; \
     # export PATH=/usr/local/cuda-11.1/bin${PATH:+:${PATH}}
     # export LD_LIBRARY_PATH=/usr/local/cuda-11.1/lib64${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 # set a link to clang
@@ -99,3 +106,5 @@ RUN set -eux; \
 ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
   	RUST_BACKTRACE=1
+
+CMD ["bash", "-l"]
