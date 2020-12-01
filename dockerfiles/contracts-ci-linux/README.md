@@ -9,6 +9,7 @@ Used to build and test contracts!.
 - `llvm-8-dev`
 - `clang-8`
 - `zlib1g-dev`
+- `python3`
 - `npm`
 - `yarn`
 - `wabt`
