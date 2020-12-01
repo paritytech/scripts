@@ -273,7 +273,7 @@ contracts-ci-linux-test:
     - job:                         contracts-ci-linux
       artifacts:                   false
   trigger:
-    project:                       parity/cargo-contracts
+    project:                       parity/cargo-contract
     branch:                        master
     strategy:                      depend
 
