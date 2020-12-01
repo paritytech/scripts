@@ -18,6 +18,7 @@ dockerfiles/ink-ci-linux/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 WORKDIR /builds
+
 ENV SHELL /bin/bash
 
 RUN	set -eux; \
