@@ -52,7 +52,8 @@ RUN set -eux; \
 	rustup default nightly; \
 	cargo install pwasm-utils-cli --bin wasm-prune; \
 	cargo install cargo-contract; \
-	cargo install --git https://github.com/hyperledger-labs/solang --tag v0.1.5; \
+# tried v0.1.5 and the latest master - both fail with https://github.com/hyperledger-labs/solang/issues/314
+	cargo install --git https://github.com/hyperledger-labs/solang --tag v0.1.2; \
 # download the latest canvas-node binary
 	curl -L "https://gitlab.parity.io/parity/canvas-node/-/jobs/artifacts/master/raw/artifacts/canvas/canvas?job=build" \
 		-o /usr/local/cargo/bin/canvas; \
