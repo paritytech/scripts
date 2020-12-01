@@ -274,11 +274,13 @@ ci-linux-test:
 
 contracts-ci-linux-test:
   stage:                           test
+  variables:
+    CI_IMAGE:                      "paritytech/contracts-ci-linux:staging"
   rules:
     - if: $IMAGE_NAME == "contracts-ci-linux"
   trigger:
     project:                       parity/cargo-contract
-    branch:                        master
+    branch:                        "115"
     strategy:                      depend
 
 #### stage:                        prod
