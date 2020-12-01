@@ -280,7 +280,7 @@ contracts-ci-linux-test:
     - if: $IMAGE_NAME == "contracts-ci-linux"
   trigger:
     project:                       parity/cargo-contract
-    branch:                        "115"
+    branch:                        master
     strategy:                      depend
 
 #### stage:                        prod
