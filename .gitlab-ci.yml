@@ -20,12 +20,10 @@ default:
 .build:                            &docker_build
   stage:                           build
   image:                           docker:stable
-  dependencies:                    []
   services:
     - docker:dind
-  only:
-    variables:
-      - $IMAGE_NAME == $CI_JOB_NAME
+  rules:
+    - if: $IMAGE_NAME == $CI_JOB_NAME
   tags:
     - kubernetes-parity-build
 
@@ -222,7 +220,6 @@ container_scanning:
     - name:                        $CLAIR_DB_IMAGE
       alias:                       clair-vulnerabilities-db
   allow_failure:                   true
-  dependencies:                    []
   script:
     - /analyzer run
   artifacts:
@@ -239,9 +236,8 @@ container_scanning:
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
     DOCKERFILE_PATH:               dockerfiles/$IMAGE_NAME/Dockerfile
-  only:
-    variables:
-      - $IMAGE_NAME
+  rules:
+    - if: $IMAGE_NAME
   tags:
     - kubernetes-parity-build
 
@@ -249,10 +245,8 @@ ci-linux-test:
   stage:                           test
   image:                           $REGISTRY_PATH/$IMAGE_NAME:staging
   interruptible:                   true
-  dependencies:                    []
-  only:
-    variables:
-      - $IMAGE_NAME == "ci-linux"
+  rules:
+    - if: $IMAGE_NAME == "ci-linux"
   variables:
     <<:                            *default-vars
     GIT_STRATEGY:                  none
@@ -280,12 +274,8 @@ ci-linux-test:
 
 contracts-ci-linux-test:
   stage:                           test
-  only:
-    variables:
-      - $IMAGE_NAME == "contracts-ci-linux"
-  needs:
-    - job:                         contracts-ci-linux
-      artifacts:                   false
+  rules:
+    - if: $IMAGE_NAME == "contracts-ci-linux"
   trigger:
     project:                       parity/cargo-contract
     branch:                        master
@@ -298,9 +288,8 @@ ci-linux-production:
   image:                           docker:stable
   services:
     - docker:dind
-  only:
-    variables:
-      - $IMAGE_NAME == "ci-linux"
+  rules:
+    - if: $IMAGE_NAME == "ci-linux"
   script:
     - *push_to_production
   tags:
@@ -314,9 +303,8 @@ contracts-ci-linux-production:
   needs:
     - job:                         contracts-ci-linux-test
       artifacts:                   false
-  only:
-    variables:
-      - $IMAGE_NAME == "contracts-ci-linux"
+  rules:
+    - if: $IMAGE_NAME == "contracts-ci-linux"
   script:
     - *push_to_production
   tags:
