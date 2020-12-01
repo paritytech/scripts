@@ -280,6 +280,9 @@ ci-linux-test:
 
 contracts-ci-linux-test:
   stage:                           test
+  only:
+    variables:
+      - $IMAGE_NAME == "contracts-ci-linux"
   needs:
     - job:                         contracts-ci-linux
       artifacts:                   false
