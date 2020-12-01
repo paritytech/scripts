@@ -57,6 +57,17 @@ default:
   - docker push $REGISTRY_PATH/$IMAGE_NAME:staging
   - docker logout
 
+.push_to_production:               &push_to_production
+  - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
+  - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
+  - docker info
+  - docker pull $REGISTRY_PATH/$IMAGE_NAME:staging
+  - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:production
+  - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+  - docker push $REGISTRY_PATH/$IMAGE_NAME:production
+  - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+  - docker logout
+
 #### stage:                        build
 
 #Build and push to docker hub and CI registry
@@ -288,16 +299,7 @@ ci-linux-production:
     variables:
       - $IMAGE_NAME == "ci-linux"
   script:
-    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-    - docker info
-    - docker pull $REGISTRY_PATH/$IMAGE_NAME:staging
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:production
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging parity/rust-builder:latest
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:production
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker logout
+    - *push_to_production
   tags:
     - kubernetes-parity-build
 
@@ -309,16 +311,10 @@ contracts-ci-linux-production:
   needs:
     - job:                         contracts-ci-linux-test
       artifacts:                   false
+  only:
+    variables:
+      - $IMAGE_NAME == "contracts-ci-linux"
   script:
-    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-    - docker info
-    - docker pull $REGISTRY_PATH/$IMAGE_NAME:staging
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:production
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging parity/rust-builder:latest
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:production
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker logout
+    - *push_to_production
   tags:
     - kubernetes-parity-build
