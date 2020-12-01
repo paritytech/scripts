@@ -17,6 +17,10 @@ dockerfiles/ink-ci-linux/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
+WORKDIR /builds
+
+ENV SHELL /bin/bash
+
 RUN	set -eux; \
 # The supported Rust nightly version must support the following components
 # to allow for a functioning CI pipeline:
@@ -35,12 +39,18 @@ RUN	set -eux; \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
-			--profile minimal --component rustfmt clippy miri rust-src; \
+		--profile minimal --component rustfmt clippy miri rust-src; \
 	rustup default nightly; \
 # We require `xargo` so that `miri` runs properly
 # We require `grcov` for coverage reporting and `rust-covfix` to improve it.
-	cargo install grcov rust-covfix cargo-contract xargo; \
+	cargo install grcov rust-covfix xargo; \
+# download the cargo-contracts binary tagged v0.8-ink-ci
+	curl -L "https://gitlab.parity.io/parity/cargo-contract/-/jobs/artifacts/v0.8-ink-ci/raw/artifacts/cargo-contract/cargo-contract?job=build" \
+		-o /usr/local/cargo/bin/cargo-contract; \
+	chmod +x /usr/local/cargo/bin/cargo-contract; \
+# versions
 	rustup show; \
 	cargo --version; \
+	cargo-contract --version; \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache;
