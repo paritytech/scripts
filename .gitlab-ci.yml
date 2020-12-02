@@ -120,7 +120,7 @@ chaostools:
     - |
       cat <<-EOT
       |
-      | # build of chaostools image
+      | # build of chaostools image>
       |
       | KUBE_VERSION = $BUILD_KUBE_VERSION
       |
@@ -213,7 +213,7 @@ terraform:
 container_scanning:
   # Template does not work, had to override its config from
   # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml
-  # these settings are from the template
+  # these settings are from the template 
   stage:                           test
   image:                           $SECURE_ANALYZERS_PREFIX/klar:$CS_MAJOR_VERSION
   services:
