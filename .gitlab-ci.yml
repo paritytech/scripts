@@ -82,9 +82,14 @@ ci-linux:
 ink-ci-linux:
   <<:                              *docker_build
   script:
-    - *push_to_docker_hub
+    - *push_to_staging
 
 contracts-ci-linux:
+  <<:                              *docker_build
+  script:
+    - *push_to_staging
+
+sccache-ci-linux:
   <<:                              *docker_build
   script:
     - *push_to_staging
@@ -272,6 +277,17 @@ ci-linux-test:
   tags:
     - linux-docker
 
+ink-ci-linux-test:
+  stage:                           test
+  variables:
+    CI_IMAGE:                      "paritytech/ink-ci-linux:staging"
+  rules:
+    - if: $IMAGE_NAME == "ink-ci-linux"
+  trigger:
+    project:                       parity/ink
+    branch:                        master
+    strategy:                      depend
+
 contracts-ci-linux-test:
   stage:                           test
   variables:
@@ -280,6 +296,17 @@ contracts-ci-linux-test:
     - if: $IMAGE_NAME == "contracts-ci-linux"
   trigger:
     project:                       parity/cargo-contract
+    branch:                        master
+    strategy:                      depend
+
+sccache-ci-linux-test:
+  stage:                           test
+  variables:
+    CI_IMAGE:                      "paritytech/sccache-ci-linux:staging"
+  rules:
+    - if: $IMAGE_NAME == "sccache-ci-linux"
+  trigger:
+    project:                       parity/sccache
     branch:                        master
     strategy:                      depend
 
@@ -297,17 +324,34 @@ ci-linux-production:
   tags:
     - kubernetes-parity-build
 
-contracts-ci-linux-production:
+ink-ci-linux-production:           &push-after-triggered-pipeline
   stage:                           prod
   image:                           docker:stable
   services:
     - docker:dind
   needs:
-    - job:                         contracts-ci-linux-test
+    - job:                         ink-ci-linux-test
       artifacts:                   false
   rules:
-    - if: $IMAGE_NAME == "contracts-ci-linux"
+    - if: $IMAGE_NAME == "ink-ci-linux"
   script:
     - *push_to_production
   tags:
     - kubernetes-parity-build
+
+contracts-ci-linux-production:
+  <<:                              *push-after-triggered-pipeline
+  needs:
+    - job:                         contracts-ci-linux-test
+      artifacts:                   false
+  rules:
+    - if: $IMAGE_NAME == "contracts-ci-linux"
+  
+
+sccache-ci-linux-production:
+  <<:                              *push-after-triggered-pipeline
+  needs:
+    - job:                         sccache-ci-linux-test
+      artifacts:                   false
+  rules:
+    - if: $IMAGE_NAME == "sccache-ci-linux"
