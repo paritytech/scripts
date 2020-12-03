@@ -89,7 +89,7 @@ contracts-ci-linux:
   script:
     - *push_to_staging
 
-sccache-ci-linux:
+sccache-ci-ubuntu:
   <<:                              *docker_build
   script:
     - *push_to_staging
@@ -299,12 +299,12 @@ contracts-ci-linux-test:
     branch:                        master
     strategy:                      depend
 
-sccache-ci-linux-test:
+sccache-ci-ubuntu-test:
   stage:                           test
   variables:
-    CI_IMAGE:                      "paritytech/sccache-ci-linux:staging"
+    CI_IMAGE:                      "paritytech/sccache-ci-ubuntu:staging"
   rules:
-    - if: $IMAGE_NAME == "sccache-ci-linux"
+    - if: $IMAGE_NAME == "sccache-ci-ubuntu"
   trigger:
     project:                       parity/sccache
     branch:                        master
@@ -348,10 +348,10 @@ contracts-ci-linux-production:
     - if: $IMAGE_NAME == "contracts-ci-linux"
   
 
-sccache-ci-linux-production:
+sccache-ci-ubuntu-production:
   <<:                              *push-after-triggered-pipeline
   needs:
-    - job:                         sccache-ci-linux-test
+    - job:                         sccache-ci-ubuntu-test
       artifacts:                   false
   rules:
-    - if: $IMAGE_NAME == "sccache-ci-linux"
+    - if: $IMAGE_NAME == "sccache-ci-ubuntu"
