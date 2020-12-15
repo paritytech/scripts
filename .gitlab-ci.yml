@@ -19,7 +19,7 @@ default:
 
 .build:                            &docker_build
   stage:                           build
-  image:                           docker:stable
+  image:                           docker:dind-rootless
   services:
     - docker:dind
   rules:
