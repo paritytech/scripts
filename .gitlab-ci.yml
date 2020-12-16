@@ -242,7 +242,6 @@ container_scanning:
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
     DOCKERFILE_PATH:               dockerfiles/$IMAGE_NAME/Dockerfile
-    REGISTRY_INSECURE:             "true"
   rules:
     - if: $IMAGE_NAME
   tags:
