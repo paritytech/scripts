@@ -8,9 +8,6 @@ stages:
   - prod
 
 variables:                         &default-vars
-  # DOCKER_HOST:                     tcp://docker:2375
-  DOCKER_HOST:                     tcp://localhost:2375
-  STORAGE_DRIVER:                  overlay2
   IMAGE_TAG:                       latest
   REGISTRY_PATH:                   docker.io/paritytech
 
@@ -37,37 +34,39 @@ default:
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+  - buildah info
   - buildah login --username "$DOCKER_USER" --password "$DOCKER_PASSWORD" "$REGISTRY_PATH"
   - buildah push "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
                  "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
   - buildah logout "$REGISTRY_PATH"
 
 .push_to_staging:                  &push_to_staging
-  - docker build
-        --build-arg VCS_REF="$CI_COMMIT_SHA"
-        --build-arg BUILD_DATE="$(date +%Y%m%d)"
-        --build-arg REGISTRY_PATH=$REGISTRY_PATH
-        --tag $REGISTRY_PATH/$IMAGE_NAME:staging
-        --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
-  - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-  - docker info
-  - docker push $REGISTRY_PATH/$IMAGE_NAME:staging
-  - docker logout
+  - buildah build
+      --squash
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date +%Y%m%d)"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+  - buildah login --username "$DOCKER_USER" --password "$DOCKER_PASSWORD" "$REGISTRY_PATH"
+  - buildah info
+  - buildah push "$REGISTRY_PATH/$IMAGE_NAME:staging"
+  - buildah logout "$REGISTRY_PATH"
 
 .push_to_production:               &push_to_production
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-  - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-  - docker info
-  - docker pull $REGISTRY_PATH/$IMAGE_NAME:staging
-  - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:production
-  - docker tag $REGISTRY_PATH/$IMAGE_NAME:staging $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-  - docker push $REGISTRY_PATH/$IMAGE_NAME:production
-  - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-  - docker logout
+  - buildah pull "$REGISTRY_PATH/$IMAGE_NAME:staging"
+  - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:production"
+  - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+  - buildah login --username "$DOCKER_USER" --password "$DOCKER_PASSWORD" "$REGISTRY_PATH"
+  - buildah info
+  - buildah push "$REGISTRY_PATH/$IMAGE_NAME:production"
+                "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+  - buildah logout "$REGISTRY_PATH"
 
 #### stage:                        build
 
-#Build and push to docker hub
+# Build and push to docker hub
 base-ci-linux:
   <<:                              *docker_build
   script:
@@ -129,18 +128,19 @@ chaostools:
       | KUBE_VERSION = $BUILD_KUBE_VERSION
       |
       EOT
-    - docker build
+    - buildah bud
+      --squash
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-      --build-arg REGISTRY_PATH=$REGISTRY_PATH
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
-      --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-      --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
-    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-    - docker info
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-    - docker logout
+    - buildah login --username "$DOCKER_USER" --password "$DOCKER_PASSWORD" "$REGISTRY_PATH"
+    - buildah info
+    - buildah push "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+    - buildah logout "$REGISTRY_PATH"
 
 # special case as version tags are introduced
 kubetools:
@@ -163,21 +163,22 @@ kubetools:
       | HELM_VERSION = $BUILD_HELM_VERSION
       |
       EOT
-    - docker build
+    - buildah bud
+      --squash
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-      --build-arg REGISTRY_PATH=$REGISTRY_PATH
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
       --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
-      --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-      --tag $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
-      --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
-    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-    - docker info
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
-    - docker logout
+    - buildah login --username "$DOCKER_USER" --password "$DOCKER_PASSWORD" "$REGISTRY_PATH"
+    - buildah info
+    - buildah push "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+    - buildah push "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
+    - buildah logout "$REGISTRY_PATH"
 
 
 terraform:
@@ -195,20 +196,20 @@ terraform:
       | TERRAFORM_VERSION = $TERRAFORM_VERSION
       |
       EOT
-    - docker build
+    - buildah bud
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-      --build-arg REGISTRY_PATH=$REGISTRY_PATH
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg TERRAFORM_VERSION="$TERRAFORM_VERSION"
-      --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-      --tag $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
-      --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
-    - docker login -u "$DOCKER_USER" -p "$DOCKER_PASSWORD"
-    - docker info
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
-    - docker logout
+    - buildah login --username "$DOCKER_USER" --password "$DOCKER_PASSWORD" "$REGISTRY_PATH"
+    - buildah info
+    - buildah push "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+    - buildah push "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
+    - buildah logout "$REGISTRY_PATH"
 
 #### stage:                        test
 
@@ -313,9 +314,7 @@ sccache-ci-ubuntu-test:
 
 ci-linux-production:
   stage:                           prod
-  image:                           docker:stable
-  services:
-    - docker:dind
+  image:                           quay.io/buildah/stable
   rules:
     - if: $IMAGE_NAME == "ci-linux"
   script:
@@ -325,9 +324,7 @@ ci-linux-production:
 
 ink-ci-linux-production:           &push-after-triggered-pipeline
   stage:                           prod
-  image:                           docker:stable
-  services:
-    - docker:dind
+  image:                           quay.io/buildah/stable
   needs:
     - job:                         ink-ci-linux-test
       artifacts:                   false
