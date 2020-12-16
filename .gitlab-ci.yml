@@ -31,7 +31,7 @@ default:
 .push_to_docker_hub:               &push_to_docker_hub
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
   - mkdir -p /kaniko/.docker
-  - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"auth\":\"$(echo -n \"$DOCKER_USER\":\"$DOCKER_PASSWORD\" | base64)\"}}}" > /kaniko/.docker/config.json
+  - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"username\":\"$DOCKER_USER\",\"password\":\"$DOCKER_PASSWORD\"}}}" > /kaniko/.docker/config.json
   - /kaniko/executor
       --cache=true
       --build-arg VCS_REF="$CI_COMMIT_SHA"
