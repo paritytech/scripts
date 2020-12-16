@@ -33,7 +33,6 @@ default:
   - mkdir -p /kaniko/.docker
   - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"username\":\"$DOCKER_USER\",\"password\":\"$DOCKER_PASSWORD\"}}}" > /kaniko/.docker/config.json
   - /kaniko/executor
-      --cache=true
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
       --build-arg REGISTRY_PATH=$REGISTRY_PATH
