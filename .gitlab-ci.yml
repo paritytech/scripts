@@ -37,8 +37,8 @@ default:
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   - buildah info
   - buildah login --username "$DOCKER_USER" --password "$DOCKER_PASSWORD" "$REGISTRY_PATH"
-  - buildah push "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
-                 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+                               "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
   - buildah logout "$REGISTRY_PATH"
 
 .push_to_staging:                  &push_to_staging
