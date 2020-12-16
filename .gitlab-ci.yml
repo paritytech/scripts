@@ -12,34 +12,51 @@ variables:                         &default-vars
   DOCKER_HOST:                     tcp://localhost:2375
   DOCKER_DRIVER:                   overlay2
   IMAGE_TAG:                       latest
-  REGISTRY_PATH:                   paritytech
+  REGISTRY_PATH:                   docker.io/paritytech
 
 default:
   cache:                           {}
 
 .build:                            &docker_build
   stage:                           build
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
+  image:                           quay.io/buildah/stable
+    # name: gcr.io/kaniko-project/executor:debug
+    # entrypoint: [""]
   rules:
     - if: $IMAGE_NAME == $CI_JOB_NAME
   tags:
     - kubernetes-parity-build
 
-# Push to Dockerhub
+# Push to Dockerhub using buildah
 .push_to_docker_hub:               &push_to_docker_hub
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-  - mkdir -p /kaniko/.docker
-  - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"username\":\"$DOCKER_USER\",\"password\":\"$DOCKER_PASSWORD\"}}}" > /kaniko/.docker/config.json
-  - /kaniko/executor
+  - buildah version
+  - buildah bud --no-cache
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
       --build-arg REGISTRY_PATH=$REGISTRY_PATH
-      --context dockerfiles
-      --dockerfile dockerfiles/$IMAGE_NAME/Dockerfile
-      --destination=docker.io/$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-      --destination=docker.io/$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+      --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+      --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+      --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
+  - buildah login --username "$DOCKER_USER" --password "$DOCKER_PASSWORD" "$REGISTRY_PATH"
+  - buildah push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+  - buildah push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+  - buildah logout
+
+
+# # Push to Dockerhub using kaniko
+# .push_to_docker_hub:               &push_to_docker_hub
+#   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
+#   - mkdir -p /kaniko/.docker
+#   - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"username\":\"$DOCKER_USER\",\"password\":\"$DOCKER_PASSWORD\"}}}" > /kaniko/.docker/config.json
+#   - /kaniko/executor
+#       --build-arg VCS_REF="$CI_COMMIT_SHA"
+#       --build-arg BUILD_DATE="$(date +%Y%m%d)"
+#       --build-arg REGISTRY_PATH=$REGISTRY_PATH
+#       --context dockerfiles
+#       --dockerfile dockerfiles/$IMAGE_NAME/Dockerfile
+#       --destination=$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+#       --destination=$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
   
 # # Push to Dockerhub
 # .push_to_docker_hub:               &push_to_docker_hub
@@ -56,6 +73,8 @@ default:
 #   - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
 #   - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
 #   - docker logout
+
+
 
 .push_to_staging:                  &push_to_staging
   - docker build
@@ -82,7 +101,7 @@ default:
 
 #### stage:                        build
 
-#Build and push to docker hub and CI registry
+#Build and push to docker hub
 base-ci-linux:
   <<:                              *docker_build
   script:
