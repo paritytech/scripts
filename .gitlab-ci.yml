@@ -28,6 +28,7 @@ default:
   - buildah version
   - buildah bud
       --squash
+      --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
