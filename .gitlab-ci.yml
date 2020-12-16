@@ -33,14 +33,14 @@ default:
   - mkdir -p /kaniko/.docker
   - echo "{\"auths\":{\"https://index.docker.io/v1/\":{\"auth\":\"$(echo -n \"$DOCKER_USER\":\"$DOCKER_PASSWORD\" | base64)\"}}}" > /kaniko/.docker/config.json
   - /kaniko/executor
-      --cache true
+      --cache=true
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
       --build-arg REGISTRY_PATH=$REGISTRY_PATH
       --context dockerfiles
       --dockerfile dockerfiles/$IMAGE_NAME/Dockerfile
-      --destination docker.io/$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-      --destination docker.io/$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
+      --destination=docker.io/$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+      --destination=docker.io/$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
   
 # # Push to Dockerhub
 # .push_to_docker_hub:               &push_to_docker_hub
