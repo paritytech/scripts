@@ -34,14 +34,14 @@ default:
   - buildah bud --no-cache
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
-      --build-arg REGISTRY_PATH=$REGISTRY_PATH
-      --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-      --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-      --file dockerfiles/$IMAGE_NAME/Dockerfile dockerfiles
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   - buildah login --username "$DOCKER_USER" --password "$DOCKER_PASSWORD" "$REGISTRY_PATH"
-  - buildah push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-  - buildah push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-  - buildah logout
+  - buildah push "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+  - buildah push "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+  - buildah logout "$REGISTRY_PATH"
 
 
 # # Push to Dockerhub using kaniko
