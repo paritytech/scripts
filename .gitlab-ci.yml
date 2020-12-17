@@ -244,10 +244,10 @@ container_scanning:
       container_scanning:          gl-container-scanning-report.json
   variables:
     SECURE_ANALYZERS_PREFIX:       "registry.gitlab.com/gitlab-org/security-products/analyzers"
-    CS_MAJOR_VERSION:              2
-    CLAIR_DB_IMAGE_TAG:            "latest"
-    CLAIR_DB_IMAGE:                "$SECURE_ANALYZERS_PREFIX/clair-vulnerabilities-db:$CLAIR_DB_IMAGE_TAG"
   # these are our overrides
+    CS_MAJOR_VERSION:              3
+    CLAIR_DB_IMAGE:                arminc/clair-db:latest
+    CLAIR_TRACE:                   "true"
     <<:                            *default-vars
     GIT_STRATEGY:                  fetch
     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
