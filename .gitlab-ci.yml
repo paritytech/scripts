@@ -227,36 +227,140 @@ terraform:
 
 # triggers on $IMAGE_NAME
 # in order to be scanned, EVERY docker build HAS to have $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+# container_scanning:
+#   # Template does not work, had to override its config from
+#   # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml
+#   # these settings are from the template 
+#   stage:                           test
+#   image:                           $SECURE_ANALYZERS_PREFIX/klar:$CS_MAJOR_VERSION
+#   services:
+#     - name:                        $CLAIR_DB_IMAGE
+#       alias:                       clair-vulnerabilities-db
+#   allow_failure:                   true
+#   script:
+#     - /analyzer run
+#   artifacts:
+#     reports:
+#       container_scanning:          gl-container-scanning-report.json
+#   variables:
+#     SECURE_ANALYZERS_PREFIX:       "registry.gitlab.com/gitlab-org/security-products/analyzers"
+#     CS_MAJOR_VERSION:              2
+#     CLAIR_DB_IMAGE_TAG:            "latest"
+#     CLAIR_DB_IMAGE:                "$SECURE_ANALYZERS_PREFIX/clair-vulnerabilities-db:$CLAIR_DB_IMAGE_TAG"
+#   # these are our overrides
+#     <<:                            *default-vars
+#     GIT_STRATEGY:                  fetch
+#     CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
+#     CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
+#     DOCKERFILE_PATH:               dockerfiles/$IMAGE_NAME/Dockerfile
+#   rules:
+#     - if: $IMAGE_NAME
+#   tags:
+#     - kubernetes-parity-build
+
 container_scanning:
-  # Template does not work, had to override its config from
-  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml
-  # these settings are from the template 
-  stage:                           test
-  image:                           $SECURE_ANALYZERS_PREFIX/klar:$CS_MAJOR_VERSION
-  services:
-    - name:                        $CLAIR_DB_IMAGE
-      alias:                       clair-vulnerabilities-db
+  image:                           docker.io/aquasec/trivy:latest
   allow_failure:                   true
   script:
-    - /analyzer run
+    - /ci-cache/trivy/trivy --download-db-only --cache-dir /ci-cache/trivy/cache
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - /ci-cache/trivy/trivy image --clear-cache
+    # Build report
+    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE_NAME
+    # Print report
+    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE_NAME
+    # Fail on high and critical vulnerabilities
+    - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE_NAME
+  cache:
+    paths:
+      - .trivycache/
   artifacts:
     reports:
-      container_scanning:          gl-container-scanning-report.json
-  variables:
-    SECURE_ANALYZERS_PREFIX:       "registry.gitlab.com/gitlab-org/security-products/analyzers"
-    CS_MAJOR_VERSION:              2
-    CLAIR_DB_IMAGE_TAG:            "latest"
-    CLAIR_DB_IMAGE:                "$SECURE_ANALYZERS_PREFIX/clair-vulnerabilities-db:$CLAIR_DB_IMAGE_TAG"
-  # these are our overrides
-    <<:                            *default-vars
-    GIT_STRATEGY:                  fetch
-    CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
-    CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
-    DOCKERFILE_PATH:               dockerfiles/$IMAGE_NAME/Dockerfile
+      container_scanning: gl-container-scanning-report.json
   rules:
     - if: $IMAGE_NAME
   tags:
     - kubernetes-parity-build
+  
+
+# official job suggested in trivy doc
+# container_scanning2:
+#   stage: test
+#   image: docker:stable
+#   services:
+#     - name: docker:dind
+#       entrypoint: ["env", "-u", "DOCKER_HOST"]
+#       command: ["dockerd-entrypoint.sh"]
+#   variables:
+#     DOCKER_HOST: tcp://docker:2375/
+#     DOCKER_DRIVER: overlay2
+#     # See https://github.com/docker-library/docker/pull/166
+#     DOCKER_TLS_CERTDIR: ""
+#   before_script:
+#     - export TRIVY_VERSION=$(wget -qO - "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | grep '"tag_name":' | sed -E 's/.*"v([^"]+)".*/\1/')
+#     - echo $TRIVY_VERSION
+#     - wget --no-verbose https://github.com/aquasecurity/trivy/releases/download/v${TRIVY_VERSION}/trivy_${TRIVY_VERSION}_Linux-64bit.tar.gz -O - | tar -zxvf -
+#   allow_failure: true
+#   script:
+#     # Build report
+#     - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE_NAME
+#     # Print report
+#     - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE_NAME
+#     # Fail on high and critical vulnerabilities
+#     - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE_NAME
+#   cache:
+#     paths:
+#       - .trivycache/
+#   artifacts:
+#     reports:
+#       container_scanning: gl-container-scanning-report.json
+#   rules:
+#     - if: $IMAGE_NAME
+#   tags:
+#     - kubernetes-parity-build
+
+# concept of using trivy as a binary, updating and running in the $IMAGE_NAME
+# downside is it uses tar and curl and we'd like to get rid of them in some images
+# upside is it uses images from the docker cache
+# container_scanning3:
+#   stage:                           test
+#   image:                           $IMAGE_NAME # check if can be tagged
+#   allow_failure:                   true
+#   before_script:
+#     - export LOCAL_TRIVY=$(/ci-cache/trivy/trivy --version | grep -Po "(?<=^Version:).*") || (
+#         echo "No local trivy, downloading."
+#       )
+#     - export LATEST_TRIVY=$(
+#         curl -sS "https://api.github.com/repos/aquasecurity/trivy/releases/latest" |
+#         grep '"tag_name":' |
+#         sed -E 's/.*"v([^"]+)".*/\1/'
+#       )
+#     - mkdir -p /ci-cache/trivy/cache
+#     # compares local vs latest version, updates if newer
+#     - if [ $LOCAL_TRIVY != $LATEST_TRIVY ]; then
+#         curl -sS -L "https://github.com/aquasecurity/trivy/releases/download/v${LATEST_TRIVY}/trivy_${LATEST_TRIVY}_Linux-64bit.tar.gz"
+#           --output /tmp/trivy.tar.gz;
+#         cd /tmp;
+#         tar -xzf trivy.tar.gz trivy;
+#         mv trivy /ci-cache/trivy/;
+#       fi
+#   script:
+#     - /ci-cache/trivy/trivy --download-db-only --cache-dir /ci-cache/trivy/cache
+#     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+#     - /ci-cache/trivy/trivy image --clear-cache
+#     # Build report
+#     - /ci-cache/trivy/trivy --exit-code 0 --cache-dir /ci-cache/trivy/cache --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json filesystem /
+#     # Print report
+#     - /ci-cache/trivy/trivy --exit-code 0 --cache-dir /ci-cache/trivy/cache --no-progress --severity HIGH filesystem /
+#     # Fail on high and critical vulnerabilities
+#     - /ci-cache/trivy/trivy --exit-code 1 --cache-dir /ci-cache/trivy/cache --severity CRITICAL --no-progress filesystem /
+#   artifacts:
+#     reports:
+#       container_scanning: gl-container-scanning-report.json
+#   rules:
+#     - if: $IMAGE_NAME
+#   tags:
+#     - linux-docker
 
 ci-linux-test:
   stage:                           test
