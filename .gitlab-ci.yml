@@ -266,11 +266,11 @@ container_scanning:
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
     - trivy image --clear-cache
     # Build report
-    - trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE_NAME
+    - trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json "$REGISTRY_PATH/$IMAGE_NAME"
     # Print report
-    - trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE_NAME
+    - trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH "$REGISTRY_PATH/$IMAGE_NAME"
     # Fail on high and critical vulnerabilities
-    - trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE_NAME
+    - trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress "$REGISTRY_PATH/$IMAGE_NAME"
   cache:
     paths:
       - .trivycache/
@@ -303,11 +303,11 @@ container_scanning:
 #   allow_failure: true
 #   script:
 #     # Build report
-#     - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE_NAME
+#     - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json "$REGISTRY_PATH/$IMAGE_NAME"
 #     # Print report
-#     - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE_NAME
+#     - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH "$REGISTRY_PATH/$IMAGE_NAME"
 #     # Fail on high and critical vulnerabilities
-#     - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE_NAME
+#     - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress "$REGISTRY_PATH/$IMAGE_NAME"
 #   cache:
 #     paths:
 #       - .trivycache/
@@ -324,7 +324,7 @@ container_scanning:
 # upside is it uses images from the docker cache
 # container_scanning3:
 #   stage:                           test
-#   image:                           $IMAGE_NAME # check if can be tagged
+#   image:                           $REGISTRY_PATH/$IMAGE_NAME # check if can be tagged
 #   allow_failure:                   true
 #   before_script:
 #     - export LOCAL_TRIVY=$(/ci-cache/trivy/trivy --version | grep -Po "(?<=^Version:).*") || (
