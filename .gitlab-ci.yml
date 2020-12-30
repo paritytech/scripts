@@ -262,15 +262,15 @@ container_scanning:
   image:                           docker.io/aquasec/trivy:latest
   allow_failure:                   true
   script:
-    - /ci-cache/trivy/trivy --download-db-only --cache-dir /ci-cache/trivy/cache
+    - trivy --download-db-only --cache-dir /ci-cache/trivy/cache
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
-    - /ci-cache/trivy/trivy image --clear-cache
+    - trivy image --clear-cache
     # Build report
-    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE_NAME
+    - trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" -o gl-container-scanning-report.json $IMAGE_NAME
     # Print report
-    - ./trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE_NAME
+    - trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH $IMAGE_NAME
     # Fail on high and critical vulnerabilities
-    - ./trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE_NAME
+    - trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress $IMAGE_NAME
   cache:
     paths:
       - .trivycache/
