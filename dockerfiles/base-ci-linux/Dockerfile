@@ -1,8 +1,9 @@
-FROM debian:buster-slim
+FROM ubuntu:20.04
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=paritytech
+ARG DEBIAN_FRONTEND=noninteractive
 
 # metadata
 LABEL summary="Layer 1 image with all dependencies for Rust and WASM compilation." \
@@ -64,3 +65,8 @@ RUN set -eux; \
 ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
   	RUST_BACKTRACE=1
+
+# use existing clang key
+# echo "deb http://apt.llvm.org/focal/ llvm-toolchain-focal main" > /etc/apt/sources.list.d/llvm.list
+# echo "deb-src http://apt.llvm.org/focal/ llvm-toolchain-focal main" >> /etc/apt/sources.list.d/llvm.list
+# apt-get install clang lldb lld
