@@ -260,25 +260,26 @@ terraform:
 
 container_scanning:
   image:                           docker.io/aquasec/trivy:latest
-  allow_failure:                   true
   script:
-    - trivy --download-db-only --no-progress --cache-dir /ci-cache/trivy/cache
+    - time trivy --download-db-only --no-progress --cache-dir .trivycache/
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
-    - trivy image --clear-cache
+    - time trivy image --clear-cache
     # Build report
-    - trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "/contrib/gitlab.tpl" -o gl-container-scanning-report.json "$REGISTRY_PATH/$IMAGE_NAME"
+    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress 
+        --format template --template "/contrib/gitlab.tpl" -o gl-container-scanning-report.json "$REGISTRY_PATH/$IMAGE_NAME"
     # Print report
-    - trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --severity HIGH "$REGISTRY_PATH/$IMAGE_NAME"
+    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress "$REGISTRY_PATH/$IMAGE_NAME"
     # Fail on high and critical vulnerabilities
-    - trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress "$REGISTRY_PATH/$IMAGE_NAME"
+    - time trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress "$REGISTRY_PATH/$IMAGE_NAME"
   cache:
     paths:
       - .trivycache/
   artifacts:
     reports:
-      container_scanning: gl-container-scanning-report.json
+      container_scanning:          gl-container-scanning-report.json
   rules:
     - if: $IMAGE_NAME
+  allow_failure:                   true
   tags:
     - kubernetes-parity-build
   
