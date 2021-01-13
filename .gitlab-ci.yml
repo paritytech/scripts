@@ -27,7 +27,6 @@ default:
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
   - buildah version
   - buildah bud
-      --squash
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
@@ -39,12 +38,11 @@ default:
   - echo "$DOCKER_PASSWORD" |
       buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
-                               "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
   - buildah logout "$REGISTRY_PATH"
 
 .push_to_staging:                  &push_to_staging
   - buildah bud
-      --squash
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
@@ -66,7 +64,7 @@ default:
       buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
   - buildah info
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:production"
-                               "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - buildah logout "$REGISTRY_PATH"
 
 #### stage:                        build
@@ -134,7 +132,6 @@ chaostools:
       |
       EOT
     - buildah bud
-      --squash
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -171,7 +168,6 @@ kubetools:
       |
       EOT
     - buildah bud
-      --squash
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -186,7 +182,7 @@ kubetools:
         buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
-                                 "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
     - buildah logout "$REGISTRY_PATH"
 
 
@@ -195,7 +191,7 @@ terraform:
   variables:
     <<:                            *default-vars
     # https://releases.hashicorp.com/terraform/
-    TERRAFORM_VERSION:             "0.13.4"
+    TERRAFORM_VERSION:             "0.13.5"
   script:
     - |
       cat <<-EOT
@@ -206,7 +202,6 @@ terraform:
       |
       EOT
     - buildah bud
-      --squash
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -220,7 +215,7 @@ terraform:
         buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
-                                 "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
     - buildah logout "$REGISTRY_PATH"
 
 #### stage:                        test
