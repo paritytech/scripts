@@ -261,8 +261,8 @@ container_scanning:
     # update vulnerabilities db
     - time trivy --download-db-only --no-progress --cache-dir .trivycache/
     # Build report
-    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress 
-        --format template --template "/contrib/gitlab.tpl" -o gl-container-scanning-report.json "$REGISTRY_PATH/$IMAGE_NAME"
+    # - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "/contrib/gitlab.tpl" -o gl-container-scanning-report.json "$REGISTRY_PATH/$IMAGE_NAME"
+    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" --output gl-container-scanning-report.json "$REGISTRY_PATH/$IMAGE_NAME"
     # debug
     - cat gl-container-scanning-report.json
     # Print report
