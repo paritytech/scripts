@@ -263,11 +263,12 @@ container_scanning:
     # Build report
     - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress 
         --format template --template "/contrib/gitlab.tpl" -o gl-container-scanning-report.json "$REGISTRY_PATH/$IMAGE_NAME"
+    # debug
+    - cat gl-container-scanning-report.json
     # Print report
     - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress "$REGISTRY_PATH/$IMAGE_NAME"
     # Fail on high and critical vulnerabilities
     - time trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress "$REGISTRY_PATH/$IMAGE_NAME"
-    - cat gl-container-scanning-report.json
   cache:
     paths:
       - .trivycache/
