@@ -268,7 +268,7 @@ container_scanning:
     - ls /
     - find / -name "gl-container-scanning-report.json"
     # debug
-    - cat gl-container-scanning-report.json
+    - cat "$CI_PROJECT_DIR/gl-container-scanning-report.json"
     # Print report
     - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress "$REGISTRY_PATH/$IMAGE_NAME"
     # Fail on high and critical vulnerabilities
