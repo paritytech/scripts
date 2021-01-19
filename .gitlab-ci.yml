@@ -271,6 +271,7 @@ container_scanning:
       - .trivycache/
   artifacts:
     reports:
+      # there's something with this template
       container_scanning:          gl-container-scanning-report.json
   rules:
     - if: $IMAGE_NAME
