@@ -262,13 +262,8 @@ container_scanning:
     # update vulnerabilities db
     - time trivy --download-db-only --no-progress --cache-dir .trivycache/
     # Build report
-    # - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "/contrib/gitlab.tpl" -o gl-container-scanning-report.json "$REGISTRY_PATH/$IMAGE_NAME"
-    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl" --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$REGISTRY_PATH/$IMAGE_NAME"
-    - pwd
-    - ls /
-    - find / -name "gl-container-scanning-report.json"
-    # debug
-    - cat "$CI_PROJECT_DIR/gl-container-scanning-report.json"
+    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl"
+        --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$REGISTRY_PATH/$IMAGE_NAME"
     # Print report
     - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress "$REGISTRY_PATH/$IMAGE_NAME"
     # Fail on high and critical vulnerabilities
@@ -277,6 +272,7 @@ container_scanning:
     paths:
       - .trivycache/
   artifacts:
+    when:                          always
     reports:
       # there's something with this template
       container_scanning:          gl-container-scanning-report.json
