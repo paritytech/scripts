@@ -256,6 +256,7 @@ terraform:
 container_scanning:
   image:                           docker.io/aquasec/trivy:latest
   script:
+    - cd /
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
     - time trivy image --clear-cache
     # update vulnerabilities db
