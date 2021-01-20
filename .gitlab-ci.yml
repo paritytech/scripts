@@ -8,7 +8,6 @@ stages:
   - prod
 
 variables:                         &default-vars
-  IMAGE_TAG:                       latest
   REGISTRY_PATH:                   docker.io/paritytech
 
 default:
@@ -32,13 +31,13 @@ default:
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   - buildah info
   - echo "$DOCKER_PASSWORD" |
       buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
-  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
   - buildah logout "$REGISTRY_PATH"
 
 .push_to_staging:                  &push_to_staging
@@ -137,13 +136,13 @@ chaostools:
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$DOCKER_PASSWORD" |
         buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
     - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah logout "$REGISTRY_PATH"
 
 # special case as version tags are introduced
@@ -174,14 +173,14 @@ kubetools:
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
       --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$DOCKER_PASSWORD" |
         buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
     - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
     - buildah logout "$REGISTRY_PATH"
 
@@ -207,49 +206,49 @@ terraform:
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg TERRAFORM_VERSION="$TERRAFORM_VERSION"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$DOCKER_PASSWORD" |
         buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
     - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
     - buildah logout "$REGISTRY_PATH"
 
 #### stage:                        test
 
-# triggers on $IMAGE_NAME
-# in order to be scanned, EVERY docker build HAS to have $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
 container_scanning:
-  # Template does not work, had to override its config from
-  # https://gitlab.com/gitlab-org/gitlab/blob/master/lib/gitlab/ci/templates/Security/Container-Scanning.gitlab-ci.yml
-  # these settings are from the template 
-  stage:                           test
-  image:                           $SECURE_ANALYZERS_PREFIX/klar:$CS_MAJOR_VERSION
-  services:
-    - name:                        $CLAIR_DB_IMAGE
-      alias:                       clair-vulnerabilities-db
-  allow_failure:                   true
+  image:                           docker.io/aquasec/trivy:latest
+  variables:
+    FULL_IMAGE_NAME:               $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
   script:
-    - /analyzer run
+    - cd /
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - time trivy image --clear-cache
+    # update vulnerabilities db
+    - time trivy --download-db-only --no-progress --cache-dir .trivycache/
+    # Build report
+    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl"
+        --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$FULL_IMAGE_NAME"
+    # Print report
+    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress "$FULL_IMAGE_NAME"
+    # Fail on high and critical vulnerabilities
+    - time trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress "$FULL_IMAGE_NAME"
+  cache:
+    # TODO: move this cache to k8s volume when it's configured
+    paths:
+      - .trivycache/
   artifacts:
+    when:                          always
     reports:
       container_scanning:          gl-container-scanning-report.json
-  variables:
-    SECURE_ANALYZERS_PREFIX:       "registry.gitlab.com/gitlab-org/security-products/analyzers"
-    CS_MAJOR_VERSION:              2
-    CLAIR_DB_IMAGE_TAG:            "latest"
-    CLAIR_DB_IMAGE:                "$SECURE_ANALYZERS_PREFIX/clair-vulnerabilities-db:$CLAIR_DB_IMAGE_TAG"
-  # these are our overrides
-    <<:                            *default-vars
-    GIT_STRATEGY:                  fetch
-    CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$IMAGE_NAME
-    CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
-    DOCKERFILE_PATH:               dockerfiles/$IMAGE_NAME/Dockerfile
   rules:
-    - if: $IMAGE_NAME
+    # $IMAGE_TAG is needed for trivy. Should me mentioned in schedule's variables. I.e. latest, staging, v2.0.0.
+    - if: $IMAGE_NAME && $IMAGE_TAG
+  # TODO: remove when all criticals are solved 
+  allow_failure:                   true
   tags:
     - kubernetes-parity-build
 
