@@ -69,6 +69,11 @@ default:
 #### stage:                        build
 
 # Build and push to docker hub
+ansible:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 base-ci-linux:
   <<:                              *docker_build
   script:
