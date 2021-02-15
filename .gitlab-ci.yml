@@ -225,17 +225,20 @@ terraform:
 #### stage:                        test
 
 container_scanning:
-  image:                           docker.io/aquasec/trivy:latest
+  image:
+    name:                          docker.io/aquasec/trivy:latest
+    entrypoint:                    [""]
   variables:
     FULL_IMAGE_NAME:               $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+    GIT_STRATEGY:                  none
   script:
-    - cd /
+    - trivy --version
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
     - time trivy image --clear-cache
     # update vulnerabilities db
     - time trivy --download-db-only --no-progress --cache-dir .trivycache/
     # Build report
-    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@contrib/gitlab.tpl"
+    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@/contrib/gitlab.tpl"
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$FULL_IMAGE_NAME"
     # Print report
     - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress "$FULL_IMAGE_NAME"
