@@ -24,14 +24,11 @@ ENV SHELL /bin/bash
 
 ENV CXX="/usr/bin/clang++-8"
 
-# copy llvm and yarn repo key
+# copy llvm repo key
 COPY utility/debian-llvm-clang.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
-COPY utility/yarn.key /etc/apt/trusted.gpg.d/debian-yarn.gpg
 
 # install tools and dependencies
 RUN set -eux; \
-	echo "deb https://dl.yarnpkg.com/debian/ stable main"  \
-		> /etc/apt/sources.list.d/yarn.list; \
 	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main" \
 		> /etc/apt/sources.list.d/llvm.list; \
 	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main" \
@@ -39,7 +36,8 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get remove -y --purge clang; \
 	apt-get install -y --no-install-recommends \
-		 zlib1g-dev llvm-8-dev clang-8 python3 npm yarn wabt; \
+		zlib1g-dev llvm-8-dev clang-8 python3 npm wabt; \
+	npm install --ignore-scripts -g yarn; \
 # set links to clang-8 and python3
 	update-alternatives --install /usr/bin/python python /usr/bin/python3 100; \
 	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100; \
