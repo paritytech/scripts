@@ -24,9 +24,8 @@ ENV SHELL /bin/bash
 
 ENV CXX="/usr/bin/clang++-8"
 
-# copy llvm and yarn repo key
+# copy llvm repo key
 COPY utility/debian-llvm-clang.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
-COPY utility/yarn.key /etc/apt/trusted.gpg.d/debian-yarn.gpg
 
 # install tools and dependencies
 RUN set -eux; \
