@@ -20,27 +20,30 @@ dockerfiles/ci-linux/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 # install tools and dependencies
-RUN set -eux; \
-	apt-get -y update; \
+RUN set -eux && \
+	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
-		chromium-driver; \
+		chromium-driver && \
 # install Rust nightly, default is stable, use minimum components
-	rustup toolchain install nightly --profile minimal; \
+	rustup toolchain install nightly --profile minimal && \
 # install wasm toolchain
-	rustup target add wasm32-unknown-unknown; \
-	rustup target add wasm32-unknown-unknown --toolchain nightly; \
+	rustup target add wasm32-unknown-unknown && \
+	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 # install cargo tools
-	cargo install cargo-audit cargo-web wasm-pack cargo-deny wasm-bindgen-cli; \
-	cargo install --version 0.3.1 diener; \
+	cargo install cargo-audit cargo-web wasm-pack wasm-bindgen-cli && \
+	cargo install --version 0.3.1 diener && \
+	# FIXME: temporarily workaround to install cargo-deny
+	# https://github.com/EmbarkStudios/cargo-deny/issues/331#issuecomment-778617026
+	install cargo-deny --locked && \
 # install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
-	cargo +nightly install wasm-gc; \
+	cargo +nightly install wasm-gc && \
 # versions
-	rustup show; \
-	cargo --version; \
+	rustup show && \
+	cargo --version && \
 # apt clean up
-	apt-get autoremove -y; \
-	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*; \
+	apt-get autoremove -y && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/* && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
-	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache;
+	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache
