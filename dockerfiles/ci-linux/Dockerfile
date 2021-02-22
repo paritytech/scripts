@@ -30,11 +30,8 @@ RUN set -eux && \
 	rustup target add wasm32-unknown-unknown && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 # install cargo tools
-	cargo install cargo-audit cargo-web wasm-pack wasm-bindgen-cli && \
+	cargo install cargo-audit cargo-web wasm-pack wasm-bindgen-cli cargo-deny mdbook && \
 	cargo install --version 0.3.1 diener && \
-	# FIXME: temporarily workaround to install cargo-deny
-	# https://github.com/EmbarkStudios/cargo-deny/issues/331#issuecomment-778617026
-	install cargo-deny --locked && \
 # install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
 	cargo +nightly install wasm-gc && \
 # versions

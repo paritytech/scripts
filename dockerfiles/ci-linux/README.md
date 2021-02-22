@@ -36,6 +36,7 @@ Used to build and test Substrate-based projects.
 - `wasm-pack`
 - `wasm-bindgen`
 - `cargo-deny`
+- `mdbook`
 - `wasm32-unknown-unknown` toolchain
 
 [Click here](https://hub.docker.com/repository/docker/paritytech/ci-linux) for the registry.
@@ -45,7 +46,7 @@ Used to build and test Substrate-based projects.
 ```yaml
 test-substrate:
     stage: test
-        image: paritytech/ci-linux
+        image: paritytech/ci-linux:production
         script:
             - cargo build ...
 ```
