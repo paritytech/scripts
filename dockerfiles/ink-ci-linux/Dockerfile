@@ -43,13 +43,7 @@ RUN	set -eux; \
 	rustup default nightly; \
 # We require `xargo` so that `miri` runs properly
 # We require `grcov` for coverage reporting and `rust-covfix` to improve it.
-	cargo install grcov rust-covfix xargo; \
-# get the latest cargo-contract binary built on master
-	curl --location "https://gitlab.parity.io/parity/cargo-contract/-/jobs/artifacts/master/raw/artifacts/cargo-contract/cargo-contract?job=build" \
-		--output /usr/local/cargo/bin/cargo-contract; \
-	chmod +x /usr/local/cargo/bin/cargo-contract; \
-# for a stable version one can use this kind of link:
-# https://gitlab.parity.io/parity/cargo-contract/-/jobs/artifacts/v0.9.0/raw/artifacts/cargo-contract/cargo-contract?job=build
+	cargo install grcov rust-covfix xargo cargo-contract; \
 # versions
 	rustup show; \
 	cargo --version; \
