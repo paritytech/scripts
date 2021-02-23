@@ -23,7 +23,7 @@ Used to build and test ink!.
 
 **Rust versions:**
 
-We always try to use the [latest possible](https://rust-lang.github.io/rustup-components-history/) `nightly` version that supports our required `rustup` components:
+We always use the [latest possible](https://rust-lang.github.io/rustup-components-history/) `nightly` version that supports our required `rustup` components:
 
 - `clippy`: The Rust linter.
 - `rust-src`: The Rust sources of the standard library.
@@ -45,7 +45,7 @@ We always try to use the [latest possible](https://rust-lang.github.io/rustup-co
 ```yaml
 test-ink:
     stage: test
-        image: paritytech/ink-ci-linux:latest
+        image: paritytech/ink-ci-linux:production
         script:
             - cargo build ...
 ```
