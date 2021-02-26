@@ -1,15 +1,17 @@
+
+
+FROM ubuntu:latest
+
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=paritytech
-
-FROM ${REGISTRY_PATH}/base-ci-linux:latest
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
     io.parity.image.vendor="Parity Technologies" \
     io.parity.image.title="${REGISTRY_PATH}/musl-ci-linux" \
-    io.parity.image.description="Inherits from base-ci-linux:latest. \
-rust target x86_64-unknown-linux-musl, openssl, zlib, musl tools" \
+    io.parity.image.description=" \
+rust target x86_64-unknown-linux-musl, openssl, zlib, musl tools clang" \
     io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/musl-linux/Dockerfile" \
     io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -18,19 +20,63 @@ dockerfiles/musl-ci-linux/README.md" \
     io.parity.image.created="${BUILD_DATE}"
 
 ARG TARGET=x86_64-linux-musl
+WORKDIR /builds
 
-# install tools and dependencies
-RUN rustup target add x86_64-unknown-linux-musl; \
-    rustup target add x86_64-unknown-linux-musl --toolchain nightly
-RUN set -eux; \
-    apt -y update; \
-    apt install -y --no-install-recommends \
-    gpg dirmngr gpg-agent;
 
 # config for x86_64-unknown-linux-musl
 COPY utility/musl-ci-linux-config /root/.cargo/config
 
-# install musl
+
+ENV RUSTUP_HOME=/usr/local/rustup \
+	CARGO_HOME=/usr/local/cargo \
+	PATH=/usr/local/cargo/bin:$PATH \
+		CC=clang \
+		CXX=clang
+# install tools and dependencies
+RUN set -eux; \
+    apt -y update; \
+    DEBIAN_FRONTEND="noninteractive" apt install -y --no-install-recommends \
+    gpg dirmngr gpg-agent libssl-dev clang lld libclang-dev make cmake \
+    git pkg-config curl time rhash ca-certificates; \
+
+# set a link to clang
+#        update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
+# install rustup, use minimum components
+    curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" \
+    -o rustup-init; \
+    chmod +x rustup-init; \
+    ./rustup-init -y --no-modify-path --profile minimal --default-toolchain stable; \
+    rm rustup-init; \
+    chmod -R a+w ${RUSTUP_HOME} ${CARGO_HOME}; \
+    rustup install nightly; \
+    rustup target add x86_64-unknown-linux-musl; \
+    rustup target add x86_64-unknown-linux-musl --toolchain nightly; \
+    rustup target add wasm32-unknown-unknown; \
+    rustup target add wasm32-unknown-unknown --toolchain nightly; \
+# install sccache
+# cargo install sccache --features redis; \
+# FIXME: TEMPORARY OVERRIDE due to the sccache issue
+# https://github.com/mozilla/sccache/issues/663
+  	cargo install --git https://github.com/mozilla/sccache  --rev 6628e1f70db3d583cb5e79210603ad878de3d315 --features redis; \
+# versions
+  	rustup show; \
+  	cargo --version; \
+# cargo clean up
+# removes compilation artifacts cargo install creates (>250M)
+    	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache;
+#    cargo install --git https://github.com/mozilla/sccache  --rev 6628e1f70db3d583cb5e79210603ad878de3d315 --features redis;
+#    SCCACHE_LATEST_URL=`curl -sL    https://api.github.com/repos/mozilla/sccache/releases/latest | jq -r '.assets[0].browser_download_url'`; \
+#    WASM_PACK_LATEST_URL=`curl -sL https://api.github.com/repos/rustwasm/wasm-pack/releases/latest | jq -r '.assets[3].browser_download_url'`; \
+#    WASM_GC_LATEST_URL=`curl -sL https://api.github.com/repos/alexcrichton/wasm-gc/releases/latest | jq -r '.assets[2].browser_download_url'`; \
+#    CARGO_WEB_LATEST_URL=`curl -sL https://api.github.com/repos/koute/cargo-web/releases/latest | jq -r '.assets[1].browser_download_url'`; \
+#    curl -L $SCCACHE_LATEST_URL | tar zxf - --overwrite --strip-components=1 -C /usr/local/cargo/bin ; \
+#    curl -L $WASM_PACK_LATEST_URL | tar zxf - --overwrite --strip-components=1 -C /usr/local/cargo/bin ; \
+#    curl -L $WASM_GC_LATEST_URL | tar zxf - --overwrite --strip-components=1 -C /usr/local/cargo/bin; \
+#    curl -L $CARGO_WEB_LATEST_URL | gzip -d > /usr/local/cargo/bin/cargo-web; \
+#    chmod +x /usr/local/cargo/bin/cargo-web; \
+
+
+# install latest musl
 RUN set -eux;\
     curl -fSL "https://more.musl.cc/x86_64-linux-musl/x86_64-linux-musl-cross.tgz" -o x86_64-linux-musl-cross.tgz; \
     curl -fSL "https://more.musl.cc/x86_64-linux-musl/x86_64-linux-musl-cross.tgz.sig" -o x86_64-linux-musl-cross.tgz.sig; \
@@ -42,10 +88,21 @@ RUN set -eux;\
     cp -fR * ../../usr/local/; \
     cd ..&& rm -rf x86_64-linux-musl-cross*
 
+# apt clean up
+RUN apt remove --purge gpg dirmngr gpg-agent -y;\
+  	apt-get autoremove -y; \
+  	apt-get clean; \
+  	rm -rf /var/lib/apt/lists/*
+
 # 1. set build ENV
 ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=$TARGET-gcc \
+    CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_GCC=$TARGET-gcc \
+    CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_CC=$TARGET-gcc \
+    CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_CXX=$TARGET-g++ \
+    CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_AR=$TARGET-ar \
     CC=$TARGET-gcc \
     CXX=$TARGET-g++ \
+    AR=$TARGET-ar \
     CC_x86_64-unknown-linux-gnu=$TARGET-gcc \
     CXX_x86_64-unknown-linux-gnu=$TARGET-g++ \
     CC_x86_64_unknown_linux_musl=$TARGET-gcc \
@@ -69,11 +126,12 @@ ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=$TARGET-gcc \
     CXXFLAGS_x86_64_unknown_linux_musl=" -fPIC -I/usr/local/include -I/usr/local/$TARGET/include" \
     CFLAGS=" -fPIC  -I/usr/local/include -I/usr/local/$TARGET/include" \
     CXXFLAGS=" -fPIC -I/usr/local/include -I/usr/local/$TARGET/include" \
-    LIBZ_SYS_STATIC=1 \
     LD_LIBRARY_PATH=/usr/local/lib:/usr/local/$TARGET/lib:$LD_LIBRARY_PATH \
     PKG_CONFIG_ALLOW_CROSS=1 \
     PKG_CONFIG_ALL_STATIC=1 \
-    OPENSSL_STATIC=1
+    PORTABLE=1 \
+    RUST_BACKTRACE=1 \
+    RUSTC_WRAPPER=sccache
 
 # Set up a prefix for musl build libraries, make the linker's job of finding them easier
 RUN echo "/usr/local/lib" >> /etc/ld-musl-x86_64.path; \
@@ -82,39 +140,5 @@ RUN echo "/usr/local/lib" >> /etc/ld-musl-x86_64.path; \
     ln -s /usr/include/asm-generic /usr/local/x86_64-linux-musl/include/asm-generic; \
     ln -s /usr/include/ /usr/local/x86_64-linux-musl/include
 
-# Build static zlib and openssl
-RUN export CC=$TARGET_CC; \
-    export C_INCLUDE_PATH=$TARGET_C_INCLUDE_PATH; \
-    echo "Building zlib"; \
-    VERS=1.2.11; \
-    ZLIB_SHA256="c3e5e9fdd5004dcb542feda5ee4f0ff0744628baf8ed2dd5d66f8ca1197cb1a1"; \
-    curl -fSL "https://zlib.net/zlib-$VERS.tar.gz" -o zlib-$VERS.tar.gz; \
-    echo "$ZLIB_SHA256 zlib-$VERS.tar.gz" | sha256sum -c -; \
-    tar xzf zlib-$VERS.tar.gz; \
-    cd zlib-$VERS; \
-    ./configure --static --archs="-fPIC" --prefix=/usr/local/$TARGET; \
-    make && make install; \
-    cd .. && rm -rf zlib-$VERS.tar.gz zlib-$VERS checksums.txt ; \
-    echo "Building OpenSSL"; \
-    VERS=1.1.1g; \
-    OPENSSL_SHA256="ddb04774f1e32f0c49751e21b67216ac87852ceb056b75209af2443400636d46"; \
-    curl -fSL "https://www.openssl.org/source/openssl-$VERS.tar.gz" -o openssl-$VERS.tar.gz; \
-    echo "$OPENSSL_SHA256 openssl-$VERS.tar.gz" | sha256sum -c -; \
-    tar xzf openssl-$VERS.tar.gz && cd openssl-$VERS; \
-    ./Configure linux-x86_64 no-async no-afalgeng no-shared no-zlib no-engine no-unit-test --static -fPIC --prefix=/usr/local/$TARGET; \
-    make depen; \
-    make && make install; \
-    cd .. && rm -rf openssl-$VERS.tar.gz openssl-$VERS checksums.txt /usr/local/$TARGET/share
-
-#apt cleanup
-RUN apt remove --purge -y gpg gpg-agent dirmngr; \
-  apt autoremove -y; \
-  apt clean; \
-  rm -rf /var/lib/apt/lists/*;
-
-# 2. set build ENV
-ENV OPENSSL_DIR=/usr/local/musl/$TARGET/ \
-    OPENSSL_INCLUDE_DIR=/usr/local/$TARGET/include/ \
-    DEP_OPENSSL_INCLUDE=/usr/local/$TARGET/include/ \
-    OPENSSL_LIB_DIR=/usr/local/$TARGET/lib/ \
-    PORTABLE=1
+RUN git clone https://github.com/paritytech/polkadot.git; \
+    git clone https://github.com/paritytech/substrate.git
