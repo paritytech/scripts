@@ -139,6 +139,3 @@ RUN echo "/usr/local/lib" >> /etc/ld-musl-x86_64.path; \
     ln -s /usr/include/x86_64-linux-gnu/asm /usr/local/x86_64-linux-musl/include/asm; \
     ln -s /usr/include/asm-generic /usr/local/x86_64-linux-musl/include/asm-generic; \
     ln -s /usr/include/ /usr/local/x86_64-linux-musl/include
-
-RUN git clone https://github.com/paritytech/polkadot.git; \
-    git clone https://github.com/paritytech/substrate.git
