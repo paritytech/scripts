@@ -64,17 +64,6 @@ RUN set -eux; \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
     	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache;
-#    cargo install --git https://github.com/mozilla/sccache  --rev 6628e1f70db3d583cb5e79210603ad878de3d315 --features redis;
-#    SCCACHE_LATEST_URL=`curl -sL    https://api.github.com/repos/mozilla/sccache/releases/latest | jq -r '.assets[0].browser_download_url'`; \
-#    WASM_PACK_LATEST_URL=`curl -sL https://api.github.com/repos/rustwasm/wasm-pack/releases/latest | jq -r '.assets[3].browser_download_url'`; \
-#    WASM_GC_LATEST_URL=`curl -sL https://api.github.com/repos/alexcrichton/wasm-gc/releases/latest | jq -r '.assets[2].browser_download_url'`; \
-#    CARGO_WEB_LATEST_URL=`curl -sL https://api.github.com/repos/koute/cargo-web/releases/latest | jq -r '.assets[1].browser_download_url'`; \
-#    curl -L $SCCACHE_LATEST_URL | tar zxf - --overwrite --strip-components=1 -C /usr/local/cargo/bin ; \
-#    curl -L $WASM_PACK_LATEST_URL | tar zxf - --overwrite --strip-components=1 -C /usr/local/cargo/bin ; \
-#    curl -L $WASM_GC_LATEST_URL | tar zxf - --overwrite --strip-components=1 -C /usr/local/cargo/bin; \
-#    curl -L $CARGO_WEB_LATEST_URL | gzip -d > /usr/local/cargo/bin/cargo-web; \
-#    chmod +x /usr/local/cargo/bin/cargo-web; \
-
 
 # install latest musl
 RUN set -eux;\
