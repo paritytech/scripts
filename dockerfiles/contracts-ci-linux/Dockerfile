@@ -20,29 +20,22 @@ dockerfiles/contracts-ci-linux/README.md" \
 
 WORKDIR /builds
 
-ENV SHELL /bin/bash \
-	CXX="/usr/bin/clang++-8" \
-	DEBIAN_FRONTEND=noninteractive
-
-# copy llvm repo key
-COPY utility/debian-llvm-clang.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg
+ENV SHELL /bin/bash
+ENV CXX=/usr/bin/clang++-10
+ENV DEBIAN_FRONTEND=noninteractive
 
 # install tools and dependencies
 RUN set -eux; \
-	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main" \
-		> /etc/apt/sources.list.d/llvm.list && \
-	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main" \
-		>> /etc/apt/sources.list.d/llvm.list && \
 	apt-get -y update && \
 	apt-get remove -y --purge clang && \
 	apt-get install -y --no-install-recommends \
-		zlib1g-dev llvm-8-dev clang-8 python3 npm wabt && \
+		zlib1g-dev python3 npm wabt llvm-dev && \
 	npm install --ignore-scripts -g yarn && \
-# set links to clang-8 and python3
+# set links to clang-10 and python3
 	update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
-	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100 && \
-	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-8 100 && \
-	update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-8 100 && \
+	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100 && \
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-10 100 && \
+	update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-10 100 && \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
@@ -57,7 +50,7 @@ RUN set -eux; \
 		-o /usr/local/cargo/bin/canvas && \
 	chmod +x /usr/local/cargo/bin/canvas && \
 # versions
-	wasm-opt --version && \
+	# wasm-opt --version && \
 	yarn --version && \
 	rustup show && \
 	cargo --version && \
