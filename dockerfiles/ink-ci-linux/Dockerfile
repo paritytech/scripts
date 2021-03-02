@@ -9,7 +9,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/ink-ci-linux" \
 	io.parity.image.description="Inherits from base-ci-linux:latest. \
-rust nightly, clippy, rustfmt, miri, rust-src grcov, rust-covfix, cargo-contract, xargo" \
+rust nightly, clippy, rustfmt, miri, rust-src grcov, rust-covfix, cargo-contract, xargo, binaryen" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ink-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -44,9 +44,17 @@ RUN	set -eux; \
 # We require `xargo` so that `miri` runs properly
 # We require `grcov` for coverage reporting and `rust-covfix` to improve it.
 	cargo install grcov rust-covfix xargo cargo-contract; \
+# `cargo-contract` requires `binaryen` for optimizing Wasm files
+	apt-get -y update; \
+	apt-get install -y --no-install-recommends binaryen; \
 # versions
 	rustup show; \
 	cargo --version; \
+	wasm-opt --version; \
 	cargo-contract --version; \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
-	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache;
+	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache; \
+# apt clean up
+	apt-get autoremove -y; \
+	apt-get clean; \
+	rm -rf /var/lib/apt/lists/*
