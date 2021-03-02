@@ -2,7 +2,7 @@ ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=paritytech
 
-FROM ${REGISTRY_PATH}/base-ci-linux:latest
+FROM ${REGISTRY_PATH}/base-ci:latest
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
@@ -20,9 +20,9 @@ dockerfiles/contracts-ci-linux/README.md" \
 
 WORKDIR /builds
 
-ENV SHELL /bin/bash
-
-ENV CXX="/usr/bin/clang++-8"
+ENV SHELL /bin/bash \
+	CXX="/usr/bin/clang++-8" \
+	DEBIAN_FRONTEND=noninteractive
 
 # copy llvm repo key
 COPY utility/debian-llvm-clang.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gpg

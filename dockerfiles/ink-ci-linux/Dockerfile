@@ -2,7 +2,7 @@ ARG VCS_REF=master
 ARG BUILD_DATE
 ARG REGISTRY_PATH=paritytech
 
-FROM ${REGISTRY_PATH}/base-ci-linux:latest
+FROM ${REGISTRY_PATH}/base-ci:latest
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
@@ -19,7 +19,8 @@ dockerfiles/ink-ci-linux/README.md" \
 
 WORKDIR /builds
 
-ENV SHELL /bin/bash
+ENV SHELL /bin/bash \
+	DEBIAN_FRONTEND=noninteractive
 
 RUN	set -eux; \
 # The supported Rust nightly version must support the following components
