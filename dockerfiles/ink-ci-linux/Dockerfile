@@ -53,4 +53,8 @@ RUN	set -eux; \
 	wasm-opt --version; \
 	cargo-contract --version; \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
-	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache;
+	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache; \
+# apt clean up
+	apt-get autoremove -y; \
+	apt-get clean; \
+	rm -rf /var/lib/apt/lists/*
