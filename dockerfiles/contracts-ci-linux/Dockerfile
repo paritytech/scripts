@@ -30,44 +30,44 @@ COPY utility/debian-llvm-clang.key /etc/apt/trusted.gpg.d/debian-archive-llvm.gp
 # install tools and dependencies
 RUN set -eux; \
 	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main" \
-		> /etc/apt/sources.list.d/llvm.list; \
+		> /etc/apt/sources.list.d/llvm.list && \
 	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-8 main" \
-		>> /etc/apt/sources.list.d/llvm.list; \
-	apt-get -y update; \
-	apt-get remove -y --purge clang; \
+		>> /etc/apt/sources.list.d/llvm.list && \
+	apt-get -y update && \
+	apt-get remove -y --purge clang && \
 	apt-get install -y --no-install-recommends \
-		zlib1g-dev llvm-8-dev clang-8 python3 npm wabt binaryen; \
-	npm install --ignore-scripts -g yarn; \
+		zlib1g-dev llvm-8-dev clang-8 python3 npm wabt && \
+	npm install --ignore-scripts -g yarn && \
 # set links to clang-8 and python3
-	update-alternatives --install /usr/bin/python python /usr/bin/python3 100; \
-	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100; \
-	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-8 100; \
-	update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-8 100; \
+	update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
+	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-8 100 && \
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-8 100 && \
+	update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-8 100 && \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
-		--profile minimal --component rustfmt rust-src; \
-	rustup default nightly; \
-	cargo install pwasm-utils-cli --bin wasm-prune; \
-	cargo install cargo-contract; \
+		--profile minimal --component rustfmt rust-src && \
+	rustup default nightly && \
+	cargo install pwasm-utils-cli --bin wasm-prune && \
+	cargo install --features binaryen-as-dependency cargo-contract && \
 # tried v0.1.5 and the latest master - both fail with https://github.com/hyperledger-labs/solang/issues/314
-	cargo install --git https://github.com/hyperledger-labs/solang --tag v0.1.2; \
+	cargo install --git https://github.com/hyperledger-labs/solang --tag v0.1.2 && \
 # download the latest canvas-node binary
 	curl -L "https://gitlab.parity.io/parity/canvas-node/-/jobs/artifacts/master/raw/artifacts/canvas/canvas?job=build" \
-		-o /usr/local/cargo/bin/canvas; \
-	chmod +x /usr/local/cargo/bin/canvas; \
+		-o /usr/local/cargo/bin/canvas && \
+	chmod +x /usr/local/cargo/bin/canvas && \
 # versions
-	wasm-opt --version; \
-	yarn --version; \
-	rustup show; \
-	cargo --version; \
-	solang --version; \
-	canvas --version; \
-	python --version; \
+	wasm-opt --version && \
+	yarn --version && \
+	rustup show && \
+	cargo --version && \
+	solang --version && \
+	canvas --version && \
+	python --version && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
-	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache; \
+	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
 # apt clean up
-	apt-get autoremove -y; \
-	apt-get clean; \
+	apt-get autoremove -y && \
+	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*

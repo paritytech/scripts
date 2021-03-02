@@ -40,22 +40,19 @@ RUN	set -eux; \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
-		--profile minimal --component rustfmt clippy miri rust-src; \
-	rustup default nightly; \
+		--profile minimal --component rustfmt clippy miri rust-src && \
+	rustup default nightly && \
 # We require `xargo` so that `miri` runs properly
 # We require `grcov` for coverage reporting and `rust-covfix` to improve it.
-	cargo install grcov rust-covfix xargo cargo-contract; \
+	cargo install grcov rust-covfix xargo && \
+	cargo install --features binaryen-as-dependency cargo-contract && \
 # `cargo-contract` requires `binaryen` for optimizing Wasm files
-	apt-get -y update; \
-	apt-get install -y --no-install-recommends binaryen; \
+	apt-get -y update && \
+	apt-get install -y --no-install-recommends && \
 # versions
-	rustup show; \
-	cargo --version; \
-	wasm-opt --version; \
-	cargo-contract --version; \
+	rustup show && \
+	cargo --version && \
+	wasm-opt --version && \
+	cargo-contract --version && \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
-	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache; \
-# apt clean up
-	apt-get autoremove -y; \
-	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*
+	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache;
