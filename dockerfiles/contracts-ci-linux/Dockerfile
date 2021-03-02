@@ -57,6 +57,7 @@ RUN set -eux; \
 		-o /usr/local/cargo/bin/canvas; \
 	chmod +x /usr/local/cargo/bin/canvas; \
 # versions
+	wasm-opt --version; \
 	yarn --version; \
 	rustup show; \
 	cargo --version; \

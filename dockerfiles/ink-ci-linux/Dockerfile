@@ -50,6 +50,7 @@ RUN	set -eux; \
 # versions
 	rustup show; \
 	cargo --version; \
+	wasm-opt --version; \
 	cargo-contract --version; \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache;
