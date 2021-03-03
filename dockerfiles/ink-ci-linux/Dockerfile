@@ -19,8 +19,9 @@ dockerfiles/ink-ci-linux/README.md" \
 
 WORKDIR /builds
 
-ENV SHELL /bin/bash \
-	DEBIAN_FRONTEND=noninteractive
+ENV SHELL /bin/bash
+ENV CXX=/usr/bin/clang++-10
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN	set -eux; \
 # The supported Rust nightly version must support the following components
@@ -36,7 +37,14 @@ RUN	set -eux; \
 #
 # Only Rust nightly builds supporting all of the above mentioned components
 # and targets can be used for this docker image.
-#
+	apt-get -y update && \
+	apt-get remove -y --purge clang && \
+	apt-get install -y --no-install-recommends \
+		python3 && \
+	update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
+	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100 && \
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-10 100 && \
+	update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-10 100 && \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
@@ -45,14 +53,16 @@ RUN	set -eux; \
 # We require `xargo` so that `miri` runs properly
 # We require `grcov` for coverage reporting and `rust-covfix` to improve it.
 	cargo install grcov rust-covfix xargo && \
-	cargo install --features binaryen-as-dependency cargo-contract && \
 # `cargo-contract` requires `binaryen` for optimizing Wasm files
-	apt-get -y update && \
-	apt-get install -y --no-install-recommends && \
+	cargo install --features binaryen-as-dependency cargo-contract && \
 # versions
 	rustup show && \
 	cargo --version && \
-	wasm-opt --version && \
 	cargo-contract --version && \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
-	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache;
+	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
+# apt clean up
+	apt-get remove -y --purge python3 && \
+	apt-get autoremove -y && \
+	apt-get clean && \
+	rm -rf /var/lib/apt/lists/*
