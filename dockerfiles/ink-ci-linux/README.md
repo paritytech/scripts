@@ -1,15 +1,15 @@
 # ink! CI for Linux Distributions
 
-Docker image based on our base CI image `<base-ci-linux:latest>`.
+Docker image based on our base CI image `<base-ci:latest>`.
 
 Used to build and test ink!.
 
 ## Dependencies and Tools
 
-**Inherited from `<base-ci-linux:latest>`:**
+**Inherited from `<base-ci:latest>`**
 
 - `libssl-dev`
-- `clang-7`
+- `clang-10`
 - `lld`
 - `libclang-dev`
 - `make`
