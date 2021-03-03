@@ -24,6 +24,16 @@ ENV CXX=/usr/bin/clang++-10
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN	set -eux; \
+	apt-get -y update && \
+	apt-get remove -y --purge clang && \
+	apt-get install -y --no-install-recommends \
+# python3 is only needed to install binaryen for contracts
+		python3 && \
+# set links to clang-10 and python3
+	update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
+	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100 && \
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-10 100 && \
+	update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-10 100 && \
 # The supported Rust nightly version must support the following components
 # to allow for a functioning CI pipeline:
 #
@@ -37,14 +47,6 @@ RUN	set -eux; \
 #
 # Only Rust nightly builds supporting all of the above mentioned components
 # and targets can be used for this docker image.
-	apt-get -y update && \
-	apt-get remove -y --purge clang && \
-	apt-get install -y --no-install-recommends \
-		python3 && \
-	update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
-	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100 && \
-	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-10 100 && \
-	update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-10 100 && \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
