@@ -1,20 +1,19 @@
 # contracts! CI for Linux Distributions
 
-Docker image based on our base CI image `<base-ci-linux:latest>`.
+Docker image based on our base CI image `<base-ci:latest>`.
 
 Used to build and test contracts!.
 
 ## Dependencies and Tools
 
-- `llvm-8-dev`
-- `clang-8`
+- `llvm-dev`
+- `clang-10`
 - `zlib1g-dev`
-- `python3`
 - `npm`
 - `yarn`
 - `wabt`
 
-**Inherited from `<base-ci-linux:latest>`:**
+**Inherited from `<base-ci:latest>`**
 
 - `libssl-dev`
 - `lld`
@@ -50,7 +49,7 @@ We always try to use the [latest possible](https://rust-lang.github.io/rustup-co
 ```yaml
 test-contracts:
     stage: test
-        image: paritytech/contracts-ci-linux:latest
+        image: paritytech/contracts-ci-linux:production
         script:
             - cargo build ...
 ```
