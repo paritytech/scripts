@@ -25,15 +25,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN	set -eux; \
 	apt-get -y update && \
-	apt-get remove -y --purge clang && \
 	apt-get install -y --no-install-recommends \
 # python3 is only needed to install binaryen for contracts
 		python3 && \
 # set links to clang-10 and python3
 	update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
-	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100 && \
-	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-10 100 && \
-	update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-10 100 && \
 # The supported Rust nightly version must support the following components
 # to allow for a functioning CI pipeline:
 #

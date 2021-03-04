@@ -9,7 +9,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/contracts-ci-linux" \
 	io.parity.image.description="Inherits from base-ci-linux:latest. \
-llvm-8-dev, clang-8, python3, zlib1g-dev, npm, yarn, wabt, binaryen. \
+llvm-dev, clang, python3, zlib1g-dev, npm, yarn, wabt, binaryen. \
 rust nightly, rustfmt, rust-src, solang, canvas-node" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/contracts-ci-linux/Dockerfile" \
@@ -27,15 +27,11 @@ ENV DEBIAN_FRONTEND=noninteractive
 # install tools and dependencies
 RUN set -eux; \
 	apt-get -y update && \
-	apt-get remove -y --purge clang && \
 	apt-get install -y --no-install-recommends \
 		zlib1g-dev python3 npm wabt llvm-dev && \
 	npm install --ignore-scripts -g yarn && \
 # set links to clang-10 and python3
 	update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
-	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100 && \
-	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-10 100 && \
-	update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-10 100 && \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
