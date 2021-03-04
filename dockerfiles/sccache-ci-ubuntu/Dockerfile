@@ -38,7 +38,7 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		linux-headers-5.8.0-29 libssl-dev clang libclang-dev gcc binutils coreutils gdbserver \
-        zlib1g-dev librust-zip+deflate-miniz-dev curl gnupg2 docker \
+        zlib1g-dev librust-zip+deflate-miniz-dev curl gnupg2 docker-cli \
         lld make cmake git pkg-config time rhash ca-certificates; \
 # setup nvcc
     curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub | apt-key add -; \
