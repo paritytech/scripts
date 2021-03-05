@@ -27,7 +27,8 @@ RUN	set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
 # python3 is only needed to install binaryen for contracts
-		python3 && \
+# hunspell is needed for automated spell-checking
+		python3 hunspell hunspell-en-us && \
 # set links to clang-10 and python3
 	update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
 # The supported Rust nightly version must support the following components
@@ -50,7 +51,8 @@ RUN	set -eux; \
 	rustup default nightly && \
 # We require `xargo` so that `miri` runs properly
 # We require `grcov` for coverage reporting and `rust-covfix` to improve it.
-	cargo install grcov rust-covfix xargo && \
+# We require `cargo-spellcheck` for automated spell-checking
+	cargo install grcov rust-covfix xargo cargo-spellcheck && \
 # `cargo-contract` requires `binaryen` for optimizing Wasm files
 	cargo install --features binaryen-as-dependency cargo-contract && \
 # versions

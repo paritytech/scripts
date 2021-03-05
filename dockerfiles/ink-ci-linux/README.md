@@ -36,6 +36,7 @@ We always use the [latest possible](https://rust-lang.github.io/rustup-component
 - `rust-covfix`: Required to polish the coverage reports by `grcov`.
 - `cargo-contract`: Required to build ink! Wasm smart contracts.
 - `xargo`: Required so that `miri` runs properly.
+- `cargo-spellcheck`: Required for the CI to do automated spell-checking.
 - `wasm32-unknown-unknown`: The toolchain to compile Rust codebases for Wasm.
 
 [Click here](https://hub.docker.com/repository/docker/paritytech/ink-ci-linux) for the registry.
