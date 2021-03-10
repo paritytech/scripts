@@ -56,7 +56,6 @@ RUN set -eux; \
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
 # apt clean up
-	apt-get remove -y --purge python3 && \
 	apt-get autoremove -y && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*

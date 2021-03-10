@@ -12,6 +12,7 @@ Used to build and test contracts!.
 - `npm`
 - `yarn`
 - `wabt`
+- `python3`
 
 **Inherited from `<base-ci:latest>`**
 
