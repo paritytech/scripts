@@ -8,7 +8,7 @@ ARG REGISTRY_PATH=paritytech
 LABEL summary="Layer 1 image with all dependencies for Rust and WASM compilation." \
 	name="${REGISTRY_PATH}/base-ci" \
 	maintainer="devops-team@parity.io" \
-	version="1.0" \
+	version="2.0" \
 	description="libssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config \
 curl, time, rhash, rust stable, rust nightly, sccache" \
 	io.parity.image.vendor="Parity Technologies" \
