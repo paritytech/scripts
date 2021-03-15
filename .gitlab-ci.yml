@@ -265,7 +265,7 @@ container_scanning:
   rules:
     # $IMAGE_TAG is needed for trivy. Should me mentioned in schedule's variables. I.e. latest, staging, v2.0.0.
     - if: $IMAGE_NAME && $IMAGE_TAG
-  # TODO: remove when all criticals are solved 
+  # TODO: remove when all criticals are solved
   allow_failure:                   true
   tags:
     - kubernetes-parity-build
@@ -349,7 +349,7 @@ contracts-ci-linux-production:
       artifacts:                   false
   rules:
     - if: $IMAGE_NAME == "contracts-ci-linux"
-  
+
 
 sccache-ci-ubuntu-production:
   <<:                              *push-after-triggered-pipeline
