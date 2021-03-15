@@ -191,13 +191,13 @@ kubetools-helm3:
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
       --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
-      --file "dockerfiles/$IMAGE_NAME/helm3.Dockerfile" dockerfiles
+      --tag "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
+      --file "dockerfiles/kubetools/helm3.Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$DOCKER_PASSWORD" |
         buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
     - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
     - buildah logout "$REGISTRY_PATH"
 
 terraform:
