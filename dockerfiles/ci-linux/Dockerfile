@@ -30,8 +30,11 @@ RUN set -eux && \
 	rustup target add wasm32-unknown-unknown && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 # install cargo tools
-	cargo install cargo-audit cargo-web wasm-pack wasm-bindgen-cli cargo-deny mdbook && \
+	cargo install cargo-audit cargo-web wasm-pack cargo-deny mdbook && \
 	cargo install --version 0.3.2 diener && \
+# wasm-bindgen-cli version should match the one pinned in substrate
+# https://github.com/paritytech/substrate/blob/master/bin/node/browser-testing/Cargo.toml#L15
+	cargo install --version 0.2.71 wasm-bindgen-cli && \
 # install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
 	cargo +nightly install wasm-gc && \
 # versions
