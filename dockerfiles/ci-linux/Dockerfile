@@ -31,7 +31,7 @@ RUN set -eux && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 # install cargo tools
 	cargo install cargo-audit cargo-web wasm-pack wasm-bindgen-cli cargo-deny mdbook && \
-	cargo install --version 0.3.1 diener && \
+	cargo install --version 0.3.2 diener && \
 # install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
 	cargo +nightly install wasm-gc && \
 # versions
