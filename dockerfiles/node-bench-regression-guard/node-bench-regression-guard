@@ -1,0 +1,90 @@
+#!/usr/bin/env ruby
+
+require 'json'
+require 'optparse'
+
+COMPARISON_THRESHOLD = 2
+
+if ARGV.empty?
+  puts 'Please provide options'
+  exit 1
+end
+
+options = {}
+option_parser = OptionParser.new do |option|
+  option.banner = "Usage: node-bench-regression-guard [options]"
+  option.on('--reference DIRECTORY (current master)', String) do |reference|
+    options[:reference] = reference
+  end
+  option.on('--compare-with DIRECTORY (merged PR branch)', String) do |compare|
+    options[:compare] = compare
+  end
+end
+
+option_parser.parse!
+reference_dir = options[:reference]
+compare_dir = options[:compare]
+
+raise ArgumentError, "Directory with references doesn't exist" unless Dir.exist?(reference_dir)
+raise ArgumentError, "Directory with results to compare doesn't exist" unless Dir.exist?(compare_dir)
+
+def deserialize_result(filename)
+  # skip all output until the json line
+  File.readlines(filename).each do |line|
+    begin
+      return JSON.parse(line)[0]
+    rescue JSON::ParserError
+      next
+    end
+  end
+  raise RuntimeError, "File doesn't contain any JSON line"
+end
+
+def parse_benches(directory)
+  hash = {}
+  Dir.each_child(directory) do |filename|
+    Dir.chdir(directory) do
+      puts File.expand_path(filename)
+      hash[filename] = deserialize_result(filename)
+      puts hash[filename]['name']
+      puts "raw_average: #{hash[filename]['raw_average']}"
+      puts "average: #{hash[filename]['average']}"
+      puts
+    end
+  end
+  return hash
+end
+
+references = parse_benches(reference_dir)
+puts "=========================\n\n"
+comparisons = parse_benches(compare_dir)
+
+regressions = []
+failed = false
+
+puts "=========================\n\n"
+
+puts "Performance ratios (merged PR branch / current master):"
+references.each_value do |reference|
+  comparisons.each_value do |comparison|
+    next unless reference['name'] == comparison['name']
+    result_avg = comparison['average'].to_f / reference['average']
+    result_raw_avg = comparison['raw_average'].to_f / reference['raw_average']
+    puts "average: #{result_avg.round(2)}; raw_average: #{result_raw_avg.round(2)} - #{comparison['name']}"
+    if ( (result_avg >= COMPARISON_THRESHOLD) ||
+         (result_raw_avg >= COMPARISON_THRESHOLD) )
+      regressions << comparison['name']
+      failed = true
+    end
+  end
+end
+
+puts "\n=========================\n\n"
+
+if failed
+  puts 'Regressions detected:'
+  puts regressions.join("\n")
+  exit 1
+else
+  puts 'No regressions detected'
+end
