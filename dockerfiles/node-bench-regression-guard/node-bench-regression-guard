@@ -63,7 +63,7 @@ def parse_benches(directory)
       puts
     end
   end
-  return hash
+  hash
 end
 
 references = parse_benches(reference_dir)
