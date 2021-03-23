@@ -206,6 +206,8 @@ terraform:
     <<:                            *default-vars
     # https://releases.hashicorp.com/terraform/
     TERRAFORM_VERSION:             "0.13.5"
+    # https://releases.hashicorp.com/vault/
+    VAULT_VERSION:                 "1.6.3"
   script:
     - |
       cat <<-EOT
@@ -213,6 +215,7 @@ terraform:
       | # build of terraform image
       |
       | TERRAFORM_VERSION = $TERRAFORM_VERSION
+      | VAULT_VERSION     = $VAULT_VERSION
       |
       EOT
     - buildah bud
@@ -221,6 +224,7 @@ terraform:
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg TERRAFORM_VERSION="$TERRAFORM_VERSION"
+      --build-arg VAULT_VERSION="$VAULT_VERSION"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
