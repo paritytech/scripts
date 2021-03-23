@@ -4,6 +4,7 @@ ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=paritytech
 ARG TERRAFORM_VERSION
+ARG VAULT_VERSION
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
@@ -24,6 +25,12 @@ RUN apk add --no-cache \
 	unzip terraform.zip	-d /usr/local/bin/ terraform; \
 	rm terraform.zip; \
 	chmod +x /usr/local/bin/terraform
+
+RUN	curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" \
+		-o vault.zip; \
+	unzip vault.zip	-d /usr/local/bin/ vault; \
+	rm vault.zip; \
+	chmod +x /usr/local/bin/vault
 
 WORKDIR /config
 
