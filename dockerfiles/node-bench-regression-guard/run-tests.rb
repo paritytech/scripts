@@ -46,6 +46,21 @@ class NodeBenchRegressionGuardTest < Minitest::Test
     assert_equal($?.exitstatus, 1)
   end
 
+  def test_regression_detected_custom_threshold
+    in_tmp_dir do
+      foo = generate_bench_data
+      bar = generate_bench_data
+      File.write("references/#{foo[0][:name]}", foo.to_json)
+      File.write("references/#{bar[0][:name]}","Faker::Quote.famous_last_words\n#{bar.to_json}")
+      foo[0][:average] = (foo[0][:average] * rand(3.2..4.2)).to_i
+      foo[0][:raw_average] = (foo[0][:average] * rand(0.9..1.1)).to_i
+      File.write("comparisons/#{foo[0][:name]}", foo.to_json)
+      File.write("comparisons/#{bar[0][:name]}","Faker::Quote.famous_last_words\n#{bar.to_json}")
+      puts `./node-bench-regression-guard --reference ./references --compare-with ./comparisons --comparison-threshold 3`
+    end
+    assert_equal($?.exitstatus, 1)
+  end
+
   def test_no_regression_detected
     in_tmp_dir do
       foo = generate_bench_data
@@ -57,6 +72,21 @@ class NodeBenchRegressionGuardTest < Minitest::Test
       File.write("comparisons/#{foo[0][:name]}", foo.to_json)
       File.write("comparisons/#{bar[0][:name]}","Faker::Quote.famous_last_words\n#{bar.to_json}")
       puts `./node-bench-regression-guard --reference ./references --compare-with ./comparisons`
+    end
+    assert_equal($?.exitstatus, 0)
+  end
+
+  def test_no_regression_detected_custom_threshold
+    in_tmp_dir do
+      foo = generate_bench_data
+      bar = generate_bench_data
+      File.write("references/#{foo[0][:name]}", foo.to_json)
+      File.write("references/#{bar[0][:name]}","Faker::Quote.famous_last_words\n#{bar.to_json}")
+      foo[0][:average] = (foo[0][:average] * rand(1.0..1.2)).to_i
+      foo[0][:raw_average] = (foo[0][:average] * rand(0.9..1.1)).to_i
+      File.write("comparisons/#{foo[0][:name]}", foo.to_json)
+      File.write("comparisons/#{bar[0][:name]}","Faker::Quote.famous_last_words\n#{bar.to_json}")
+      puts `./node-bench-regression-guard --reference ./references --compare-with ./comparisons --comparison-threshold 3`
     end
     assert_equal($?.exitstatus, 0)
   end

@@ -14,6 +14,7 @@ node-bench-regression-guard --help
 Usage: node-bench-regression-guard [options]
         --reference DIRECTORY (current master)
         --compare-with DIRECTORY (merged PR branch)
+        --comparison-threshold (optional, integer, defaults to 2)
 ```
 
 ### Testing
