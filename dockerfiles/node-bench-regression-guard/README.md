@@ -4,7 +4,7 @@ This small utility is used as part of `substrate` pipeline for the perfomance re
 
 ### How it works
 
-It processes JSON output of `substate`'s `node-bench` benchmarks and compares the results. The utility exits with `1` when the difference between the benchmarks and their reference counterparts is twice or more.
+It processes JSON output of `substrate`'s `node-bench` benchmarks and compares the results. The utility exits with `1` when the difference between the benchmarks and their reference counterparts is twice or more.
 
 ### Usage
 
@@ -19,7 +19,7 @@ Usage: node-bench-regression-guard [options]
 
 ### Testing
 
-Just `bundle install && ruby run-tests.rb`.
+Just `bundle install && bundle exec ruby run-tests.rb`.
 
 ### Dependencies
 
