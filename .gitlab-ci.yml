@@ -125,6 +125,11 @@ redis-exporter:
   script:
     - *push_to_docker_hub
 
+node-bench-regression-guard:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 # special case as version tags are introduced
 kubetools:
   <<:                              *docker_build
