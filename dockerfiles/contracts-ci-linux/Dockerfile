@@ -10,7 +10,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.title="${REGISTRY_PATH}/contracts-ci-linux" \
 	io.parity.image.description="Inherits from base-ci-linux:latest. \
 llvm-dev, clang, python3, zlib1g-dev, npm, yarn, wabt, binaryen. \
-rust nightly, rustfmt, rust-src, solang, canvas-node" \
+rust nightly, rustfmt, clippy, rust-src, solang, canvas-node" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/contracts-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -35,7 +35,7 @@ RUN set -eux; \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
-		--profile minimal --component rustfmt rust-src && \
+		--profile minimal --component rustfmt clippy rust-src && \
 	rustup default nightly && \
 	cargo install pwasm-utils-cli --bin wasm-prune && \
 	cargo install --features binaryen-as-dependency cargo-contract && \
