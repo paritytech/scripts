@@ -33,6 +33,7 @@ Used to build and test contracts!.
 We always try to use the [latest possible](https://rust-lang.github.io/rustup-components-history/) `nightly` version that supports our required `rustup` components:
 
 - `rustfmt`: The Rust code formatter.
+- `clippy`: The Rust linter.
 - `rust-src`: The Rust sources of the standard library.
 
 **Rust tools & toolchains:**
