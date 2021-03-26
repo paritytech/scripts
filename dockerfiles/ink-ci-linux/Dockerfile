@@ -8,7 +8,7 @@ FROM ${REGISTRY_PATH}/base-ci:latest
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/ink-ci-linux" \
-	io.parity.image.description="Inherits from base-ci-linux:latest. \
+	io.parity.image.description="Inherits from paritytech/base-ci. \
 rust nightly, clippy, rustfmt, miri, rust-src grcov, rust-covfix, cargo-contract, xargo, binaryen" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ink-ci-linux/Dockerfile" \
