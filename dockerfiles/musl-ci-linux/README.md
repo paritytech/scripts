@@ -1,18 +1,15 @@
-# MUSL CI for Linux Distributions
+# musl-ci-linux
 
-Docker image based on our base CI image `<base-ci-linux:latest>`.
+Docker image based on our Linux CI image `<ci-linux:production>`.
 
-Used to build and test MUSL target.
+Used to build and test Substrate-based projects using the MUSL toolchain.
 
 ## Dependencies and Tools
 
-- `openssl`
-- `zlib`
-- `[musl tools](https://musl.cc/)`
-
-**Inherited from `<base-ci-linux:latest>`:**
+**Inherited from `<ci-linux:production>`:**
 
 - `libssl-dev`
+- `clang-7`
 - `lld`
 - `libclang-dev`
 - `make`
@@ -23,29 +20,35 @@ Used to build and test MUSL target.
 - `time`
 - `rhash`
 - `ca-certificates`
+- `chromium-driver`
+- `cargo-audit`
+- `cargo-web`
+- `sccache`
+- `wasm-pack`
+- `wasm-bindgen`
+- `cargo-deny`
+- `mdbook`
 
 **Rust versions:**
 
-We always try to use the latest possible `nightly` version that supports our required `rustup` components:
-
-- `clippy`
-- `cargo`
-- `rustfmt`
-
-The [`rustup` component history](https://rust-lang.github.io/rustup-components-history/) provides a decent overview to decide upon a new version update.
+- stable (default)
+- nightly
 
 **Rust tools & toolchains:**
 
-- `x86_64-unknown-linux-musl` toolchain
+- `musl`
+- `musl-dev`
+- `musl-tools`
+- `wasm32-unknown-unknown` toolchain
 
 [Click here](https://hub.docker.com/repository/docker/paritytech/musl-ci-linux) for the registry.
 
 ## Usage
 
 ```yaml
-test-contracts:
+test-substrate:
     stage: test
         image: paritytech/musl-ci-linux:latest
         script:
-            - cargo build ...
+            - cargo build ... --target=x86_64-unknown-linux-musl
 ```
