@@ -1,103 +1,114 @@
 # .gitlab-ci.yml
 # paritytech/scripts
 #
-# triggers the container scanning built-in tool
-include:
-  - template:                      Container-Scanning.gitlab-ci.yml
 
 stages:
   - build
   - test
+  - prod
 
-variables:
-  # DOCKER_HOST:                     tcp://docker:2375
-  DOCKER_HOST:                     tcp://localhost:2375
-  DOCKER_DRIVER:                   overlay2
-  IMAGE_NAME:                      $CI_JOB_NAME
-  IMAGE_TAG:                       latest
-  DOCKERFILE_DIR:                  $CI_JOB_NAME
-  REGISTRY_PATH:                   paritytech
-  CI_REGISTRY_PATH:                "registry.parity.io/parity/infrastructure/scripts"
+variables:                         &default-vars
+  REGISTRY_PATH:                   docker.io/paritytech
 
+default:
+  cache:                           {}
 
 .build:                            &docker_build
   stage:                           build
-  image:                           docker:stable
-  only:
-    refs:
-      - schedules
-      - web
-    kubernetes:                    active
+  image:                           quay.io/buildah/stable
+  rules:
+    - if: $IMAGE_NAME == $CI_JOB_NAME
   tags:
     - kubernetes-parity-build
-  services:
-    - docker:dind
-  environment:
-    name:                          parity-build
-  before_script:
-    - test -z "$DOCKERIMAGE" && echo "DOCKERIMAGE must be defined" && exit 1
-  only:
-    variables:
-      - $DOCKERIMAGE == $CI_JOB_NAME
 
-# Push to Dockerhub
+# Push to Dockerhub using buildah
 .push_to_docker_hub:               &push_to_docker_hub
-    - cd dockerfiles/
-    - export IMAGE_DATE_TAG="${CI_COMMIT_SHORT_SHA}-$(date +%Y%m%d)"
-    - docker build --no-cache
-        --build-arg VCS_REF="${CI_COMMIT_SHA}"
-        --build-arg BUILD_DATE="$(date +%Y%m%d)"
-        --build-arg REGISTRY_PATH=$REGISTRY_PATH
-        --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-        --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-        --file $DOCKERFILE_DIR/Dockerfile .
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
-    - docker info
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-    - docker logout
+  - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
+  - buildah version
+  - buildah bud
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date +%Y%m%d)"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+  - buildah info
+  - echo "$DOCKER_PASSWORD" |
+      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+  - buildah logout "$REGISTRY_PATH"
 
-# Push to CI registry
-# TODO: remove when fully switching to dockerhub
-.push_to_own_reg:                  &push_to_own_reg
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-    - docker push $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG
-    - docker push $CI_REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-    - docker logout
+.push_to_staging:                  &push_to_staging
+  - buildah bud
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date +%Y%m%d)"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+  - echo "$DOCKER_PASSWORD" |
+      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+  - buildah info
+  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:staging"
+  - buildah logout "$REGISTRY_PATH"
 
+.push_to_production:               &push_to_production
+  - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
+  - buildah pull "$REGISTRY_PATH/$IMAGE_NAME:staging"
+  - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:production"
+  - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+  - echo "$DOCKER_PASSWORD" |
+      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+  - buildah info
+  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:production"
+  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+  - buildah logout "$REGISTRY_PATH"
 
-#Build and push to docker hub and CI registry
+#### stage:                        build
+
+# Build and push to docker hub
+ansible:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 base-ci-linux:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
-    - *push_to_own_reg
 
-substrate-ci-linux:
+
+base-ci:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
-    - *push_to_own_reg
+
+ci-linux:
+  <<:                              *docker_build
+  script:
+    - *push_to_staging
 
 ink-ci-linux:
   <<:                              *docker_build
   script:
-    - *push_to_docker_hub
-    - *push_to_own_reg
+    - *push_to_staging
 
 contracts-ci-linux:
   <<:                              *docker_build
   script:
-    - *push_to_docker_hub
-    - *push_to_own_reg
+    - *push_to_staging
+
+sccache-ci-ubuntu:
+  <<:                              *docker_build
+  script:
+    - *push_to_staging
 
 awscli:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
-    - *push_to_own_reg
 
 musl-ci-linux:
     <<:                              *docker_build
@@ -119,118 +130,245 @@ redis-exporter:
   script:
     - *push_to_docker_hub
 
-# build k8s on top of node 12-alpine
-chaostools:
+node-bench-regression-guard:
   <<:                              *docker_build
-  variables:
-    # https://github.com/kubernetes/kubernetes/releases
-    BUILD_KUBE_VERSION:            "1.14.6"
   script:
-    - |
-      cat <<-EOT
-      |
-      | # build of chaostools image
-      |
-      | KUBE_VERSION = ${BUILD_KUBE_VERSION}
-      |
-      EOT
-    - cd dockerfiles/
-    - docker build
-      --build-arg VCS_REF="${CI_COMMIT_SHA}"
-      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-      --build-arg REGISTRY_PATH=$REGISTRY_PATH
-      --build-arg KUBE_VERSION="${BUILD_KUBE_VERSION}"
-      --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-      --file $DOCKERFILE_DIR/Dockerfile .
-    # Push to Dockerhub
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
-    - docker info
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-    - docker logout
+    - *push_to_docker_hub
 
 # special case as version tags are introduced
 kubetools:
   <<:                              *docker_build
   variables:
+    <<:                            *default-vars
     # https://github.com/kubernetes/kubernetes/releases
     BUILD_KUBE_VERSION:            "1.18.2"
     # https://github.com/kubernetes/helm/releases
     # will be overwritten by the global variable at
     # https://gitlab.parity.io/groups/parity/-/settings/ci_cd
-    BUILD_HELM_VERSION:            "2.16.6"
+    BUILD_HELM_VERSION:            "2.16.11"
   script:
     - |
       cat <<-EOT
       |
       | # build of kubetools image
       |
-      | KUBE_VERSION = ${BUILD_KUBE_VERSION}
-      | HELM_VERSION = ${BUILD_HELM_VERSION}
+      | KUBE_VERSION = $BUILD_KUBE_VERSION
+      | HELM_VERSION = $BUILD_HELM_VERSION
       |
       EOT
-    - cd dockerfiles/
-    - docker build
-      --build-arg VCS_REF="${CI_COMMIT_SHA}"
+    - buildah bud
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-      --build-arg REGISTRY_PATH=$REGISTRY_PATH
-      --build-arg KUBE_VERSION="${BUILD_KUBE_VERSION}"
-      --build-arg HELM_VERSION="${BUILD_HELM_VERSION}"
-      --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-      --tag $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
-      --file $DOCKERFILE_DIR/Dockerfile .
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
+      --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
-    - docker info
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION
-    - docker logout
+    - echo "$DOCKER_PASSWORD" |
+        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+    - buildah info
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
+    - buildah logout "$REGISTRY_PATH"
 
+# waits until kubetools job above is deprecated, "latest" tag remains after the old image
+kubetools-helm3:
+  <<:                              *docker_build
+  variables:
+    <<:                            *default-vars
+    IMAGE_NAME:                    kubetools
+    # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+    BUILD_KUBE_VERSION:            "1.20.0"
+    # https://github.com/helm/helm/releases
+    BUILD_HELM_VERSION:            "3.5.3"
+  script:
+    - |
+      cat <<-EOT
+      |
+      | # build of kubetools image
+      |
+      | KUBE_VERSION = $BUILD_KUBE_VERSION
+      | HELM_VERSION = $BUILD_HELM_VERSION
+      |
+      EOT
+    - buildah bud
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
+      --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
+      --tag "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
+      --file "dockerfiles/kubetools/helm3.Dockerfile" dockerfiles
+    # Push to Dockerhub
+    - echo "$DOCKER_PASSWORD" |
+        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+    - buildah info
+    - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
+    - buildah logout "$REGISTRY_PATH"
 
 terraform:
   <<:                              *docker_build
   variables:
+    <<:                            *default-vars
     # https://releases.hashicorp.com/terraform/
-    TERRAFORM_VERSION:             "0.12.24"
+    TERRAFORM_VERSION:             "0.13.5"
+    # https://releases.hashicorp.com/vault/
+    VAULT_VERSION:                 "1.6.3"
   script:
     - |
       cat <<-EOT
       |
       | # build of terraform image
       |
-      | TERRAFORM_VERSION = ${TERRAFORM_VERSION}
+      | TERRAFORM_VERSION = $TERRAFORM_VERSION
+      | VAULT_VERSION     = $VAULT_VERSION
       |
       EOT
-    - cd dockerfiles/
-    - docker build
-      --build-arg VCS_REF="${CI_COMMIT_SHA}"
+    - buildah bud
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-      --build-arg REGISTRY_PATH=$REGISTRY_PATH
-      --build-arg TERRAFORM_VERSION="${TERRAFORM_VERSION}"
-      --tag $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-      --tag $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
-      --file $DOCKERFILE_DIR/Dockerfile .
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --build-arg TERRAFORM_VERSION="$TERRAFORM_VERSION"
+      --build-arg VAULT_VERSION="$VAULT_VERSION"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
-    - docker login -u "${Docker_Hub_User_Parity}" -p "${Docker_Hub_Pass_Parity}"
-    - docker info
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-    - docker push $REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION
-    - docker logout
+    - echo "$DOCKER_PASSWORD" |
+        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+    - buildah info
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
+    - buildah logout "$REGISTRY_PATH"
 
+#### stage:                        test
 
-# triggers on $DOCKERIMAGE
-# in order to be scanned, EVERY docker build HAS to have $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
-container_scanning: # for dockerhub
-  stage:                           test
-  only:
-    variables:
-      - $DOCKERIMAGE
+container_scanning:
+  image:
+    name:                          docker.io/aquasec/trivy:latest
+    entrypoint:                    [""]
   variables:
-    GIT_STRATEGY:                  fetch
-    CI_APPLICATION_REPOSITORY:     $REGISTRY_PATH/$DOCKERIMAGE
-    CI_APPLICATION_TAG:            $IMAGE_TAG # OR $IMAGE_DATE_TAG
-    DOCKERFILE_PATH:               "dockerfiles/${DOCKERFILE_DIR}/Dockerfile"
-    DOCKER_USER:                   $Docker_Hub_User_Parity
-    DOCKER_PASSWORD:               $Docker_Hub_Pass_Parity
+    FULL_IMAGE_NAME:               $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+    GIT_STRATEGY:                  none
+  script:
+    - trivy --version
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - time trivy image --clear-cache
+    # update vulnerabilities db
+    - time trivy --download-db-only --no-progress --cache-dir .trivycache/
+    # Build report
+    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@/contrib/gitlab.tpl"
+        --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$FULL_IMAGE_NAME"
+    # Print report
+    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress "$FULL_IMAGE_NAME"
+    # Fail on high and critical vulnerabilities
+    - time trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress "$FULL_IMAGE_NAME"
+  cache:
+    # TODO: move this cache to k8s volume when it's configured
+    paths:
+      - .trivycache/
+  artifacts:
+    when:                          always
+    reports:
+      container_scanning:          gl-container-scanning-report.json
+  rules:
+    # $IMAGE_TAG is needed for trivy. Should me mentioned in schedule's variables. I.e. latest, staging, v2.0.0.
+    - if: $IMAGE_NAME && $IMAGE_TAG
+  # TODO: remove when all criticals are solved
+  allow_failure:                   true
+  tags:
+    - kubernetes-parity-build
+
+ci-linux-test:
+  stage:                           test
+  variables:
+    CI_IMAGE:                      "paritytech/ci-linux:staging"
+    # this is to rewrite "-Dwarnings" we use in Substrate CI since new warnings
+    # are often introduced and we do not want to fail on them in this case
+    RUSTFLAGS:                     "-Cdebug-assertions=y"
+  rules:
+    - if: $IMAGE_NAME == "ci-linux"
+  trigger:
+    project:                       parity/substrate
+    branch:                        master
+    strategy:                      depend
+
+ink-ci-linux-test:
+  stage:                           test
+  variables:
+    CI_IMAGE:                      "paritytech/ink-ci-linux:staging"
+  rules:
+    - if: $IMAGE_NAME == "ink-ci-linux"
+  trigger:
+    project:                       parity/ink
+    branch:                        master
+    strategy:                      depend
+
+contracts-ci-linux-test:
+  stage:                           test
+  variables:
+    CI_IMAGE:                      "paritytech/contracts-ci-linux:staging"
+  rules:
+    - if: $IMAGE_NAME == "contracts-ci-linux"
+  trigger:
+    project:                       parity/cargo-contract
+    branch:                        master
+    strategy:                      depend
+
+sccache-ci-ubuntu-test:
+  stage:                           test
+  variables:
+    CI_IMAGE:                      "paritytech/sccache-ci-ubuntu:staging"
+  rules:
+    - if: $IMAGE_NAME == "sccache-ci-ubuntu"
+  trigger:
+    project:                       parity/sccache
+    branch:                        master
+    strategy:                      depend
+
+#### stage:                        prod
+
+ci-linux-production:
+  stage:                           prod
+  image:                           quay.io/buildah/stable
+  rules:
+    - if: $IMAGE_NAME == "ci-linux"
+  script:
+    - *push_to_production
+  tags:
+    - kubernetes-parity-build
+
+ink-ci-linux-production:           &push-after-triggered-pipeline
+  stage:                           prod
+  image:                           quay.io/buildah/stable
+  needs:
+    - job:                         ink-ci-linux-test
+      artifacts:                   false
+  rules:
+    - if: $IMAGE_NAME == "ink-ci-linux"
+  script:
+    - *push_to_production
+  tags:
+    - kubernetes-parity-build
+
+contracts-ci-linux-production:
+  <<:                              *push-after-triggered-pipeline
+  needs:
+    - job:                         contracts-ci-linux-test
+      artifacts:                   false
+  rules:
+    - if: $IMAGE_NAME == "contracts-ci-linux"
 
 
-# vim: expandtab sts=2
+sccache-ci-ubuntu-production:
+  <<:                              *push-after-triggered-pipeline
+  needs:
+    - job:                         sccache-ci-ubuntu-test
+      artifacts:                   false
+  rules:
+    - if: $IMAGE_NAME == "sccache-ci-ubuntu"

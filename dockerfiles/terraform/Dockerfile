@@ -3,7 +3,8 @@ FROM alpine:latest
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=paritytech
-ARG TERRAFORM_VERSION="0.12.24"
+ARG TERRAFORM_VERSION
+ARG VAULT_VERSION
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
@@ -17,15 +18,20 @@ dockerfiles/terraform/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-ADD "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" /tmp
-RUN unzip /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip -d /usr/local/bin/ terraform && \
-	rm /tmp/terraform_${TERRAFORM_VERSION}_linux_amd64.zip
-
-
 RUN apk add --no-cache \
 		ca-certificates git jq make curl gettext; \
+	curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
+		-o terraform.zip; \
+	unzip terraform.zip	-d /usr/local/bin/ terraform; \
+	rm terraform.zip; \
 	chmod +x /usr/local/bin/terraform
+
+RUN	curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" \
+		-o vault.zip; \
+	unzip vault.zip	-d /usr/local/bin/ vault; \
+	rm vault.zip; \
+	chmod +x /usr/local/bin/vault
 
 WORKDIR /config
 
-CMD /bin/sh
+CMD ["/bin/sh"]
