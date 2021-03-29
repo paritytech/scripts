@@ -24,6 +24,8 @@ RUN set -eux && \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
 		chromium-driver && \
+# install `rust-src` component for ui test
+	rustup component add rust-src && \
 # install Rust nightly, default is stable, use minimum components
 	rustup toolchain install nightly --profile minimal && \
 # install wasm toolchain
