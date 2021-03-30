@@ -11,6 +11,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
       io.parity.image.revision="${VCS_REF}" \
       io.parity.image.created="${BUILD_DATE}"
 
-COPY node-bench-regression-guard /usr/local/bin/node-bench-regression-guard
+RUN apk add --no-cache --update curl unzip
+COPY node-bench-regression-guard/node-bench-regression-guard /usr/local/bin/node-bench-regression-guard
 
 ENTRYPOINT ["node-bench-regression-guard"]
