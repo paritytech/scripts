@@ -241,6 +241,43 @@ terraform:
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
     - buildah logout "$REGISTRY_PATH"
 
+sops:
+  <<:                              *docker_build
+  variables:
+    <<:                            *default-vars
+    # https://github.com/mozilla/sops/releases/
+    SOPS_VERSION:                  "3.7.0"
+    # https://releases.hashicorp.com/vault/
+    VAULT_VERSION:                 "1.6.3"
+  script:
+    - |
+      cat <<-EOT
+      |
+      | # build of terraform image
+      |
+      | SOPS_VERSION      = $SOPS_VERSION
+      | VAULT_VERSION     = $VAULT_VERSION
+      |
+      EOT
+    - buildah bud
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --build-arg SOPS_VERSION="$SOPS_VERSION"
+      --build-arg VAULT_VERSION="$VAULT_VERSION"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+    # Push to Dockerhub
+    - echo "$DOCKER_PASSWORD" |
+        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+    - buildah info
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
+    - buildah logout "$REGISTRY_PATH"
+
+
 #### stage:                        test
 
 container_scanning:
