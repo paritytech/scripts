@@ -14,4 +14,4 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 RUN apk add --no-cache --update curl unzip
 COPY node-bench-regression-guard/node-bench-regression-guard /usr/local/bin/node-bench-regression-guard
 
-ENTRYPOINT ["node-bench-regression-guard"]
+CMD ["node-bench-regression-guard", "--help"]
