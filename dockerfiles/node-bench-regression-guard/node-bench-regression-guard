@@ -91,6 +91,7 @@ references.each_value do |reference|
 end
 
 puts "\n=========================\n\n"
+puts "Comparison threshold is #{comparison_threshold}"
 
 if failed
   puts 'Regressions detected:'
