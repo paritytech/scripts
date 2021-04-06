@@ -26,11 +26,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN	set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
-# python3 is only needed to install binaryen for contracts
+# binaryen is needed by cargo-contract for optimizing Wasm files
 # hunspell is needed for automated spell-checking
-		python3 hunspell hunspell-en-us && \
-# set links to clang-10 and python3
-	update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
+	binaryen hunspell hunspell-en-us && \
 # The supported Rust nightly version must support the following components
 # to allow for a functioning CI pipeline:
 #
@@ -53,8 +51,7 @@ RUN	set -eux; \
 # We require `grcov` for coverage reporting and `rust-covfix` to improve it.
 # We require `cargo-spellcheck` for automated spell-checking
 	cargo install grcov rust-covfix xargo cargo-spellcheck && \
-# `cargo-contract` requires `binaryen` for optimizing Wasm files
-	cargo install --features binaryen-as-dependency cargo-contract && \
+	cargo install cargo-contract && \
 # versions
 	rustup show && \
 	cargo --version && \
@@ -62,7 +59,6 @@ RUN	set -eux; \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
 # apt clean up
-	apt-get remove -y --purge python3 && \
 	apt-get autoremove -y && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
