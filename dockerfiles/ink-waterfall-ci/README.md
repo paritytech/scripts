@@ -1,6 +1,6 @@
 # ink! waterfall CI for Linux Distributions
 
-Docker image based on our base CI image `<base-ci:latest>`.
+Docker image based on our base CI image `<ink-ci-linux:production>`.
 
 Used to build and run end-to-end tests for ink!, `cargo-contract`, `canvas-node` and `canvas-ui`.
 
@@ -9,7 +9,6 @@ Used to build and run end-to-end tests for ink!, `cargo-contract`, `canvas-node`
 **Inherited from `<base-ci:latest>`**
 
 - `libssl-dev`
-- `clang-10`
 - `lld`
 - `libclang-dev`
 - `make`
@@ -35,14 +34,14 @@ We always use the [latest possible](https://rust-lang.github.io/rustup-component
 - `canvas-node`: Required to run a Substrate chain for smart contracts.
 - `wasm32-unknown-unknown`: The toolchain to compile Rust codebases for Wasm.
 
-[Click here](https://hub.docker.com/repository/docker/paritytech/ink-waterfall-ci-linux) for the registry.
+[Click here](https://hub.docker.com/repository/docker/paritytech/ink-waterfall-ci) for the registry.
 
 ## Usage
 
 ```yaml
 test-ink:
     stage: test
-        image: paritytech/ink-waterfall-ci-linux:production
+        image: paritytech/ink-waterfall-ci:production
         script:
             - cargo build ...
 ```
