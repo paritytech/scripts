@@ -2,6 +2,8 @@ ARG VCS_REF=master
 ARG BUILD_DATE
 ARG REGISTRY_PATH=paritytech
 
+# `production` tag is used here to base off the image that has already been tested against
+# the `ink` CI. This reduces the maintenance of fixing the same nightly stuff in both images.
 FROM ${REGISTRY_PATH}/ink-ci-linux:production
 
 # metadata
@@ -25,7 +27,8 @@ RUN	set -eux; \
 	apt-get -y update && \
 # The ink! repository is needed for the `examples/`
 	git clone --depth 1 https://github.com/paritytech/ink.git . && \
-# `cargo-contract` is needed for building those examples
+# `cargo-contract` is needed for building those examples. Here it's
+# force-rewritten above the stable version from the parent image.
 	cargo install --git https://github.com/paritytech/cargo-contract \
 		--force --branch master && \
 # `canvas-node` is a Substrate chain with smart contract functionality
