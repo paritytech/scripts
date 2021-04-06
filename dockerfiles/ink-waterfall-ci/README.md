@@ -41,7 +41,7 @@ We always use the [latest possible](https://rust-lang.github.io/rustup-component
 ```yaml
 test-ink:
     stage: test
-        image: paritytech/ink-waterfall-ci:production
+        image: paritytech/ink-waterfall-ci:latest
         script:
             - cargo build ...
 ```

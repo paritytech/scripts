@@ -25,12 +25,10 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN	set -eux; \
 	apt-get -y update && \
-# The ink! repository is needed for the `examples/`
-	git clone --depth 1 https://github.com/paritytech/ink.git . && \
 # `cargo-contract` is needed for building those examples. Here it's
 # force-rewritten above the stable version from the parent image.
 	cargo install --git https://github.com/paritytech/cargo-contract \
-		--force --branch master && \
+		--locked --branch master --force && \
 # `canvas-node` is a Substrate chain with smart contract functionality
 	cargo install --git https://github.com/paritytech/canvas-node.git \
 		--locked --branch master && \
