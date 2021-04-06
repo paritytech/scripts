@@ -26,9 +26,11 @@ RUN	set -eux; \
 # The ink! repository is needed for the `examples/`
 	git clone --depth 1 https://github.com/paritytech/ink.git . && \
 # `cargo-contract` is needed for building those examples
-	cargo install --force --git https://github.com/paritytech/cargo-contract && \
+	cargo install --git https://github.com/paritytech/cargo-contract \
+		--branch master --force && \
 # `canvas-node` is a Substrate chain with smart contract functionality
-	cargo install canvas-node --git https://github.com/paritytech/canvas-node.git --locked && \
+	cargo install --git https://github.com/paritytech/canvas-node.git \
+		--locked --branch master && \
 # versions
 	rustup show && \
 	cargo --version && \
