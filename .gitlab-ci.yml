@@ -95,6 +95,11 @@ ink-ci-linux:
   script:
     - *push_to_staging
 
+ink-waterfall-ci:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 contracts-ci-linux:
   <<:                              *docker_build
   script:
