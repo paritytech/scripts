@@ -27,7 +27,7 @@ RUN	set -eux; \
 	git clone --depth 1 https://github.com/paritytech/ink.git . && \
 # `cargo-contract` is needed for building those examples
 	cargo install --git https://github.com/paritytech/cargo-contract \
-		--branch master --force && \
+		--force --branch master && \
 # `canvas-node` is a Substrate chain with smart contract functionality
 	cargo install --git https://github.com/paritytech/canvas-node.git \
 		--locked --branch master && \
