@@ -27,9 +27,12 @@ RUN	set -eux; \
 	apt-get -y update && \
 # `cargo-contract` is needed for building those examples. Here it's
 # force-rewritten above the stable version from the parent image.
+# `--force` rewrites the stable version installed in the parent image.
+# `--locked` ensures the project's `Cargo.lock` is used.
 	cargo install --git https://github.com/paritytech/cargo-contract \
 		--locked --branch master --force && \
-# `canvas-node` is a Substrate chain with smart contract functionality
+# `canvas-node` is a Substrate chain with smart contract functionality.
+# `--locked` ensures the project's `Cargo.lock` is used.
 	cargo install --git https://github.com/paritytech/canvas-node.git \
 		--locked --branch master && \
 # versions
