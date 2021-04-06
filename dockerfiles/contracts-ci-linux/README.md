@@ -7,12 +7,11 @@ Used to build and test contracts!.
 ## Dependencies and Tools
 
 - `llvm-dev`
-- `clang-10`
 - `zlib1g-dev`
 - `npm`
 - `yarn`
 - `wabt`
-- `python3`
+- `binaryen`
 
 **Inherited from `<base-ci:latest>`**
 
