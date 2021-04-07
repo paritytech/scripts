@@ -38,7 +38,8 @@ RUN set -eux; \
 	tar -xvzf binaryen-version_*-x86_64-linux.tar.gz  && \
 	rm binaryen-version_*-x86_64-linux.tar.gz && \
 	chmod +x binaryen-version_*/bin/wasm-opt && \
-	cp binaryen-version_*/bin/wasm-opt /usr/local/bin/ && \
+	mv binaryen-version_*/bin/wasm-opt /usr/local/bin/ && \
+	rm -rf binaryen-version_*/ && \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
