@@ -25,6 +25,19 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN	set -eux; \
 	apt-get -y update && \
+	apt-get install -y --no-install-recommends \
+# `firefox` is needed to simulate interactions with the `canvas-ui`
+	firefox && \
+# `geckodriver` is needed to run headless browser tests
+# we fetch the latest version number from the github api and use that release
+	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/latest | \
+		egrep --only-matching 'https://github.com/mozilla/geckodriver/releases/download/v[0-9.]+/geckodriver-v[0-9.]+-linux64.tar.gz' | \
+		head -n1 | \
+		xargs curl -L -O && \
+	tar -xvzf geckodriver-v*-linux64.tar.gz && \
+	rm geckodriver-v*-linux64.tar.gz && \
+	chmod +x geckodriver && \
+	mv geckodriver /usr/local/bin/ && \
 # `cargo-contract` is needed for building those examples. Here it's
 # force-rewritten above the stable version from the parent image.
 # `--force` rewrites the stable version installed in the parent image.
