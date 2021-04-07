@@ -27,8 +27,19 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
-		zlib1g-dev binaryen npm wabt llvm-dev && \
+		zlib1g-dev npm wabt llvm-dev && \
 	npm install --ignore-scripts -g yarn && \
+# binaryen is needed by cargo-contract for optimizing Wasm files
+# we fetch the latest version number from the GitHub API and use that release
+	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases/latest | \
+		egrep --only-matching 'https://github.com/WebAssembly/binaryen/releases/download/version_[0-9]+/binaryen-version_[0-9]+-x86_64-linux.tar.gz' | \
+		head -n1 | \
+		xargs curl -L -O && \
+	tar -xvzf binaryen-version_*-x86_64-linux.tar.gz  && \
+	rm binaryen-version_*-x86_64-linux.tar.gz && \
+	chmod +x binaryen-version_*/bin/wasm-opt && \
+	mv binaryen-version_*/bin/wasm-opt /usr/local/bin/ && \
+	rm -rf binaryen-version_*/ && \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \

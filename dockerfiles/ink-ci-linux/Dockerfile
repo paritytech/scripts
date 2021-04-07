@@ -26,9 +26,19 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN	set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
-# binaryen is needed by cargo-contract for optimizing Wasm files
 # hunspell is needed for automated spell-checking
-	binaryen hunspell hunspell-en-us && \
+	hunspell hunspell-en-us && \
+# binaryen is needed by cargo-contract for optimizing Wasm files
+# we fetch the latest version number from the GitHub API and use that release
+	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases/latest | \
+		egrep --only-matching 'https://github.com/WebAssembly/binaryen/releases/download/version_[0-9]+/binaryen-version_[0-9]+-x86_64-linux.tar.gz' | \
+		head -n1 | \
+		xargs curl -L -O && \
+	tar -xvzf binaryen-version_*-x86_64-linux.tar.gz  && \
+	rm binaryen-version_*-x86_64-linux.tar.gz && \
+	chmod +x binaryen-version_*/bin/wasm-opt && \
+	mv binaryen-version_*/bin/wasm-opt /usr/local/bin/ && \
+	rm -rf binaryen-version_*/ && \
 # The supported Rust nightly version must support the following components
 # to allow for a functioning CI pipeline:
 #
