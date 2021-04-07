@@ -38,6 +38,7 @@ RUN	set -eux; \
 	rm binaryen-version_*-x86_64-linux.tar.gz && \
 	chmod +x binaryen-version_*/bin/wasm-opt && \
 	cp binaryen-version_*/bin/wasm-opt /usr/local/bin/ && \
+	rm -rf binaryen-version_*/ && \
 # The supported Rust nightly version must support the following components
 # to allow for a functioning CI pipeline:
 #
