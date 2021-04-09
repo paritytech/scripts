@@ -2,7 +2,6 @@
 
 require 'gitlab'
 require 'json'
-require 'optparse'
 
 if ENV['GITLAB_INSTANCE'].nil? || ENV['GITLAB_TOKEN'].nil?
   puts 'Specify GITLAB_INSTANCE & GITLAB_TOKEN environment variables'
