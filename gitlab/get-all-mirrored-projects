@@ -38,7 +38,19 @@ def vanity(projects, with: true)
   vanity
 end
 
+def github(projects)
+  github = []
+  projects.each do |project|
+    github << project.web_url if $api.service(project.id, :github).active
+  end
+  puts "\nMirrors with GitHub integration enabled: #{github.count}"
+  puts "=================="
+  puts github.sort.join("\n")
+  github
+end
+
 unless ARGV.nil?
   vanity(mirrored_projects) if ARGV.include?('with-vanity')
   vanity(mirrored_projects, with: false) if ARGV.include?('without-vanity')
+  github(mirrored_projects) if ARGV.include?('github')
 end
