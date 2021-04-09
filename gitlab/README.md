@@ -1,6 +1,6 @@
 # GitLab scripts
 
-This the collection of small GitLab-related scripts written in Ruby.
+This is the collection of small GitLab-related scripts written in Ruby.
 
 ### Table of contents
 
