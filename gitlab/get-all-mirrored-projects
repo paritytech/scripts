@@ -1,0 +1,45 @@
+#!/usr/bin/env ruby
+
+require 'gitlab'
+require 'json'
+require 'optparse'
+
+if ENV['GITLAB_INSTANCE'].nil? || ENV['GITLAB_TOKEN'].nil?
+  puts 'Specify GITLAB_INSTANCE & GITLAB_TOKEN environment variables'
+  exit 1
+end
+
+$api = Gitlab.client(endpoint: "#{ENV['GITLAB_INSTANCE']}/api/v4", private_token: ENV['GITLAB_TOKEN'])
+
+puts "Signed in as #{$api.user.email}\n\n"
+
+mirrored_projects = $api.projects.auto_paginate.select(&:mirror)
+
+puts "Total mirrors: #{mirrored_projects.count}"
+puts "=================="
+mirrored_projects.each do |project|
+  puts project.web_url
+end
+
+def vanity(projects, with: true)
+  vanity = []
+  projects.each do |project|
+    hooks = $api.project_hooks(project.id)
+    if hooks.count > 0
+      hooks.each do |hook|
+          vanity << project.web_url if with && hook.url.include?('vanity-service')
+      end
+    else
+      vanity << project.web_url unless with
+    end
+  end
+  puts "\nMirrors #{with ? "with" : "without"} vanity-service's hook: #{vanity.count}"
+  puts "=================="
+  puts vanity.sort.join("\n")
+  vanity
+end
+
+unless ARGV.nil?
+  vanity(mirrored_projects) if ARGV.include?('with-vanity')
+  vanity(mirrored_projects, with: false) if ARGV.include?('without-vanity')
+end
