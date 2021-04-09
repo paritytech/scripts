@@ -34,7 +34,7 @@ def vanity(projects, with: true)
   end
   puts "\nMirrors #{with ? "with" : "without"} vanity-service's hook: #{vanity.count}"
   puts "=================="
-  puts vanity.sort.join("\n")
+  puts vanity.sort.map { |url| url + '/hooks' }.join("\n")
   vanity
 end
 
@@ -45,7 +45,7 @@ def github(projects)
   end
   puts "\nMirrors with GitHub integration enabled: #{github.count}"
   puts "=================="
-  puts github.sort.join("\n")
+  puts github.sort.map { |url| url + '/-/services/github/edit' }.join("\n")
   github
 end
 
