@@ -26,6 +26,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN	set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
+# npm is needed to install `yarn`
+	npm \
 # `firefox` is needed to simulate interactions with the `canvas-ui`
 	firefox && \
 # `geckodriver` is needed to run headless browser tests
@@ -38,6 +40,8 @@ RUN	set -eux; \
 	rm geckodriver-v*-linux64.tar.gz && \
 	chmod +x geckodriver && \
 	mv geckodriver /usr/local/bin/ && \
+# `yarn` is needed to run `canvas-ui`
+	npm install --ignore-scripts -g yarn && \
 # `cargo-contract` is needed for building those examples. Here it's
 # force-rewritten above the stable version from the parent image.
 # `--force` rewrites the stable version installed in the parent image.
