@@ -36,7 +36,7 @@ RUN set -eux && \
 	cargo install --version 0.3.2 diener && \
 # wasm-bindgen-cli version should match the one pinned in substrate
 # https://github.com/paritytech/substrate/blob/master/bin/node/browser-testing/Cargo.toml#L15
-	cargo install --version 0.2.71 wasm-bindgen-cli && \
+	cargo install --version 0.2.73 wasm-bindgen-cli && \
 # install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
 	cargo +nightly install wasm-gc && \
 # versions
