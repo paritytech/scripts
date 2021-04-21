@@ -5,7 +5,7 @@
 FROM paritytech/base-ci:latest
 
 RUN rustup toolchain install nightly --target wasm32-unknown-unknown \
-		--profile minimal --component rustfmt clippy miri rust-src && \
+		--profile minimal --component rustfmt clippy && \
 	cargo install cargo-deny && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
