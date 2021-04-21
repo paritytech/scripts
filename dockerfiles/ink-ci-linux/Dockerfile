@@ -8,7 +8,7 @@ FROM ${REGISTRY_PATH}/base-ci:latest
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/ink-ci-linux" \
-	io.parity.image.description="Inherits from base-ci-linux:latest. \
+	io.parity.image.description="Inherits from paritytech/base-ci. \
 rust nightly, clippy, rustfmt, miri, rust-src grcov, rust-covfix, cargo-contract, xargo, binaryen" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ink-ci-linux/Dockerfile" \
@@ -26,10 +26,19 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN	set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
-# python3 is only needed to install binaryen for contracts
-		python3 && \
-# set links to clang-10 and python3
-	update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
+# hunspell is needed for automated spell-checking
+	hunspell hunspell-en-us && \
+# binaryen is needed by cargo-contract for optimizing Wasm files
+# we fetch the latest version number from the GitHub API and use that release
+	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases/latest | \
+		egrep --only-matching 'https://github.com/WebAssembly/binaryen/releases/download/version_[0-9]+/binaryen-version_[0-9]+-x86_64-linux.tar.gz' | \
+		head -n1 | \
+		xargs curl -L -O && \
+	tar -xvzf binaryen-version_*-x86_64-linux.tar.gz  && \
+	rm binaryen-version_*-x86_64-linux.tar.gz && \
+	chmod +x binaryen-version_*/bin/wasm-opt && \
+	mv binaryen-version_*/bin/wasm-opt /usr/local/bin/ && \
+	rm -rf binaryen-version_*/ && \
 # The supported Rust nightly version must support the following components
 # to allow for a functioning CI pipeline:
 #
@@ -50,9 +59,9 @@ RUN	set -eux; \
 	rustup default nightly && \
 # We require `xargo` so that `miri` runs properly
 # We require `grcov` for coverage reporting and `rust-covfix` to improve it.
-	cargo install grcov rust-covfix xargo && \
-# `cargo-contract` requires `binaryen` for optimizing Wasm files
-	cargo install --features binaryen-as-dependency cargo-contract && \
+# We require `cargo-spellcheck` for automated spell-checking
+	cargo install grcov rust-covfix xargo cargo-spellcheck && \
+	cargo install cargo-contract && \
 # versions
 	rustup show && \
 	cargo --version && \
@@ -60,7 +69,6 @@ RUN	set -eux; \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
 # apt clean up
-	apt-get remove -y --purge python3 && \
 	apt-get autoremove -y && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*

@@ -79,6 +79,12 @@ base-ci-linux:
   script:
     - *push_to_docker_hub
 
+
+base-ci:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 ci-linux:
   <<:                              *docker_build
   script:
@@ -88,6 +94,11 @@ ink-ci-linux:
   <<:                              *docker_build
   script:
     - *push_to_staging
+
+ink-waterfall-ci:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
 
 contracts-ci-linux:
   <<:                              *docker_build
@@ -119,36 +130,10 @@ redis-exporter:
   script:
     - *push_to_docker_hub
 
-# build k8s on top of node 12-alpine
-chaostools:
+node-bench-regression-guard:
   <<:                              *docker_build
-  variables:
-    <<:                            *default-vars
-    # https://github.com/kubernetes/kubernetes/releases
-    BUILD_KUBE_VERSION:            "1.18.2"
   script:
-    - |
-      cat <<-EOT
-      |
-      | # build of chaostools image>
-      |
-      | KUBE_VERSION = $BUILD_KUBE_VERSION
-      |
-      EOT
-    - buildah bud
-      --format=docker
-      --build-arg VCS_REF="$CI_COMMIT_SHA"
-      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
-      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
-      --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
-      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
-    # Push to Dockerhub
-    - echo "$DOCKER_PASSWORD" |
-        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
-    - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
-    - buildah logout "$REGISTRY_PATH"
+    - *push_to_docker_hub
 
 # special case as version tags are introduced
 kubetools:
@@ -189,13 +174,50 @@ kubetools:
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
     - buildah logout "$REGISTRY_PATH"
 
+# waits until kubetools job above is deprecated, "latest" tag remains after the old image
+kubetools-helm3:
+  <<:                              *docker_build
+  variables:
+    <<:                            *default-vars
+    IMAGE_NAME:                    kubetools
+    # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+    BUILD_KUBE_VERSION:            "1.20.0"
+    # https://github.com/helm/helm/releases
+    BUILD_HELM_VERSION:            "3.5.3"
+  script:
+    - |
+      cat <<-EOT
+      |
+      | # build of kubetools image
+      |
+      | KUBE_VERSION = $BUILD_KUBE_VERSION
+      | HELM_VERSION = $BUILD_HELM_VERSION
+      |
+      EOT
+    - buildah bud
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
+      --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
+      --tag "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
+      --file "dockerfiles/kubetools/helm3.Dockerfile" dockerfiles
+    # Push to Dockerhub
+    - echo "$DOCKER_PASSWORD" |
+        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+    - buildah info
+    - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
+    - buildah logout "$REGISTRY_PATH"
 
 terraform:
   <<:                              *docker_build
   variables:
     <<:                            *default-vars
     # https://releases.hashicorp.com/terraform/
-    TERRAFORM_VERSION:             "0.13.5"
+    TERRAFORM_VERSION:             "0.13.6"
+    # https://releases.hashicorp.com/vault/
+    VAULT_VERSION:                 "1.6.3"
   script:
     - |
       cat <<-EOT
@@ -203,6 +225,7 @@ terraform:
       | # build of terraform image
       |
       | TERRAFORM_VERSION = $TERRAFORM_VERSION
+      | VAULT_VERSION     = $VAULT_VERSION
       |
       EOT
     - buildah bud
@@ -211,6 +234,7 @@ terraform:
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg TERRAFORM_VERSION="$TERRAFORM_VERSION"
+      --build-arg VAULT_VERSION="$VAULT_VERSION"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
@@ -221,6 +245,43 @@ terraform:
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
     - buildah logout "$REGISTRY_PATH"
+
+sops:
+  <<:                              *docker_build
+  variables:
+    <<:                            *default-vars
+    # https://github.com/mozilla/sops/releases/
+    SOPS_VERSION:                  "3.7.0"
+    # https://releases.hashicorp.com/vault/
+    VAULT_VERSION:                 "1.6.3"
+  script:
+    - |
+      cat <<-EOT
+      |
+      | # build of terraform image
+      |
+      | SOPS_VERSION      = $SOPS_VERSION
+      | VAULT_VERSION     = $VAULT_VERSION
+      |
+      EOT
+    - buildah bud
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --build-arg SOPS_VERSION="$SOPS_VERSION"
+      --build-arg VAULT_VERSION="$VAULT_VERSION"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+    # Push to Dockerhub
+    - echo "$DOCKER_PASSWORD" |
+        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+    - buildah info
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
+    - buildah logout "$REGISTRY_PATH"
+
 
 #### stage:                        test
 
@@ -255,7 +316,7 @@ container_scanning:
   rules:
     # $IMAGE_TAG is needed for trivy. Should me mentioned in schedule's variables. I.e. latest, staging, v2.0.0.
     - if: $IMAGE_NAME && $IMAGE_TAG
-  # TODO: remove when all criticals are solved 
+  # TODO: remove when all criticals are solved
   allow_failure:                   true
   tags:
     - kubernetes-parity-build
@@ -339,7 +400,7 @@ contracts-ci-linux-production:
       artifacts:                   false
   rules:
     - if: $IMAGE_NAME == "contracts-ci-linux"
-  
+
 
 sccache-ci-ubuntu-production:
   <<:                              *push-after-triggered-pipeline

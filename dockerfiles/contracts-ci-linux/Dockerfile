@@ -9,8 +9,8 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/contracts-ci-linux" \
 	io.parity.image.description="Inherits from base-ci-linux:latest. \
-llvm-dev, clang, python3, zlib1g-dev, npm, yarn, wabt, binaryen. \
-rust nightly, rustfmt, rust-src, solang, canvas-node" \
+llvm-dev, clang, zlib1g-dev, npm, yarn, wabt, binaryen. \
+rust nightly, rustfmt, clippy, rust-src, solang, canvas-node" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/contracts-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -21,24 +21,32 @@ dockerfiles/contracts-ci-linux/README.md" \
 WORKDIR /builds
 
 ENV SHELL /bin/bash
-ENV CXX=/usr/bin/clang++-10
 ENV DEBIAN_FRONTEND=noninteractive
 
 # install tools and dependencies
 RUN set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
-		zlib1g-dev python3 npm wabt llvm-dev && \
+		zlib1g-dev npm wabt llvm-dev && \
 	npm install --ignore-scripts -g yarn && \
-# set links to clang-10 and python3
-	update-alternatives --install /usr/bin/python python /usr/bin/python3 100 && \
+# binaryen is needed by cargo-contract for optimizing Wasm files
+# we fetch the latest version number from the GitHub API and use that release
+	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases/latest | \
+		egrep --only-matching 'https://github.com/WebAssembly/binaryen/releases/download/version_[0-9]+/binaryen-version_[0-9]+-x86_64-linux.tar.gz' | \
+		head -n1 | \
+		xargs curl -L -O && \
+	tar -xvzf binaryen-version_*-x86_64-linux.tar.gz  && \
+	rm binaryen-version_*-x86_64-linux.tar.gz && \
+	chmod +x binaryen-version_*/bin/wasm-opt && \
+	mv binaryen-version_*/bin/wasm-opt /usr/local/bin/ && \
+	rm -rf binaryen-version_*/ && \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
-		--profile minimal --component rustfmt rust-src && \
+		--profile minimal --component rustfmt clippy rust-src && \
 	rustup default nightly && \
 	cargo install pwasm-utils-cli --bin wasm-prune && \
-	cargo install --features binaryen-as-dependency cargo-contract && \
+	cargo install cargo-contract && \
 # tried v0.1.5 and the latest master - both fail with https://github.com/hyperledger-labs/solang/issues/314
 	cargo install --git https://github.com/hyperledger-labs/solang --tag v0.1.2 && \
 # download the latest canvas-node binary
@@ -51,12 +59,10 @@ RUN set -eux; \
 	cargo --version && \
 	solang --version && \
 	canvas --version && \
-	python --version && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
 # apt clean up
-	apt-get remove -y --purge python3 && \
 	apt-get autoremove -y && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*

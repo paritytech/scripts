@@ -1,8 +1,8 @@
-# ink! CI for Linux Distributions
+# ink! waterfall CI for Linux Distributions
 
-Docker image based on our base CI image `<base-ci:latest>`.
+Docker image based on our base CI image `<ink-ci-linux:production>`.
 
-Used to build and test ink!.
+Used to build and run end-to-end tests for ink!, `cargo-contract`, `canvas-node` and `canvas-ui`.
 
 ## Dependencies and Tools
 
@@ -10,6 +10,7 @@ Used to build and test ink!.
 
 - `libssl-dev`
 - `lld`
+- `libclang-dev`
 - `make`
 - `cmake`
 - `git`
@@ -18,7 +19,6 @@ Used to build and test ink!.
 - `time`
 - `rhash`
 - `ca-certificates`
-- `binaryen`
 
 **Rust versions:**
 
@@ -26,26 +26,22 @@ We always use the [latest possible](https://rust-lang.github.io/rustup-component
 
 - `clippy`: The Rust linter.
 - `rust-src`: The Rust sources of the standard library.
-- `miri`: The Rust MIR interpreter that interprets the test suite with additional checks.
 - `rustfmt`: The Rust code formatter.
 
 **Rust tools & toolchains:**
 
-- `grcov`: Required for general Rust code coverage reports.
-- `rust-covfix`: Required to polish the coverage reports by `grcov`.
 - `cargo-contract`: Required to build ink! Wasm smart contracts.
-- `xargo`: Required so that `miri` runs properly.
-- `cargo-spellcheck`: Required for the CI to do automated spell-checking.
+- `canvas-node`: Required to run a Substrate chain for smart contracts.
 - `wasm32-unknown-unknown`: The toolchain to compile Rust codebases for Wasm.
 
-[Click here](https://hub.docker.com/repository/docker/paritytech/ink-ci-linux) for the registry.
+[Click here](https://hub.docker.com/repository/docker/paritytech/ink-waterfall-ci) for the registry.
 
 ## Usage
 
 ```yaml
 test-ink:
     stage: test
-        image: paritytech/ink-ci-linux:production
+        image: paritytech/ink-waterfall-ci:latest
         script:
             - cargo build ...
 ```
