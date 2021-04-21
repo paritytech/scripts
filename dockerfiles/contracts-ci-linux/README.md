@@ -16,6 +16,7 @@ Used to build and test contracts!.
 **Inherited from `<base-ci:latest>`**
 
 - `libssl-dev`
+- `clang-10`
 - `lld`
 - `libclang-dev`
 - `make`
@@ -26,6 +27,7 @@ Used to build and test contracts!.
 - `time`
 - `rhash`
 - `ca-certificates`
+- `jq`
 
 **Rust versions:**
 

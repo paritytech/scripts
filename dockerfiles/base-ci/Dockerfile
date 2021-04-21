@@ -10,7 +10,7 @@ LABEL summary="Layer 1 image with all dependencies for Rust and WASM compilation
 	maintainer="devops-team@parity.io" \
 	version="2.0" \
 	description="libssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config \
-curl, time, rhash, rust stable, rust nightly, sccache" \
+curl, time, rhash, ca-certificates, jq, rust stable, sccache" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/base-ci/Dockerfile" \
