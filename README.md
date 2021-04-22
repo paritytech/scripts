@@ -23,3 +23,4 @@ To launch the pipeline go to the project's CI/CD -> Schedules menu.
 To change, edit/create the new schedule:
     set the required variable and cron schedule.
 
+
