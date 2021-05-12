@@ -1,4 +1,4 @@
-FROM ruby:2.7-alpine
+FROM docker.io/library/ruby:2.7-alpine
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""

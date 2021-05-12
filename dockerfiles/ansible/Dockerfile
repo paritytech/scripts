@@ -1,4 +1,4 @@
-FROM python:3.7.6-stretch
+FROM docker.io/library/python:3.7.6-stretch
 
 # metadata
 ARG VCS_REF=master
