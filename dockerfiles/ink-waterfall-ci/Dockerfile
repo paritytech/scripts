@@ -1,6 +1,6 @@
 ARG VCS_REF=master
 ARG BUILD_DATE
-ARG REGISTRY_PATH=paritytech
+ARG REGISTRY_PATH=docker.io/paritytech
 
 # `production` tag is used here to base off the image that has already been tested against
 # the `ink` CI. This reduces the maintenance of fixing the same nightly stuff in both images.

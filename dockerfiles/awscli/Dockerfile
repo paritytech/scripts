@@ -1,4 +1,4 @@
-FROM python:3.6-alpine
+FROM docker.io/library/python:3.6-alpine
 
 # metadata
 ARG VCS_REF=master

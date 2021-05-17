@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM docker.io/library/ubuntu:20.04
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""

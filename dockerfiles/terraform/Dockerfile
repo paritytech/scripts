@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM docker.io/library/alpine:latest
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
