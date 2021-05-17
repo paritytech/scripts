@@ -52,13 +52,27 @@ RUN	set -eux; \
 # `--locked` ensures the project's `Cargo.lock` is used.
 	cargo install --git https://github.com/paritytech/canvas-node.git \
 		--locked --branch master && \
+# We additionally install the `canvas-node` as `canvas-rand-extension`.
+# This installation though is a modified `canvas-node`, so that ink!'s
+# `rand-extension` chain extension example is included in the runtime.
+# This enables us to test in the waterfall that the `rand-extension`
+# integration with Substrate still works.
+	git clone --depth 1 https://github.com/paritytech/canvas-node.git && \
+	curl -s https://raw.githubusercontent.com/paritytech/ink/master/examples/rand-extension/runtime/chain-extension-example.rs \
+		>> canvas-node/runtime/src/lib.rs && \
+	sed -i 's/type ChainExtension = ();/type ChainExtension = FetchRandomExtension;/g' canvas-node/runtime/src/lib.rs && \
+	sed -i 's/name = "canvas"/name = "canvas-rand-extension"/g' canvas-node/node/Cargo.toml && \
+	cargo install --locked --path canvas-node/node/ && \
 # versions
 	rustup show && \
 	cargo --version && \
 	cargo-contract --version && \
 	canvas --version && \
+	canvas-rand-extension --version && \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
+# Clean up artifacts of `canvas-rand-extension` installation
+	rm -rf canvas-node/ && \
 # apt clean up
 	apt-get autoremove -y && \
 	apt-get clean && \
