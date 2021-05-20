@@ -2,7 +2,7 @@ FROM docker.io/library/python:3-alpine
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
-ARG REGISTRY_PATH=paritytech
+ARG REGISTRY_PATH=docker.io/paritytech
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \

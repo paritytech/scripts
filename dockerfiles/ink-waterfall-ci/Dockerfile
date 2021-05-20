@@ -10,7 +10,7 @@ FROM ${REGISTRY_PATH}/ink-ci-linux:production
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/ink-waterfall-ci" \
-	io.parity.image.description="Inherits from paritytech/ink-ci-linux." \
+	io.parity.image.description="Inherits from docker.io/paritytech/ink-ci-linux." \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ink-waterfall-ci/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\

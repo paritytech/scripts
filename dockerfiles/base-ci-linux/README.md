@@ -33,5 +33,5 @@ Used to build and test Substrate-based projects.
 ## Usage
 
 ```Dockerfile
-FROM paritytech/base-ci-linux:latest
+FROM docker.io/paritytech/base-ci-linux:latest
 ```

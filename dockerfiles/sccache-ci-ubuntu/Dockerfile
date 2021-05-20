@@ -9,7 +9,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/sccache-ci-linux" \
 	io.parity.image.description="CI image with all dependencies for sccache compilation. \
-Inherits from paritytech/base-ci. llibssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config \
+Inherits from docker.io/paritytech/base-ci. llibssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config \
 curl, time, rhash, ca-certificates, jq, rust stable, sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/sccache-ci-linux/Dockerfile" \
