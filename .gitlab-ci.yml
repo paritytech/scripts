@@ -79,7 +79,6 @@ base-ci-linux:
   script:
     - *push_to_docker_hub
 
-
 base-ci:
   <<:                              *docker_build
   script:
@@ -104,6 +103,11 @@ contracts-ci-linux:
   <<:                              *docker_build
   script:
     - *push_to_staging
+
+bridges-ci:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
 
 sccache-ci-ubuntu:
   <<:                              *docker_build
