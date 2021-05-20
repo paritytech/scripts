@@ -27,4 +27,11 @@ RUN curl -sS -L "https://github.com/prometheus/prometheus/releases/download/v${P
 	mv prometheus-${PROM_VERSION}.linux-amd64/promtool /usr/local/bin && \
 	rm -rf prometheus.tar.gz prometheus-${PROM_VERSION}.linux-amd64
 
+# by default, run as non-root user
+RUN set -x \
+    && groupadd -g 1000 user \
+    && useradd -u 1000 -g 1000 user
+
+USER user:user
+
 CMD ["/bin/sh"]

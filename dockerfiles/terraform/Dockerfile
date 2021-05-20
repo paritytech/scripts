@@ -34,4 +34,11 @@ RUN	curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VE
 
 WORKDIR /config
 
+# by default, run as non-root user
+RUN set -x \
+    && groupadd -g 1000 user \
+    && useradd -u 1000 -g 1000 user
+
+USER user:user
+
 CMD ["/bin/sh"]

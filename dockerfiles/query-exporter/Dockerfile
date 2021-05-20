@@ -19,6 +19,13 @@ RUN \
 	apk --purge del .build-deps
 
 
+# by default, run as non-root user
+RUN set -x \
+    && groupadd -g 1000 user \
+    && useradd -u 1000 -g 1000 user
+
+USER user:user
+
 EXPOSE 9560
 
 ENTRYPOINT ["python3", "/usr/local/bin/query-exporter"]

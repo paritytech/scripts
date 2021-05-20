@@ -49,3 +49,10 @@ RUN set -eux && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache
+
+# by default, run as non-root user
+RUN set -x \
+    && groupadd -g 1000 user \
+    && useradd -u 1000 -g 1000 user
+
+USER user:user

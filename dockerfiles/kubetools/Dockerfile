@@ -32,4 +32,11 @@ RUN apk add --no-cache \
 
 WORKDIR /config
 
+# by default, run as non-root user
+RUN set -x \
+    && groupadd -g 1000 user \
+    && useradd -u 1000 -g 1000 user
+
+USER user:user
+
 CMD ["/bin/sh"]

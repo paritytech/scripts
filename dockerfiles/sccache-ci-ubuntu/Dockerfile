@@ -69,4 +69,12 @@ ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
   	RUST_BACKTRACE=1
 
+
+# by default, run as non-root user
+RUN set -x \
+    && groupadd -g 1000 user \
+    && useradd -u 1000 -g 1000 user
+
+USER user:user
+
 CMD ["bash", "-l"]

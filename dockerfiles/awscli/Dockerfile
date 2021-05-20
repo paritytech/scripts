@@ -22,4 +22,11 @@ RUN pip install awscli; \
 COPY utility/awscli-config /etc/aws.config
 ENV AWS_CONFIG_FILE /etc/aws.config
 
+# by default, run as non-root user
+RUN set -x \
+    && groupadd -g 1000 user \
+    && useradd -u 1000 -g 1000 user
+
+USER user:user
+
 CMD ["/bin/sh"]

@@ -35,6 +35,13 @@ RUN apk add --no-cache \
     kubectl version --short=true --client && \
     helm version
 
+# by default, run as non-root user
+RUN set -x \
+    && groupadd -g 1000 user \
+    && useradd -u 1000 -g 1000 user
+
+USER user:user
+
 WORKDIR /config
 
-    CMD ["/bin/sh"]
+CMD ["/bin/sh"]
