@@ -22,7 +22,7 @@ dockerfiles/dridges-ci/README.md" \
 
 RUN rustup toolchain install nightly --target wasm32-unknown-unknown \
 		--profile minimal --component rustfmt clippy && \
-	cargo install cargo-deny && \
+	cargo install cargo-deny cargo-spellcheck && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" && \
