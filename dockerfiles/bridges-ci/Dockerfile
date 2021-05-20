@@ -28,10 +28,7 @@ RUN rustup toolchain install nightly --target wasm32-unknown-unknown \
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" && \
 # versions
 	rustc -vV && \
-    cargo -V && \
-    gcc -v && \
-    g++ -v && \
-    cmake --version
+    cargo -V
 
 # cache handler
 ENV	RUSTC_WRAPPER=sccache
