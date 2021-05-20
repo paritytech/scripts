@@ -11,7 +11,7 @@ Used to build and test Substrate-based projects.
 **Dependencies and Tools:**
 
 - `libssl-dev`
-- `clang-7`
+- `clang-10`
 - `lld`
 - `libclang-dev`
 - `make`
@@ -22,6 +22,7 @@ Used to build and test Substrate-based projects.
 - `time`
 - `rhash`
 - `ca-certificates`
+- `jq`
 
 [Click here](https://hub.docker.com/repository/docker/paritytech/base-ci-linux) for the registry.
 
@@ -33,5 +34,5 @@ Used to build and test Substrate-based projects.
 ## Usage
 
 ```Dockerfile
-FROM paritytech/base-ci-linux:latest
+FROM docker.io/paritytech/base-ci-linux:latest
 ```

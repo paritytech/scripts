@@ -9,7 +9,9 @@ Used to build and test ink!.
 **Inherited from `<base-ci:latest>`**
 
 - `libssl-dev`
+- `clang-10`
 - `lld`
+- `libclang-dev`
 - `make`
 - `cmake`
 - `git`
@@ -18,7 +20,7 @@ Used to build and test ink!.
 - `time`
 - `rhash`
 - `ca-certificates`
-- `binaryen`
+- `jq`
 
 **Rust versions:**
 

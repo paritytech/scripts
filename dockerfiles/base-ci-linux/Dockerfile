@@ -2,7 +2,7 @@ FROM docker.io/library/debian:buster-slim
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
-ARG REGISTRY_PATH=paritytech
+ARG REGISTRY_PATH=docker.io/paritytech
 
 # metadata
 LABEL summary="Layer 1 image with all dependencies for Rust and WASM compilation." \

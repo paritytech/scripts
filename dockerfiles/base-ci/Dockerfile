@@ -2,15 +2,15 @@ FROM docker.io/library/ubuntu:20.04
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
-ARG REGISTRY_PATH=paritytech
+ARG REGISTRY_PATH=docker.io/paritytech
 
 # metadata
 LABEL summary="Layer 1 image with all dependencies for Rust and WASM compilation." \
 	name="${REGISTRY_PATH}/base-ci" \
 	maintainer="devops-team@parity.io" \
-	version="1.0" \
+	version="2.0" \
 	description="libssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config \
-curl, time, rhash, rust stable, rust nightly, sccache" \
+curl, time, rhash, ca-certificates, jq, rust stable, sccache" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/base-ci/Dockerfile" \

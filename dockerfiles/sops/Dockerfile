@@ -2,7 +2,7 @@ FROM docker.io/library/alpine:latest
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
-ARG REGISTRY_PATH=paritytech
+ARG REGISTRY_PATH=docker.io/paritytech
 ARG SOPS_VERSION
 ARG VAULT_VERSION
 

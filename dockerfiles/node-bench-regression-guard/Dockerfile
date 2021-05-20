@@ -2,7 +2,7 @@ FROM docker.io/library/ruby:2.7-alpine
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
-ARG REGISTRY_PATH=paritytech
+ARG REGISTRY_PATH=docker.io/paritytech
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
       io.parity.image.vendor="Parity Technologies" \
