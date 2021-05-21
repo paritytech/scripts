@@ -24,4 +24,19 @@ RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     sshpass ssh rsync
 
-WORKDIR /work
+ARG WORKDIR=/work
+
+RUN groupadd --gid 10001 nonroot && \
+    useradd  --home-dir /home/nonroot \
+             --create-home \
+             --shell /bin/bash \
+             --gid nonroot \
+             --groups nonroot \
+             --uid 10000 nonroot
+RUN chown -R nonroot. /home/nonroot
+RUN mkdir ${WORKDIR}
+RUN chown -R nonroot. ${WORKDIR}
+
+USER 10000:10001
+WORKDIR ${WORKDIR}
+
