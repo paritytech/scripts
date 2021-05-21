@@ -7,12 +7,12 @@ ARG REGISTRY_PATH=docker.io/paritytech
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
         io.parity.image.vendor="Parity Technologies" \
-        io.parity.image.title="${REGISTRY_PATH}/awscli" \
-        io.parity.image.description="awscli" \
+        io.parity.image.title="${REGISTRY_PATH}/ansible" \
+        io.parity.image.description="ansible" \
         io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/awscli/Dockerfile" \
+dockerfiles/ansible/Dockerfile" \
         io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/awscli/README.md" \
+dockerfiles/ansible/README.md" \
         io.parity.image.revision="${VCS_REF}" \
         io.parity.image.created="${BUILD_DATE}"
 
