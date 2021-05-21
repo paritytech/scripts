@@ -18,7 +18,7 @@ dockerfiles/ansible/README.md" \
 
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    sshpass ssh rsync
+    sshpass ssh rsync tini
 
 RUN pip install pip --upgrade
 RUN pip install ansible
@@ -39,4 +39,5 @@ RUN chown -R nonroot. ${WORKDIR}
 
 USER 10000:10001
 WORKDIR ${WORKDIR}
+ENTRYPOINT ["/usr/bin/tini", "--"]
 
