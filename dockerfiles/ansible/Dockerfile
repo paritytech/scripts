@@ -16,13 +16,13 @@ dockerfiles/ansible/README.md" \
         io.parity.image.revision="${VCS_REF}" \
         io.parity.image.created="${BUILD_DATE}"
 
-RUN pip install pip --upgrade
-RUN pip install ansible
-RUN ansible-galaxy collection install ansible.posix
-
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     sshpass ssh rsync
+
+RUN pip install pip --upgrade
+RUN pip install ansible
+RUN ansible-galaxy collection install ansible.posix
 
 ARG WORKDIR=/work
 
