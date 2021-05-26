@@ -17,9 +17,14 @@ dockerfiles/awscli/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 RUN pip install awscli; \
-	apk add --no-cache bash
+	apk add --no-cache bash shadow
+
+RUN set -x \
+    && groupadd -g 1000 nonroot \
+    && useradd -u 1000 -g 1000 -s /bin/bash -m nonroot
 
 COPY utility/awscli-config /etc/aws.config
 ENV AWS_CONFIG_FILE /etc/aws.config
 
-CMD ["/bin/sh"]
+USER nonroot:nonroot
+CMD ["/bin/bash"]

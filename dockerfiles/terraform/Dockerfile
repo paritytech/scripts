@@ -19,7 +19,7 @@ dockerfiles/terraform/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 RUN apk add --no-cache \
-		ca-certificates git jq make curl gettext; \
+		ca-certificates git jq make curl gettext bash shadow; \
 	curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
 		-o terraform.zip; \
 	unzip terraform.zip	-d /usr/local/bin/ terraform; \
@@ -32,6 +32,13 @@ RUN	curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VE
 	rm vault.zip; \
 	chmod +x /usr/local/bin/vault
 
+RUN set -x \
+    && groupadd -g 1000 nonroot \
+    && useradd -u 1000 -g 1000 -s /bin/bash -m nonroot \
+    && mkdir /config \
+    && chown nonroot:nonroot /config
+
 WORKDIR /config
 
-CMD ["/bin/sh"]
+USER nonroot:nonroot
+CMD ["/bin/bash"]
