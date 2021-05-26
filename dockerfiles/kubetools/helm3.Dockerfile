@@ -19,7 +19,7 @@ dockerfiles/kubetools/README.md" \
     io.parity.image.created="${BUILD_DATE}"
 
 RUN apk add --no-cache \
-        ca-certificates git jq make curl gettext && \
+        ca-certificates git jq make curl gettext bash shadow && \
     # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
     curl -L "https://dl.k8s.io/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl" \
         -o /usr/local/bin/kubectl && \
@@ -35,6 +35,13 @@ RUN apk add --no-cache \
     kubectl version --short=true --client && \
     helm version
 
+RUN set -x \
+    && groupadd -g 1000 nonroot \
+    && useradd -u 1000 -g 1000 -s /bin/bash -m nonroot \
+    && mkdir /config \
+    && chown nonroot:nonroot /config
+
 WORKDIR /config
 
-    CMD ["/bin/sh"]
+USER nonroot:nonroot
+CMD ["/bin/bash"]

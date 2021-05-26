@@ -19,7 +19,7 @@ dockerfiles/tools/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 
-RUN apk add --no-cache curl git jq rsync make gettext gnupg bash
+RUN apk add --no-cache curl git jq rsync make gettext gnupg bash shadow
 
 RUN curl -sS -L "https://github.com/prometheus/prometheus/releases/download/v${PROM_VERSION}/prometheus-${PROM_VERSION}.linux-amd64.tar.gz" \
   		--output prometheus.tar.gz && \
@@ -27,4 +27,9 @@ RUN curl -sS -L "https://github.com/prometheus/prometheus/releases/download/v${P
 	mv prometheus-${PROM_VERSION}.linux-amd64/promtool /usr/local/bin && \
 	rm -rf prometheus.tar.gz prometheus-${PROM_VERSION}.linux-amd64
 
-CMD ["/bin/sh"]
+RUN set -x \
+    && groupadd -g 1000 nonroot \
+    && useradd -u 1000 -g 1000 -s /bin/bash -m nonroot
+
+USER nonroot:nonroot
+CMD ["/bin/bash"]
