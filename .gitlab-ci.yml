@@ -56,7 +56,7 @@ default:
 
 .push_to_production:               &push_to_production
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-  - buildah pull "$REGISTRY_PATH/$IMAGE_NAME:staging"
+  - env REGISTRY_AUTH_FILE= buildah pull "$REGISTRY_PATH/$IMAGE_NAME:staging"
   - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:production"
   - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - echo "$DOCKER_PASSWORD" |
