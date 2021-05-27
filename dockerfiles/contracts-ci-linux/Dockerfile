@@ -66,3 +66,5 @@ RUN set -eux; \
 	apt-get autoremove -y && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
+
+USER nonroot:nonroot

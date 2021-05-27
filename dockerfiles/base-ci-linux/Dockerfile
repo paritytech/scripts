@@ -59,7 +59,10 @@ RUN set -eux; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
-	rm -rf /var/lib/apt/lists/*
+  rm -rf /var/lib/apt/lists/*; \
+# add non-root user
+  groupadd -g 1000 nonroot; \
+  useradd -u 1000 -g 1000 -s /bin/bash -m nonroot
 # cache handler
 ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
