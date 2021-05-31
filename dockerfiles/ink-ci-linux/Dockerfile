@@ -72,3 +72,6 @@ RUN	set -eux; \
 	apt-get autoremove -y && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
+
+# TODO: switch to non-root here when ink-waterfall-ci won't be the dependency of this img
+# USER nonroot:nonroot

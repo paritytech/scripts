@@ -69,4 +69,5 @@ ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
   	RUST_BACKTRACE=1
 
+USER nonroot:nonroot
 CMD ["bash", "-l"]

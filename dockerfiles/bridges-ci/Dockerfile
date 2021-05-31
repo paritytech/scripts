@@ -35,3 +35,5 @@ RUN rustup toolchain install nightly --target wasm32-unknown-unknown \
 ENV	RUSTC_WRAPPER=sccache
 # show backtraces
 ENV RUST_BACKTRACE=1
+
+USER nonroot:nonroot
