@@ -377,7 +377,7 @@ bridges-ci-test:
   variables:
     CI_IMAGE:                      "paritytech/bridges-ci:staging"
   rules:
-    - if: $IMAGE_NAME == "sccache-ci-ubuntu"
+    - if: $IMAGE_NAME == "bridges-ci"
   trigger:
     project:                       parity/parity-bridges-common
     branch:                        master
