@@ -107,7 +107,7 @@ contracts-ci-linux:
 bridges-ci:
   <<:                              *docker_build
   script:
-    - *push_to_docker_hub
+    - *push_to_staging
 
 sccache-ci-ubuntu:
   <<:                              *docker_build
@@ -372,6 +372,17 @@ sccache-ci-ubuntu-test:
     branch:                        master
     strategy:                      depend
 
+bridges-ci-test:
+  stage:                           test
+  variables:
+    CI_IMAGE:                      "paritytech/bridges-ci:staging"
+  rules:
+    - if: $IMAGE_NAME == "sccache-ci-ubuntu"
+  trigger:
+    project:                       parity/parity-bridges-common
+    branch:                        master
+    strategy:                      depend
+
 #### stage:                        prod
 
 ci-linux-production:
@@ -413,3 +424,11 @@ sccache-ci-ubuntu-production:
       artifacts:                   false
   rules:
     - if: $IMAGE_NAME == "sccache-ci-ubuntu"
+
+bridges-ci-production:
+  <<:                              *push-after-triggered-pipeline
+  needs:
+    - job:                         bridges-ci-test
+      artifacts:                   false
+  rules:
+    - if: $IMAGE_NAME == "bridges-ci"
