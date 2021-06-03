@@ -46,6 +46,7 @@ RUN set -eux && \
     ln -s cuda-11.1 /usr/local/cuda && \
 # install rustup, use minimum components
 	rustup toolchain install stable --profile minimal --component clippy rustfmt && \
+	rustup target add x86_64-unknown-linux-musl && \
 	rustup default stable && \
     rustup toolchain install nightly --profile minimal && \
     cargo install broot ripgrep sd && \
