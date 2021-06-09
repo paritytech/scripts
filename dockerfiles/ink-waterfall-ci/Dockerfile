@@ -78,4 +78,5 @@ RUN	set -eux; \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
-USER nonroot:nonroot
+# TODO: https://gitlab.parity.io/parity/infrastructure/scripts/-/jobs/958687
+# USER nonroot:nonroot
