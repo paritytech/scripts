@@ -27,7 +27,7 @@ RUN set -eux && \
 # install `rust-src` component for ui test
 	rustup component add rust-src && \
 # install Rust nightly, default is stable, use minimum components
-	rustup toolchain install nightly --profile minimal && \
+	rustup toolchain install nightly-2021-04-22 --profile minimal && \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
