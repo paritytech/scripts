@@ -67,4 +67,5 @@ RUN set -eux; \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
 
-USER nonroot:nonroot
+# TODO: https://gitlab.parity.io/parity/cargo-contract/-/jobs/958744, https://gitlab.parity.io/parity/cargo-contract/-/jobs/958745
+# USER nonroot:nonroot
