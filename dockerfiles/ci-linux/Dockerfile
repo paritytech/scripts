@@ -2,13 +2,13 @@ ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
 
-FROM ${REGISTRY_PATH}/base-ci-linux:latest
+FROM ${REGISTRY_PATH}/base-ci:latest
 
 # metadata
 LABEL summary="Image for Substrate-based projects." \
 	name="${REGISTRY_PATH}/ci-linux" \
 	maintainer="devops-team@parity.io" \
-	version="1.0" \
+	version="2.0" \
 	description="Inherits from base-ci-linux; chromium-driver, \
 wasm-gc, wasm-bindgen-cli, wasm-pack, cargo-audit, cargo-web, cargo-deny " \
 	io.parity.image.vendor="Parity Technologies" \
