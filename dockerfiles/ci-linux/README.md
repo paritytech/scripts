@@ -1,6 +1,6 @@
 # ci-linux
 
-Docker image based on our base CI image `<base-ci-linux:latest>`.
+Docker image based on our base CI image `<base-ci:latest>`.
 
 Used to build and test Substrate-based projects.
 
@@ -8,7 +8,7 @@ Used to build and test Substrate-based projects.
 
 - `chromium-driver`
 
-**Inherited from `<base-ci-linux:latest>`:**
+**Inherited from `<base-ci:latest>`:**
 
 - `libssl-dev`
 - `clang-7`
