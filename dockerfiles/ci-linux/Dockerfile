@@ -9,8 +9,8 @@ LABEL summary="Image for Substrate-based projects." \
 	name="${REGISTRY_PATH}/ci-linux" \
 	maintainer="devops-team@parity.io" \
 	version="2.0" \
-	description="Inherits from base-ci-linux; chromium-driver, \
-wasm-gc, wasm-bindgen-cli, wasm-pack, cargo-audit, cargo-web, cargo-deny " \
+	description="Inherits from base-ci-linux; \
+geckodriver, wasm-gc, wasm-bindgen-cli, wasm-pack, cargo-deny " \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ci-linux/Dockerfile" \
@@ -44,7 +44,7 @@ RUN set -eux && \
 	rustup target add wasm32-unknown-unknown && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 # install cargo tools
-	cargo install cargo-audit cargo-web wasm-pack cargo-deny mdbook && \
+	cargo install wasm-pack cargo-deny && \
 	cargo install --version 0.4.0 diener && \
 # wasm-bindgen-cli version should match the one pinned in substrate
 # https://github.com/paritytech/substrate/blob/master/bin/node/browser-testing/Cargo.toml#L15
