@@ -23,7 +23,17 @@ dockerfiles/ci-linux/README.md" \
 RUN set -eux && \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
-		chromium-driver && \
+		firefox=89.0.1+build1-0ubuntu0.20.04.1 && \
+# `geckodriver` is needed to run headless browser tests
+# we fetch the latest version number from the github api and use that release
+	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/latest | \
+		egrep --only-matching 'https://github.com/mozilla/geckodriver/releases/download/v[0-9.]+/geckodriver-v[0-9.]+-linux64.tar.gz' | \
+		head -n1 | \
+		xargs curl -L -O && \
+	tar -xvzf geckodriver-v*-linux64.tar.gz && \
+	rm geckodriver-v*-linux64.tar.gz && \
+	chmod +x geckodriver && \
+	mv geckodriver /usr/local/bin/ && \
 # install `rust-src` component for ui test
 	rustup component add rust-src && \
 # install specific Rust nightly, default is stable, use minimum components
@@ -35,7 +45,7 @@ RUN set -eux && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 # install cargo tools
 	cargo install cargo-audit cargo-web wasm-pack cargo-deny mdbook && \
-	cargo install --version 0.3.2 diener && \
+	cargo install --version 0.4.0 diener && \
 # wasm-bindgen-cli version should match the one pinned in substrate
 # https://github.com/paritytech/substrate/blob/master/bin/node/browser-testing/Cargo.toml#L15
 	cargo install --version 0.2.73 wasm-bindgen-cli && \
