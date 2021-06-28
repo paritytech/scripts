@@ -23,7 +23,7 @@ dockerfiles/ci-linux/README.md" \
 RUN set -eux && \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
-		firefox=89.0.1+build1-0ubuntu0.20.04.1 && \
+		firefox=89.* && \
 # `geckodriver` is needed to run headless browser tests
 # we fetch the latest version number from the github api and use that release
 	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/latest | \
