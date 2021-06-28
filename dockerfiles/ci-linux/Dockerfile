@@ -9,7 +9,7 @@ LABEL summary="Image for Substrate-based projects." \
 	name="${REGISTRY_PATH}/ci-linux" \
 	maintainer="devops-team@parity.io" \
 	version="2.0" \
-	description="Inherits from base-ci-linux; \
+	description="Inherits from paritytech/base-ci; \
 geckodriver, wasm-gc, wasm-bindgen-cli, wasm-pack, cargo-deny " \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -27,7 +27,7 @@ RUN set -eux && \
 # `geckodriver` is needed to run headless browser tests
 # we fetch the latest version number from the github api and use that release
 	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/latest | \
-		egrep --only-matching 'https://github.com/mozilla/geckodriver/releases/download/v[0-9.]+/geckodriver-v[0-9.]+-linux64.tar.gz' | \
+		grep --only-matching -E 'https://github.com/mozilla/geckodriver/releases/download/v[0-9.]+/geckodriver-v[0-9.]+-linux64.tar.gz' | \
 		head -n1 | \
 		xargs curl -L -O && \
 	tar -xvzf geckodriver-v*-linux64.tar.gz && \
