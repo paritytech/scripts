@@ -18,7 +18,7 @@ $api = Gitlab.client(endpoint: "#{ENV['GITLAB_INSTANCE']}/api/v4", private_token
 puts "Signed in as #{$api.user.email}\n\n"
 
 projects_with_pages = $api.projects.auto_paginate.select { |project| project.pages_access_level != 'disabled' }
-projects_with_pages = projects_with_pages.select { |project| project.pages_access_level == 'public' }
+projects_with_pages = projects_with_pages.select { |project| project.pages_access_level == 'public' } if public_only
 
 puts "Total projects with Pages enabled: #{projects_with_pages.count}"
 puts "(public only)" if public_only
