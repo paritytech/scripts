@@ -24,10 +24,6 @@ ENV CXX=/usr/bin/clang++-10
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN	set -eux; \
-	apt-get -y update && \
-	apt-get install -y --no-install-recommends \
-# hunspell is needed for automated spell-checking
-	hunspell hunspell-en-us && \
 # binaryen is needed by cargo-contract for optimizing Wasm files
 # we fetch the latest version number from the GitHub API and use that release
 	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases/latest | \
