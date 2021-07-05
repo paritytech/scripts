@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+require 'gitlab'
+require 'json'
+
+if ENV['GITLAB_INSTANCE'].nil? || ENV['GITLAB_TOKEN'].nil?
+  puts 'Specify GITLAB_INSTANCE & GITLAB_TOKEN environment variables'
+  exit 1
+end
+
+unless ARGV.nil?
+  public_only = true if ARGV.include?('public')
+end
+
+
+$api = Gitlab.client(endpoint: "#{ENV['GITLAB_INSTANCE']}/api/v4", private_token: ENV['GITLAB_TOKEN'])
+
+puts "Signed in as #{$api.user.email}\n\n"
+
+projects_with_pages = $api.projects.auto_paginate.select { |project| project.pages_access_level != 'disabled' }
+projects_with_pages = projects_with_pages.select { |project| project.pages_access_level == 'public' }
+
+puts "Total projects with Pages enabled: #{projects_with_pages.count}"
+puts "(public only)" if public_only
+puts "=================="
+projects_with_pages.each do |project|
+  puts "#{project.web_url} - #{project.pages_access_level}"
+end
