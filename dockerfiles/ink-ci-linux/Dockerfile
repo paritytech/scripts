@@ -24,6 +24,9 @@ ENV CXX=/usr/bin/clang++-10
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN	set -eux; \
+# Needed for running commands in parallel, without overlapping output.
+	apt-get -y update && \
+	apt-get install -y --no-install-recommends parallel && \
 # binaryen is needed by cargo-contract for optimizing Wasm files
 # we fetch the latest version number from the GitHub API and use that release
 	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases/latest | \
