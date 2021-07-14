@@ -160,6 +160,8 @@ kubetools:
       | HELM_VERSION = $BUILD_HELM_VERSION
       |
       EOT
+    # beware that latest is helm2, not helm3
+    # TODO: helm3 should be latest
     - buildah bud
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
@@ -167,8 +169,6 @@ kubetools:
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
       --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
-      # beware that latest is helm2, not helm3
-      # TODO: helm3 should be latest
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:helm2"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
