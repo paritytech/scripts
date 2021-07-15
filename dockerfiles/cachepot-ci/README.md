@@ -1,8 +1,8 @@
-# sccache-ci
+# cachepot-ci
 
 Docker image based on our base CI image `<base-ci:latest>`.
 
-Used to build and test sccache.
+Used to build and test cachepot.
 
 ## Dependencies and Tools
 
@@ -58,7 +58,7 @@ We always use the [latest possible](https://rust-lang.github.io/rustup-component
 ```yaml
 test-ink:
     stage: test
-        image: paritytech/sccache-ci:production
+        image: paritytech/cachepot-ci:production
         script:
             - cargo build ...
 ```
