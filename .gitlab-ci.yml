@@ -109,7 +109,7 @@ bridges-ci:
   script:
     - *push_to_staging
 
-sccache-ci-ubuntu:
+cachepot-ci:
   <<:                              *docker_build
   script:
     - *push_to_staging
@@ -367,14 +367,14 @@ contracts-ci-linux-test:
     branch:                        master
     strategy:                      depend
 
-sccache-ci-ubuntu-test:
+cachepot-ci-test:
   stage:                           test
   variables:
-    CI_IMAGE:                      "paritytech/sccache-ci-ubuntu:staging"
+    CI_IMAGE:                      "paritytech/cachepot-ci:staging"
   rules:
-    - if: $IMAGE_NAME == "sccache-ci-ubuntu"
+    - if: $IMAGE_NAME == "cachepot-ci"
   trigger:
-    project:                       parity/sccache
+    project:                       parity/cachepot
     branch:                        master
     strategy:                      depend
 
@@ -423,13 +423,13 @@ contracts-ci-linux-production:
     - if: $IMAGE_NAME == "contracts-ci-linux"
 
 
-sccache-ci-ubuntu-production:
+cachepot-ci-production:
   <<:                              *push-after-triggered-pipeline
   needs:
-    - job:                         sccache-ci-ubuntu-test
+    - job:                         cachepot-ci-test
       artifacts:                   false
   rules:
-    - if: $IMAGE_NAME == "sccache-ci-ubuntu"
+    - if: $IMAGE_NAME == "cachepot-ci"
 
 bridges-ci-production:
   <<:                              *push-after-triggered-pipeline
