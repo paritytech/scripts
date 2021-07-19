@@ -6,6 +6,10 @@ Used to build and test ink!.
 
 ## Dependencies and Tools
 
+- `parallel`: for running commands in parallel, without overlapping output
+- `codecov`: to upload the test coverage results
+- `binaryen`: needed by cargo-contract for optimizing Wasm files
+
 **Inherited from `<base-ci:latest>`**
 
 - `libssl-dev`
