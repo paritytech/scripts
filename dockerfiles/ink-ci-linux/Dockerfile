@@ -32,6 +32,7 @@ RUN	set -eux; \
 	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov && \
 	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM && \
 	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
+	curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import && \
 	gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \
 	shasum -a 256 -c codecov.SHA256SUM && \
 	chmod +x codecov && \
