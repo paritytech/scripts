@@ -9,7 +9,8 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/ink-ci-linux" \
 	io.parity.image.description="Inherits from docker.io/paritytech/base-ci. \
-rust nightly, clippy, rustfmt, miri, rust-src grcov, rust-covfix, cargo-contract, xargo, binaryen" \
+rust nightly, clippy, rustfmt, miri, rust-src grcov, rust-covfix, llvm-tools-preview, \
+cargo-contract, xargo, binaryen, parallel, codecov" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ink-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -65,7 +66,7 @@ RUN	set -eux; \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly --target wasm32-unknown-unknown \
-		--profile minimal --component rustfmt clippy miri rust-src && \
+		--profile minimal --component rustfmt clippy miri rust-src llvm-tools-preview && \
 	rustup default nightly && \
 # We require `xargo` so that `miri` runs properly
 # We require `grcov` for coverage reporting and `rust-covfix` to improve it.
