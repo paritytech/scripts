@@ -9,7 +9,8 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/ink-ci-linux" \
 	io.parity.image.description="Inherits from docker.io/paritytech/base-ci. \
-rust nightly, clippy, rustfmt, miri, rust-src grcov, rust-covfix, cargo-contract, xargo, binaryen" \
+rust nightly, clippy, rustfmt, miri, rust-src grcov, rust-covfix, llvm-tools-preview, \
+cargo-contract, xargo, binaryen, parallel, codecov" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ink-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
