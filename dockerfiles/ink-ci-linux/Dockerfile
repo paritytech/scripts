@@ -25,8 +25,19 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN	set -eux; \
 # Needed for running commands in parallel, without overlapping output.
+# gnupg is only needed to verify the signature of the codecov uploader.
 	apt-get -y update && \
-	apt-get install -y --no-install-recommends parallel && \
+	apt-get install -y --no-install-recommends parallel gnupg && \
+# codecov uploader
+	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov && \
+	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM && \
+	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
+	curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import && \
+	gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \
+	shasum --algorithm 256 --check codecov.SHA256SUM && \
+	chmod +x codecov && \
+	mv codecov /usr/local/bin/codecov && \
+	rm -f codecov.SHA256SUM codecov.SHA256SUM.sig && \
 # binaryen is needed by cargo-contract for optimizing Wasm files
 # we fetch the latest version number from the GitHub API and use that release
 	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases/latest | \
@@ -68,6 +79,7 @@ RUN	set -eux; \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
 # apt clean up
+	apt-get remove -y gnupg && \
 	apt-get autoremove -y && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
