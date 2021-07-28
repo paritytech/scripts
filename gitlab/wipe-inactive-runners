@@ -1,0 +1,57 @@
+#!/usr/bin/env ruby
+
+require 'gitlab'
+require 'json'
+require 'optparse'
+
+require 'pry-byebug'
+
+if ARGV.empty?
+  puts 'Please provide options or check --help'
+  exit 1
+end
+
+options = {}
+option_parser = OptionParser.new do |option|
+  option.banner = "Usage: wipe-inactive-runners [options]"
+  option.on('--tag RUNNER TAG', 'Which runner\'s tag to clean up', String) do |tag|
+    options[:tag] = tag
+  end
+  option.on('--dry-run', 'Just output what will be removed') do |dry_run|
+    options[:dry_run] = true
+  end
+end
+
+option_parser.parse!
+
+raise OptionParser::MissingArgument, '--tag is required' unless options[:tag]
+
+if ENV['GITLAB_INSTANCE'].nil? || ENV['GITLAB_TOKEN'].nil?
+  puts 'Specify GITLAB_INSTANCE & GITLAB_TOKEN environment variables'
+  exit 1
+end
+
+$api = Gitlab.client(endpoint: "#{ENV['GITLAB_INSTANCE']}/api/v4", private_token: ENV['GITLAB_TOKEN'])
+
+puts "Signed in as #{$api.user.email}\n\n"
+
+runners = $api.all_runners.auto_paginate
+
+detailed_runners = []
+
+runners.each do |runner|
+  detailed_runners << $api.runner(runner.id)
+end
+
+dead_runners = detailed_runners.select { |runner| runner.tag_list.include?(options[:tag]) && runner.online.nil? }
+
+puts "Dry run. Outputting runners' list to remove:" if options[:dry_run]
+
+dead_runners.each do |runner|
+  if options[:dry_run]
+    puts "#{runner.id} | #{runner.description} | #{runner.tag_list}"
+  else
+    $api.delete_runner(runner.id)
+    puts "Deleted #{runner.id} (#{runner.description})"
+  end
+end
