@@ -4,8 +4,6 @@ require 'gitlab'
 require 'json'
 require 'optparse'
 
-require 'pry-byebug'
-
 if ARGV.empty?
   puts 'Please provide options or check --help'
   exit 1
