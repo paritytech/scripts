@@ -25,7 +25,7 @@ RUN set -eux && \
 	apt-get install -y --no-install-recommends \
 		chromium-driver && \
 # install `rust-src` component for ui test
-	rustup component add rust-src && \
+	rustup component add rust-src rustfmt && \
 # install specific Rust nightly, default is stable, use minimum components
 	rustup toolchain install nightly-2021-06-29 --profile minimal --component rustfmt && \
 # "alias" pinned nightly-2021-06-29 toolchain as nightly
