@@ -5,6 +5,7 @@ ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
 ARG HELM_VERSION="3.6.2"
 ARG HELMFILE_VERSION="0.140.0"
+ARG HELM_DIFF_PLUGIN_VERSION="3.1.3"
 ARG KUBE_VERSION="1.20.8"
 
 # metadata
@@ -36,10 +37,13 @@ RUN apk add --no-cache \
     chmod +x /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/helm && \
     chmod +x /usr/local/bin/helmfile && \
+    # https://github.com/databus23/helm-diff/releases
+    helm plugin install https://github.com/databus23/helm-diff --version "v${HELM_DIFF_PLUGIN_VERSION}" && \
 # test
     kubectl version --short=true --client && \
     helm version  && \
-    helmfile version
+    helmfile version && \
+    helm plugin list
 
 RUN set -x \
     && groupadd -g 1000 nonroot \
