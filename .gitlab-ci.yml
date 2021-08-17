@@ -193,6 +193,8 @@ kubetools-helm3:
     # https://github.com/helm/helm/releases
     BUILD_HELM_VERSION:            "3.5.3"
     BUILD_HELMFILE_VERSION:        "0.140.0"
+    BUILD_HELM_DIFF_PLUGIN_VERSION: "3.1.3"
+
   script:
     - |
       cat <<-EOT
@@ -202,6 +204,7 @@ kubetools-helm3:
       | KUBE_VERSION = $BUILD_KUBE_VERSION
       | HELM_VERSION = $BUILD_HELM_VERSION
       | BUILD_HELMFILE_VERSION = $BUILD_HELMFILE_VERSION
+      | BUILD_HELM_DIFF_PLUGIN_VERSION = $BUILD_HELM_DIFF_PLUGIN_VERSION
       |
       EOT
     - buildah bud
@@ -212,6 +215,7 @@ kubetools-helm3:
       --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
       --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
       --build-arg HELMFILE_VERSION="$BUILD_HELMFILE_VERSION"
+      --build-arg HELM_DIFF_PLUGIN_VERSION="$BUILD_HELM_DIFF_PLUGIN_VERSION"
       --tag "$REGISTRY_PATH/kubetools:helm3"
       --tag "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
       --file "dockerfiles/kubetools/helm3.Dockerfile" dockerfiles
