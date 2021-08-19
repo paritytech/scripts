@@ -37,13 +37,10 @@ RUN apk add --no-cache \
     chmod +x /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/helm && \
     chmod +x /usr/local/bin/helmfile && \
-    # https://github.com/databus23/helm-diff/releases
-    helm plugin install https://github.com/databus23/helm-diff --version "v${HELM_DIFF_PLUGIN_VERSION}" && \
 # test
     kubectl version --short=true --client && \
     helm version  && \
-    helmfile version && \
-    helm plugin list
+    helmfile version
 
 RUN set -x \
     && groupadd -g 1000 nonroot \
@@ -54,4 +51,8 @@ RUN set -x \
 WORKDIR /config
 
 USER nonroot:nonroot
+
+    # https://github.com/databus23/helm-diff/releases
+RUN helm plugin install https://github.com/databus23/helm-diff --version "v${HELM_DIFF_PLUGIN_VERSION}" && \
+    helm plugin list
 CMD ["/bin/bash"]
