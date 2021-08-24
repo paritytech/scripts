@@ -74,10 +74,7 @@ RUN	set -eux; \
 	cargo install grcov rust-covfix xargo && \
 	cargo install cargo-contract && \
 
-# ICE with `cargo-spellcheck` on some 2021-08-xx nightlies:
-# https://gitlab.parity.io/parity/infrastructure/scripts/-/jobs/1078743#L1044
-# https://github.com/rust-lang/rust/issues/88309
-# Compile with stable for now
+# Stuff that compiles on stable.
   cargo +stable install cargo-spellcheck && \
 
 # versions
