@@ -58,6 +58,7 @@ default:
   - echo "$DOCKER_PASSWORD" |
       buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
   - buildah info
+  - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:latest"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
   - buildah logout "$REGISTRY_PATH"
 
