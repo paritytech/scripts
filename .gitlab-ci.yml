@@ -39,7 +39,7 @@ default:
       buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
-  - buildah logout "$REGISTRY_PATH"
+  - buildah logout "$REGISTRY_NAME"
 
 .push_to_staging:                  &push_to_staging
   - buildah bud
@@ -53,7 +53,7 @@ default:
       buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
   - buildah info
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:staging"
-  - buildah logout "$REGISTRY_PATH"
+  - buildah logout "$REGISTRY_NAME"
 
 .publish_as_latest_too:            &publish_as_latest_too
   - echo "$DOCKER_PASSWORD" |
@@ -61,7 +61,7 @@ default:
   - buildah info
   - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:latest"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
-  - buildah logout "$REGISTRY_PATH"
+  - buildah logout "$REGISTRY_NAME"
 
 .push_to_production:               &push_to_production
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
@@ -73,7 +73,7 @@ default:
   - buildah info
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:production"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
-  - buildah logout "$REGISTRY_PATH"
+  - buildah logout "$REGISTRY_NAME"
 
 #### stage:                        build
 
@@ -190,7 +190,7 @@ kubetools:
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:helm2"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
-    - buildah logout "$REGISTRY_PATH"
+    - buildah logout "$REGISTRY_NAME"
 
 # waits until kubetools job above is deprecated, "latest" tag remains after the old image
 kubetools-helm3:
@@ -235,7 +235,7 @@ kubetools-helm3:
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:helm3"
     - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
-    - buildah logout "$REGISTRY_PATH"
+    - buildah logout "$REGISTRY_NAME"
 
 terraform:
   <<:                              *docker_build
@@ -271,7 +271,7 @@ terraform:
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
-    - buildah logout "$REGISTRY_PATH"
+    - buildah logout "$REGISTRY_NAME"
 
 sops:
   <<:                              *docker_build
@@ -307,7 +307,7 @@ sops:
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
-    - buildah logout "$REGISTRY_PATH"
+    - buildah logout "$REGISTRY_NAME"
 
 
 #### stage:                        test
