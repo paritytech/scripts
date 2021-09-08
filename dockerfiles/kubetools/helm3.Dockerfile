@@ -3,8 +3,10 @@ FROM docker.io/library/alpine:latest
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
-ARG HELM_VERSION="3.5.3"
-ARG KUBE_VERSION="1.20.0"
+ARG HELM_VERSION="3.6.2"
+ARG HELMFILE_VERSION="0.140.0"
+ARG HELM_DIFF_PLUGIN_VERSION="3.1.3"
+ARG KUBE_VERSION="1.20.8"
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
@@ -29,11 +31,16 @@ RUN apk add --no-cache \
     tar -zxf helm.tar.gz linux-amd64/helm && \
     mv linux-amd64/helm /usr/local/bin/helm && \
     rm -rf helm.tar.gz linux-amd64 && \
+    # https://github.com/roboll/helmfile/releases
+    curl -L "https://github.com/roboll/helmfile/releases/download/v${HELMFILE_VERSION}/helmfile_linux_amd64" \
+        -o /usr/local/bin/helmfile && \
     chmod +x /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/helm && \
+    chmod +x /usr/local/bin/helmfile && \
 # test
     kubectl version --short=true --client && \
-    helm version
+    helm version  && \
+    helmfile version
 
 RUN set -x \
     && groupadd -g 1000 nonroot \
@@ -44,4 +51,8 @@ RUN set -x \
 WORKDIR /config
 
 USER nonroot:nonroot
+
+    # https://github.com/databus23/helm-diff/releases
+RUN helm plugin install https://github.com/databus23/helm-diff --version "v${HELM_DIFF_PLUGIN_VERSION}" && \
+    helm plugin list
 CMD ["/bin/bash"]

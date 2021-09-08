@@ -6,6 +6,10 @@ Used to build and test ink!.
 
 ## Dependencies and Tools
 
+- `parallel`: for running commands in parallel, without overlapping output
+- `codecov`: to upload the test coverage results
+- `binaryen`: needed by cargo-contract for optimizing Wasm files
+
 **Inherited from `<base-ci:latest>`**
 
 - `libssl-dev`
@@ -39,6 +43,7 @@ We always use the [latest possible](https://rust-lang.github.io/rustup-component
 - `xargo`: Required so that `miri` runs properly.
 - `cargo-spellcheck`: Required for the CI to do automated spell-checking.
 - `wasm32-unknown-unknown`: The toolchain to compile Rust codebases for Wasm.
+- `llvm-tools-preview`: or MIR source-based Rust coverage instrumentation.
 
 [Click here](https://hub.docker.com/repository/docker/paritytech/ink-ci-linux) for the registry.
 

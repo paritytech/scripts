@@ -9,6 +9,7 @@ stages:
 
 variables:                         &default-vars
   REGISTRY_PATH:                   docker.io/paritytech
+  REGISTRY_NAME:                   docker.io
 
 default:
   cache:                           {}
@@ -35,10 +36,10 @@ default:
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   - buildah info
   - echo "$DOCKER_PASSWORD" |
-      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
-  - buildah logout "$REGISTRY_PATH"
+  - buildah logout "$REGISTRY_NAME"
 
 .push_to_staging:                  &push_to_staging
   - buildah bud
@@ -49,10 +50,18 @@ default:
       --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   - echo "$DOCKER_PASSWORD" |
-      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
   - buildah info
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:staging"
-  - buildah logout "$REGISTRY_PATH"
+  - buildah logout "$REGISTRY_NAME"
+
+.publish_as_latest_too:            &publish_as_latest_too
+  - echo "$DOCKER_PASSWORD" |
+      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
+  - buildah info
+  - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:latest"
+  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+  - buildah logout "$REGISTRY_NAME"
 
 .push_to_production:               &push_to_production
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
@@ -60,11 +69,11 @@ default:
   - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:production"
   - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - echo "$DOCKER_PASSWORD" |
-      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
   - buildah info
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:production"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
-  - buildah logout "$REGISTRY_PATH"
+  - buildah logout "$REGISTRY_NAME"
 
 #### stage:                        build
 
@@ -103,13 +112,14 @@ contracts-ci-linux:
   <<:                              *docker_build
   script:
     - *push_to_staging
+    - *publish_as_latest_too
 
 bridges-ci:
   <<:                              *docker_build
   script:
     - *push_to_staging
 
-sccache-ci-ubuntu:
+cachepot-ci:
   <<:                              *docker_build
   script:
     - *push_to_staging
@@ -160,6 +170,8 @@ kubetools:
       | HELM_VERSION = $BUILD_HELM_VERSION
       |
       EOT
+    # beware that latest is helm2, not helm3
+    # TODO: helm3 should be latest
     - buildah bud
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
@@ -168,15 +180,17 @@ kubetools:
       --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
       --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:helm2"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$DOCKER_PASSWORD" |
-        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:helm2"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
-    - buildah logout "$REGISTRY_PATH"
+    - buildah logout "$REGISTRY_NAME"
 
 # waits until kubetools job above is deprecated, "latest" tag remains after the old image
 kubetools-helm3:
@@ -188,6 +202,9 @@ kubetools-helm3:
     BUILD_KUBE_VERSION:            "1.20.0"
     # https://github.com/helm/helm/releases
     BUILD_HELM_VERSION:            "3.5.3"
+    BUILD_HELMFILE_VERSION:        "0.140.0"
+    BUILD_HELM_DIFF_PLUGIN_VERSION: "3.1.3"
+
   script:
     - |
       cat <<-EOT
@@ -196,6 +213,8 @@ kubetools-helm3:
       |
       | KUBE_VERSION = $BUILD_KUBE_VERSION
       | HELM_VERSION = $BUILD_HELM_VERSION
+      | BUILD_HELMFILE_VERSION = $BUILD_HELMFILE_VERSION
+      | BUILD_HELM_DIFF_PLUGIN_VERSION = $BUILD_HELM_DIFF_PLUGIN_VERSION
       |
       EOT
     - buildah bud
@@ -205,23 +224,27 @@ kubetools-helm3:
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
       --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
+      --build-arg HELMFILE_VERSION="$BUILD_HELMFILE_VERSION"
+      --build-arg HELM_DIFF_PLUGIN_VERSION="$BUILD_HELM_DIFF_PLUGIN_VERSION"
+      --tag "$REGISTRY_PATH/kubetools:helm3"
       --tag "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
       --file "dockerfiles/kubetools/helm3.Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$DOCKER_PASSWORD" |
-        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
     - buildah info
+    - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:helm3"
     - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
-    - buildah logout "$REGISTRY_PATH"
+    - buildah logout "$REGISTRY_NAME"
 
 terraform:
   <<:                              *docker_build
   variables:
     <<:                            *default-vars
     # https://releases.hashicorp.com/terraform/
-    TERRAFORM_VERSION:             "0.13.6"
+    TERRAFORM_VERSION:             "1.0.4"
     # https://releases.hashicorp.com/vault/
-    VAULT_VERSION:                 "1.6.3"
+    VAULT_VERSION:                 "1.8.0"
   script:
     - |
       cat <<-EOT
@@ -244,11 +267,11 @@ terraform:
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$DOCKER_PASSWORD" |
-        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
-    - buildah logout "$REGISTRY_PATH"
+    - buildah logout "$REGISTRY_NAME"
 
 sops:
   <<:                              *docker_build
@@ -280,11 +303,11 @@ sops:
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$DOCKER_PASSWORD" |
-        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_PATH"
+        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
-    - buildah logout "$REGISTRY_PATH"
+    - buildah logout "$REGISTRY_NAME"
 
 
 #### stage:                        test
@@ -361,14 +384,14 @@ contracts-ci-linux-test:
     branch:                        master
     strategy:                      depend
 
-sccache-ci-ubuntu-test:
+cachepot-ci-test:
   stage:                           test
   variables:
-    CI_IMAGE:                      "paritytech/sccache-ci-ubuntu:staging"
+    CI_IMAGE:                      "paritytech/cachepot-ci:staging"
   rules:
-    - if: $IMAGE_NAME == "sccache-ci-ubuntu"
+    - if: $IMAGE_NAME == "cachepot-ci"
   trigger:
-    project:                       parity/sccache
+    project:                       parity/cachepot
     branch:                        master
     strategy:                      depend
 
@@ -417,13 +440,13 @@ contracts-ci-linux-production:
     - if: $IMAGE_NAME == "contracts-ci-linux"
 
 
-sccache-ci-ubuntu-production:
+cachepot-ci-production:
   <<:                              *push-after-triggered-pipeline
   needs:
-    - job:                         sccache-ci-ubuntu-test
+    - job:                         cachepot-ci-test
       artifacts:                   false
   rules:
-    - if: $IMAGE_NAME == "sccache-ci-ubuntu"
+    - if: $IMAGE_NAME == "cachepot-ci"
 
 bridges-ci-production:
   <<:                              *push-after-triggered-pipeline

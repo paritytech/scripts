@@ -7,14 +7,14 @@ FROM ${REGISTRY_PATH}/base-ci:latest
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="${REGISTRY_PATH}/sccache-ci-linux" \
-	io.parity.image.description="CI image with all dependencies for sccache compilation. \
+	io.parity.image.title="${REGISTRY_PATH}/cachepot-ci" \
+	io.parity.image.description="CI image with all dependencies for cachepot compilation. \
 Inherits from docker.io/paritytech/base-ci. llibssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config \
 curl, time, rhash, ca-certificates, jq, rust stable, sccache" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/sccache-ci-linux/Dockerfile" \
+dockerfiles/cachepot-ci/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/sccache-ci-linux/README.md" \
+dockerfiles/cachepot-ci/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 

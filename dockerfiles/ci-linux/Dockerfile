@@ -37,14 +37,18 @@ RUN set -eux && \
 # install `rust-src` component for ui test
 	rustup component add rust-src && \
 # install specific Rust nightly, default is stable, use minimum components
-	rustup toolchain install nightly-2021-04-23 --profile minimal && \
-# "alias" pinned nightly-2021-04-23 toolchain as nightly
-	ln -s /usr/local/rustup/toolchains/nightly-2021-04-23-x86_64-unknown-linux-gnu /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
+	rustup toolchain install nightly-2021-08-24 --profile minimal --component rustfmt && \
+# "alias" pinned nightly-2021-08-24 toolchain as nightly
+	ln -s /usr/local/rustup/toolchains/nightly-2021-08-24-x86_64-unknown-linux-gnu /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 # install cargo tools
+<<<<<<< HEAD
 	cargo install wasm-pack cargo-deny && \
+=======
+	cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck && \
+>>>>>>> master
 	cargo install --version 0.4.0 diener && \
 # wasm-bindgen-cli version should match the one pinned in substrate
 # https://github.com/paritytech/substrate/blob/master/bin/node/browser-testing/Cargo.toml#L15
