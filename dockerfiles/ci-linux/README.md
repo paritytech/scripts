@@ -6,8 +6,6 @@ Used to build and test Substrate-based projects.
 
 ## Dependencies and Tools
 
-- `chromium-driver`
-
 **Inherited from `<base-ci:latest>`:**
 
 - `libssl-dev`
@@ -32,7 +30,6 @@ Used to build and test Substrate-based projects.
 
 **Rust tools & toolchains:**
 
-- `cargo-web`
 - `sccache`
 - `wasm-pack`
 - `wasm-bindgen`
