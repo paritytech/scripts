@@ -48,31 +48,31 @@ RUN	set -eux; \
 # `--locked` ensures the project's `Cargo.lock` is used.
 	cargo install --git https://github.com/paritytech/cargo-contract \
 		--locked --branch master --force && \
-# `canvas-node` is a Substrate chain with smart contract functionality.
+# `substrate-contracts-node` is a Substrate chain with smart contract functionality.
 # `--locked` ensures the project's `Cargo.lock` is used.
-	cargo install --git https://github.com/paritytech/canvas-node.git \
-		--locked --branch master && \
-# We additionally install the `canvas-node` as `canvas-rand-extension`.
-# This installation though is a modified `canvas-node`, so that ink!'s
+	cargo install --git https://github.com/paritytech/substrate-contracts-node.git \
+		--locked --branch main && \
+# We additionally install the `substrate-contracts-node` as `substrate-contracts-rand-extension`.
+# This installation though is a modified `substrate-contracts-node`, so that ink!'s
 # `rand-extension` chain extension example is included in the runtime.
 # This enables us to test in the waterfall that the `rand-extension`
 # integration with Substrate still works.
-	git clone --depth 1 https://github.com/paritytech/canvas-node.git && \
+	git clone --depth 1 https://github.com/paritytech/substrate-contracts-node.git && \
 	curl -s https://raw.githubusercontent.com/paritytech/ink/master/examples/rand-extension/runtime/chain-extension-example.rs \
-		>> canvas-node/runtime/src/lib.rs && \
-	sed -i 's/type ChainExtension = ();/type ChainExtension = FetchRandomExtension;/g' canvas-node/runtime/src/lib.rs && \
-	sed -i 's/name = "canvas"/name = "canvas-rand-extension"/g' canvas-node/node/Cargo.toml && \
-	cargo install --locked --path canvas-node/node/ && \
+		>> substrate-contracts-node/runtime/src/lib.rs && \
+	sed -i 's/type ChainExtension = ();/type ChainExtension = FetchRandomExtension;/g' substrate-contracts-node/runtime/src/lib.rs && \
+	sed -i 's/name = "substrate-contracts"/name = "substrate-contracts-rand-extension"/g' substrate-contracts-node/node/Cargo.toml && \
+	cargo install --locked --path substrate-contracts-node/node/ && \
 # versions
 	rustup show && \
 	cargo --version && \
 	cargo-contract --version && \
-	canvas --version && \
-	canvas-rand-extension --version && \
+	substrate-contracts-node --version && \
+	substrate-contracts-rand-extension --version && \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
-# Clean up artifacts of `canvas-rand-extension` installation
-	rm -rf canvas-node/ && \
+# Clean up artifacts of `substrate-contracts-rand-extension` installation
+	rm -rf substrate-contracts-node/ && \
 # apt clean up
 	apt-get autoremove -y && \
 	apt-get clean && \

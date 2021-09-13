@@ -2,7 +2,7 @@
 
 Docker image based on our base CI image `<ink-ci-linux:production>`.
 
-Used to build and run end-to-end tests for ink!, `cargo-contract`, `canvas-node` and `canvas-ui`.
+Used to build and run end-to-end tests for ink!, `cargo-contract`, `substrate-contracts-node` and `canvas-ui`.
 
 ## Dependencies and Tools
 
@@ -31,7 +31,7 @@ We always use the [latest possible](https://rust-lang.github.io/rustup-component
 **Rust tools & toolchains:**
 
 - `cargo-contract`: Required to build ink! Wasm smart contracts.
-- `canvas-node`: Required to run a Substrate chain for smart contracts.
+- `substrate-contracts-node`: Required to run a Substrate chain for smart contracts.
 - `wasm32-unknown-unknown`: The toolchain to compile Rust codebases for Wasm.
 
 [Click here](https://hub.docker.com/repository/docker/paritytech/ink-waterfall-ci) for the registry.
