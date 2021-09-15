@@ -29,9 +29,12 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		zlib1g-dev npm wabt llvm-dev && \
 	npm install --ignore-scripts -g yarn && \
-# binaryen is needed by cargo-contract for optimizing Wasm files
-# we fetch the latest version number from the GitHub API and use that release
-	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases/latest | \
+# `binaryen` is needed by `cargo-contract` for optimizing Wasm files.
+# We fetch the latest release which contains a Linux binary. There is
+# currently an issue with not all releases containing a Linux binary
+# (https://github.com/WebAssembly/binaryen/issues/4148). Once that one
+# is fixed we can always use the latest release again.
+	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases | \
 		egrep --only-matching 'https://github.com/WebAssembly/binaryen/releases/download/version_[0-9]+/binaryen-version_[0-9]+-x86_64-linux.tar.gz' | \
 		head -n1 | \
 		xargs curl -L -O && \
