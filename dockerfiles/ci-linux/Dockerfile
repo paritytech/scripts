@@ -30,6 +30,7 @@ RUN set -eux && \
 # install wasm toolchain
 	rustup target add wasm32-unknown-unknown && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
+    rustup component add clippy --toolchain nightly && \
 # install cargo tools
 	cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck && \
 	cargo install --version 0.4.0 diener && \

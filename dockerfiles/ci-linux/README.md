@@ -30,13 +30,15 @@ Used to build and test Substrate-based projects.
 
 **Rust tools & toolchains:**
 
+- `diener`
 - `sccache`
-- `wasm-pack`
-- `wasm-bindgen`
-- `wasm-gc`
+- `cargo-clippy`
 - `cargo-deny`
 - `cargo-spellcheck`: Required for the CI to do automated spell-checking
 - `wasm32-unknown-unknown` toolchain
+- `wasm-pack`
+- `wasm-bindgen`
+- `wasm-gc`
 
 [Click here](https://hub.docker.com/repository/docker/paritytech/ci-linux) for the registry.
 
