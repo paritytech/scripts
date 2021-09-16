@@ -24,7 +24,7 @@ RUN set -eux && \
 # install `rust-src` component for ui test
 	rustup component add rust-src && \
 # install specific Rust nightly, default is stable, use minimum components
-	rustup toolchain install nightly-2021-09-13 --profile minimal --component rustfmt && \
+	rustup toolchain install nightly-2021-09-13 --profile minimal --component rustfmt clippy && \
 # "alias" pinned nightly-2021-09-13 toolchain as nightly
 	ln -s /usr/local/rustup/toolchains/nightly-2021-09-13-x86_64-unknown-linux-gnu /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
 # install wasm toolchain
