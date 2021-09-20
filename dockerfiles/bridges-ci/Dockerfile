@@ -21,8 +21,7 @@ dockerfiles/dridges-ci/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 RUN rustup toolchain install nightly --target wasm32-unknown-unknown \
-		--profile minimal --component clippy && \
-	rustup component add rustfmt && \
+		--profile minimal --component clippy rustfmt && \
 	cargo install cargo-deny cargo-spellcheck && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
