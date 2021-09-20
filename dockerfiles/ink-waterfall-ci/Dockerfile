@@ -61,14 +61,14 @@ RUN	set -eux; \
 	curl -s https://raw.githubusercontent.com/paritytech/ink/master/examples/rand-extension/runtime/chain-extension-example.rs \
 		>> substrate-contracts-node/runtime/src/lib.rs && \
 	sed -i 's/type ChainExtension = ();/type ChainExtension = FetchRandomExtension;/g' substrate-contracts-node/runtime/src/lib.rs && \
-	sed -i 's/name = "substrate-contracts"/name = "substrate-contracts-rand-extension"/g' substrate-contracts-node/node/Cargo.toml && \
+	sed -i 's/name = "substrate-contracts-node"/name = "substrate-contracts-node-rand-extension"/g' substrate-contracts-node/node/Cargo.toml && \
 	cargo install --locked --path substrate-contracts-node/node/ && \
 # versions
 	rustup show && \
 	cargo --version && \
 	cargo-contract --version && \
 	substrate-contracts-node --version && \
-	substrate-contracts-rand-extension --version && \
+	substrate-contracts-node-rand-extension --version && \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
 # Clean up artifacts of `substrate-contracts-rand-extension` installation
