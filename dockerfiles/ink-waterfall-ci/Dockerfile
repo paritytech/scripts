@@ -26,6 +26,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN	set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
+# `redis-cli` is needed to interact with ci/cd's redis
+	redis-tools \
 # npm is needed to install `yarn`
 	npm \
 # `firefox` is needed to simulate interactions with the `canvas-ui`
