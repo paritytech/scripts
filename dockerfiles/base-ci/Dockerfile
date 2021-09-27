@@ -1,4 +1,4 @@
-FROM docker.io/library/debian:buster-slim
+FROM docker.io/library/ubuntu:20.04
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
@@ -8,9 +8,9 @@ ARG REGISTRY_PATH=docker.io/paritytech
 LABEL summary="Layer 1 image with all dependencies for Rust and WASM compilation." \
 	name="${REGISTRY_PATH}/base-ci" \
 	maintainer="devops-team@parity.io" \
-	version="1.0" \
+	version="2.0" \
 	description="libssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config \
-curl, time, rhash, rust stable, rust nightly, sccache" \
+curl, time, rhash, ca-certificates, jq, rust stable, sccache" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/base-ci/Dockerfile" \
@@ -24,11 +24,12 @@ WORKDIR /builds
 # config for wasm32-unknown-unknown & clang
 COPY utility/base-ci-linux-config /root/.cargo/config
 
-ENV RUSTUP_HOME=/usr/local/rustup \
-	CARGO_HOME=/usr/local/cargo \
-	PATH=/usr/local/cargo/bin:$PATH \
-		CC=clang \
-		CXX=clang
+ENV RUSTUP_HOME=/usr/local/rustup
+ENV	CARGO_HOME=/usr/local/cargo
+ENV	PATH=/usr/local/cargo/bin:$PATH
+ENV	CC=clang-10
+ENV CXX=/usr/bin/clang++-10
+ENV	DEBIAN_FRONTEND=noninteractive
 
 # install tools and dependencies
 RUN set -eux; \
@@ -37,7 +38,9 @@ RUN set -eux; \
 		libssl-dev clang lld libclang-dev make cmake \
 		git pkg-config curl time rhash ca-certificates jq && \
 # set a link to clang
-	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
+	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100 && \
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-10 100 && \
+	update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang++-10 100 && \
 # install rustup, use minimum components
 	curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" \
 		-o rustup-init && \

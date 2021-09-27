@@ -1,16 +1,17 @@
 # ci-linux
 
-Docker image based on our base CI image `<base-ci:latest>`.
+Docker image based on our base CI image `<base-ci-linux:latest>`.
 
 Used to build and test Substrate-based projects.
 
 ## Dependencies and Tools
 
-**Inherited from `<base-ci:latest>`:**
+- `chromium-driver`
+
+**Inherited from `<base-ci-linux:latest>`:**
 
 - `libssl-dev`
-- `clang-10`
-- `clang++-10`
+- `clang-7`
 - `lld`
 - `libclang-dev`
 - `make`
@@ -21,7 +22,6 @@ Used to build and test Substrate-based projects.
 - `time`
 - `rhash`
 - `ca-certificates`
-- `jq`
 
 **Rust versions:**
 
@@ -30,12 +30,12 @@ Used to build and test Substrate-based projects.
 
 **Rust tools & toolchains:**
 
+- `cargo-web`
 - `sccache`
 - `wasm-pack`
 - `wasm-bindgen`
-- `wasm-gc`
 - `cargo-deny`
-- `cargo-spellcheck`: Required for the CI to do automated spell-checking
+- `cargo-spellcheck`: Required for the CI to do automated spell-checking.
 - `wasm32-unknown-unknown` toolchain
 
 [Click here](https://hub.docker.com/repository/docker/paritytech/ci-linux) for the registry.
