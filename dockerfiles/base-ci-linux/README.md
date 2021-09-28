@@ -20,6 +20,8 @@ Used to build and test Substrate-based projects.
 - `pkg-config`
 - `curl`
 - `time`
+- `jq`
+- `lsof`
 - `rhash`
 - `ca-certificates`
 

@@ -14,7 +14,7 @@ LABEL summary="Layer 1 image with all dependencies for Rust and WASM compilation
 	maintainer="devops-team@parity.io" \
 	version="1.0" \
 	description="libssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config \
-curl, time, rhash, rust stable, rust nightly, sccache" \
+curl, time, jq, lsof, rhash, rust stable, rust nightly, sccache" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/base-ci-linux/Dockerfile" \
@@ -39,7 +39,7 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		libssl-dev clang lld libclang-dev make cmake \
-		git pkg-config curl time rhash ca-certificates; \
+		git pkg-config curl time rhash ca-certificates lsof; \
 # install recent jq; this step can be removed once jq >= 1.6 is available
 # through the distribution
   curl -sqL https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -o "$JQ_PATH" && \
