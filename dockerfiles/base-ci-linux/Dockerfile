@@ -4,6 +4,10 @@ ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
 
+# those can be removed once jq is available through the distribution
+ARG JQ_CHECKSUM=af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44
+ARG JQ_PATH=/bin/jq
+
 # metadata
 LABEL summary="Layer 1 image with all dependencies for Rust and WASM compilation." \
 	name="${REGISTRY_PATH}/base-ci-linux" \
@@ -35,7 +39,13 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		libssl-dev clang lld libclang-dev make cmake \
-		git pkg-config curl time rhash ca-certificates jq; \
+		git pkg-config curl time rhash ca-certificates; \
+# install recent jq; this step can be removed once jq >= 1.6 is available
+# through the distribution
+  curl -sqL https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -o "$JQ_PATH" && \
+  chmod +x "$JQ_PATH" && \
+  echo "$JQ_CHECKSUM $JQ_PATH" | sha256sum --check && \
+  jq --version; \
 # set a link to clang
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
 # install rustup, use minimum components
