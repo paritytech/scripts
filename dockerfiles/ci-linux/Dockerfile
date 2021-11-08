@@ -9,8 +9,8 @@ LABEL summary="Image for Substrate-based projects." \
 	name="${REGISTRY_PATH}/ci-linux" \
 	maintainer="devops-team@parity.io" \
 	version="1.0" \
-	description="Inherits from base-ci-linux; chromium-driver, \
-wasm-gc, wasm-bindgen-cli, wasm-pack, cargo-audit, cargo-web, cargo-deny " \
+	description="Inherits from base-ci-linux; \
+wasm-gc, wasm-bindgen-cli, wasm-pack, cargo-audit, cargo-web, cargo-deny" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ci-linux/Dockerfile" \
@@ -21,9 +21,6 @@ dockerfiles/ci-linux/README.md" \
 
 # install tools and dependencies
 RUN set -eux && \
-	apt-get -y update && \
-	apt-get install -y --no-install-recommends \
-		chromium-driver && \
 # install `rust-src` component for ui test
 	rustup component add rust-src && \
 # install specific Rust nightly, default is stable, use minimum components
@@ -35,7 +32,7 @@ RUN set -eux && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 # install cargo tools
 	cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck && \
-	cargo install --version 0.4.0 diener && \
+	cargo install --version 0.4.2 diener && \
 # wasm-bindgen-cli version should match the one pinned in substrate
 # https://github.com/paritytech/substrate/blob/master/bin/node/browser-testing/Cargo.toml#L15
 	cargo install --version 0.2.73 wasm-bindgen-cli && \
