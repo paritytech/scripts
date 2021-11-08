@@ -9,8 +9,8 @@ LABEL summary="Image for Substrate-based projects." \
 	name="${REGISTRY_PATH}/ci-linux" \
 	maintainer="devops-team@parity.io" \
 	version="1.0" \
-	description="Inherits from base-ci-linux; chromium-driver, \
-wasm-gc, wasm-bindgen-cli, wasm-pack, cargo-audit, cargo-web, cargo-deny " \
+	description="Inherits from base-ci-linux; \
+wasm-gc, wasm-bindgen-cli, wasm-pack, cargo-audit, cargo-web, cargo-deny" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ci-linux/Dockerfile" \
@@ -21,9 +21,6 @@ dockerfiles/ci-linux/README.md" \
 
 # install tools and dependencies
 RUN set -eux && \
-	apt-get -y update && \
-	apt-get install -y --no-install-recommends \
-		chromium-driver && \
 # install `rust-src` component for ui test
 	rustup component add rust-src && \
 # install specific Rust nightly, default is stable, use minimum components
