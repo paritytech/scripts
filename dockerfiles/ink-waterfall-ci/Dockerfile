@@ -65,6 +65,9 @@ RUN	set -eux; \
 	sed -i 's/type ChainExtension = ();/type ChainExtension = FetchRandomExtension;/g' substrate-contracts-node/runtime/src/lib.rs && \
 	sed -i 's/name = "substrate-contracts-node"/name = "substrate-contracts-node-rand-extension"/g' substrate-contracts-node/node/Cargo.toml && \
 	cargo install --locked --path substrate-contracts-node/node/ && \
+# Needed for regression testing, a CSV contains the sizes of compiled contracts.
+	cargo install --git https://github.com/HCastano/csv-comparator && \
+	npm install -g csv2md && \
 # versions
 	rustup show && \
 	cargo --version && \
