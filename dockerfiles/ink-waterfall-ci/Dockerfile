@@ -67,6 +67,7 @@ RUN	set -eux; \
 	cargo install --locked --path substrate-contracts-node/node/ && \
 # Needed for comparisons of CSV's which contain the compiled contract sizes \
 	cargo install --git https://github.com/HCastano/csv-comparator && \
+	npm install -g csv2md && \
 # versions
 	rustup show && \
 	cargo --version && \
