@@ -32,6 +32,8 @@ RUN	set -eux; \
 	npm \
 # `firefox` is needed to simulate interactions with the `canvas-ui`
 	firefox && \
+# `jq` is needed for parsing interactions with the GitHub API
+	jq && \
 # `geckodriver` is needed to run headless browser tests
 # we fetch the latest version number from the github api and use that release
 	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/latest | \
