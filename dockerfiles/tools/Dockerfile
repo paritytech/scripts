@@ -19,7 +19,7 @@ dockerfiles/tools/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 
-RUN apk add --no-cache curl git jq rsync make gettext gnupg bash shadow redis
+RUN apk add --no-cache curl git jq rsync make gettext gnupg bash shadow redis openssh
 
 RUN curl -sS -L "https://github.com/prometheus/prometheus/releases/download/v${PROM_VERSION}/prometheus-${PROM_VERSION}.linux-amd64.tar.gz" \
   		--output prometheus.tar.gz && \
