@@ -10,7 +10,7 @@ ENV PROM_VERSION=2.19.0
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/tools" \
-	io.parity.image.description="curl git jq rsync make gettext gnupg bash promtool" \
+	io.parity.image.description="curl git jq rsync make gettext gnupg bash promtool openssh" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/tools/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
