@@ -36,7 +36,7 @@ RUN set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
 		libssl-dev clang lld libclang-dev make cmake \
-		git pkg-config curl time rhash ca-certificates jq && \
+		git pkg-config curl time rhash ca-certificates jq ruby git-restore-mtime && \
 # set a link to clang
 	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100 && \
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-10 100 && \
