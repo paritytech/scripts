@@ -22,7 +22,7 @@ dockerfiles/ci-linux/README.md" \
 # install tools and dependencies
 RUN set -eux && \
 # install `rust-src` component for ui test
-	rustup component add rust-src && \
+	rustup component add rust-src rustfmt clippy && \
 # install specific Rust nightly, default is stable, use minimum components
 	rustup toolchain install nightly-2021-11-08 --profile minimal --component rustfmt clippy && \
 # "alias" pinned nightly-2021-11-08 toolchain as nightly
