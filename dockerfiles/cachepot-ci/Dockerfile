@@ -36,6 +36,7 @@ RUN set -eux && \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
 		linux-headers-5.8.0-29 gcc binutils coreutils gdbserver \
+                libxcb-shape0-dev libxcb-xfixes0-dev \
         zlib1g-dev librust-zip+deflate-miniz-dev gnupg2 && \
 # setup nvcc
     curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub | apt-key add - && \
