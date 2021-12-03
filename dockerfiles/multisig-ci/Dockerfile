@@ -16,9 +16,6 @@ dockerfiles/multisig-ci/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 RUN pip install poetry && \
-    apt-get autoremove -y && \
-	apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
     # add non-root user
     groupadd -g 10000 nonroot && \
     useradd -u 10000 -g 10000 -s /bin/bash -m nonroot
