@@ -40,19 +40,16 @@ RUN	set -eux; \
 	mv codecov /usr/local/bin/codecov && \
 	rm -f codecov.SHA256SUM codecov.SHA256SUM.sig && \
 # `binaryen` is needed by `cargo-contract` for optimizing Wasm files.
-# We fetch the latest release which contains a Linux binary. There is
-# currently an issue with not all releases containing a Linux binary
-# (https://github.com/WebAssembly/binaryen/issues/4148). Once that one
-# is fixed we can always use the latest release again.
+# We fetch the latest release which contains a Linux binary.
 	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases | \
 		egrep --only-matching 'https://github.com/WebAssembly/binaryen/releases/download/version_[0-9]+/binaryen-version_[0-9]+-x86_64-linux.tar.gz' | \
 		head -n1 | \
 		xargs curl -L -O && \
-	tar -xvzf binaryen-version_*-x86_64-linux.tar.gz  && \
+	tar -xvzf binaryen-*-x86_64-linux.tar.gz  && \
 	rm binaryen-version_*-x86_64-linux.tar.gz && \
-	chmod +x binaryen-version_*/bin/wasm-opt && \
-	mv binaryen-version_*/bin/wasm-opt /usr/local/bin/ && \
-	rm -rf binaryen-version_*/ && \
+	chmod +x binaryen-*/bin/wasm-opt && \
+	mv binaryen-*/bin/wasm-opt /usr/local/bin/ && \
+	rm -rf binaryen-*/ && \
 # The supported Rust nightly version must support the following components
 # to allow for a functioning CI pipeline:
 #
