@@ -150,6 +150,11 @@ redis-exporter:
   script:
     - *push_to_docker_hub
 
+multisig-ci:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 node-bench-regression-guard:
   <<:                              *docker_build
   script:
