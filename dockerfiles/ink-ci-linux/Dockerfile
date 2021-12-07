@@ -46,7 +46,7 @@ RUN	set -eux; \
 		head -n1 | \
 		xargs curl -L -O && \
 	tar -xvzf binaryen-*-x86_64-linux.tar.gz  && \
-	rm binaryen-version_*-x86_64-linux.tar.gz && \
+	rm binaryen-*-x86_64-linux.tar.gz && \
 	chmod +x binaryen-*/bin/wasm-opt && \
 	mv binaryen-*/bin/wasm-opt /usr/local/bin/ && \
 	rm -rf binaryen-*/ && \
