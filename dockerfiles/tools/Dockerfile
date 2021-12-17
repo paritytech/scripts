@@ -21,6 +21,8 @@ dockerfiles/tools/README.md" \
 
 RUN apk add --no-cache curl git jq rsync make gettext gnupg bash shadow redis openssh ruby
 
+RUN curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc && chmod 755 /usr/local/bin/mc
+
 RUN curl -sS -L "https://github.com/prometheus/prometheus/releases/download/v${PROM_VERSION}/prometheus-${PROM_VERSION}.linux-amd64.tar.gz" \
   		--output prometheus.tar.gz && \
 	tar -xzf prometheus.tar.gz prometheus-${PROM_VERSION}.linux-amd64/promtool && \
