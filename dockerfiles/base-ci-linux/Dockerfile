@@ -48,8 +48,8 @@ RUN set -eux; \
   echo "$JQ_CHECKSUM $JQ_PATH" | sha256sum --check && \
   jq --version; \
 # install minio client
-  curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc \
-  && chmod 755 /usr/local/bin/mc \
+  curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc && \
+  chmod 755 /usr/local/bin/mc && \
 # set a link to clang
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
 # install rustup, use minimum components
