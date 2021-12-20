@@ -39,8 +39,8 @@ RUN set -eux; \
 		git pkg-config curl time rhash ca-certificates \
 		jq ruby git-restore-mtime python3-pip && \
 # install minio client
-	curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc \
-	&& chmod 755 /usr/local/bin/mc \
+	curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc && \
+	chmod 755 /usr/local/bin/mc && \
 # set a link to clang
 	update-alternatives --install /usr/bin/clang clang /usr/bin/clang-10 100 && \
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-10 100 && \
