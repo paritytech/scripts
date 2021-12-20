@@ -1,0 +1,2 @@
+prometheus_api_client==0.4.2
+PyGithub==1.55
