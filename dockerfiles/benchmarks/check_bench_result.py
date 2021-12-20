@@ -48,8 +48,7 @@ def benchmark_last(project,benchmark):
 
 def create_github_issue(benchmarks_list,github_org_repo):
     """Create github issue with list of benchmarks"""
-    # repo = github_client.get_repo(github_org_repo)
-    repo = github_client.get_repo("tripleightech/gl-gh-test")
+    repo = github_client.get_repo(github_org_repo)
     last_sha = repo.get_commits()[1].sha
     commit_url = f"https://github.com/{github_repo_full}/commit/"
     benchmarks_mstring = "\n".join(benchmarks_list)
