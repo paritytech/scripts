@@ -18,8 +18,8 @@ dockerfiles/benchmarks/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-COPY check_bench_result.py /usr/local/bin/check_bench_result
-COPY push_bench_results.sh /usr/local/bin/push_bench_results
+COPY benchmarks/check_bench_result.py /usr/local/bin/check_bench_result
+COPY benchmarks/push_bench_results.sh /usr/local/bin/push_bench_results
 
 RUN groupadd -g 10000 nonroot; \
     useradd -u 10000 -g 10000 -s /bin/bash -m nonroot; \
