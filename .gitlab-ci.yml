@@ -140,6 +140,11 @@ tools:
   script:
     - *push_to_docker_hub
 
+benchmarks:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 query-exporter:
   <<:                              *docker_build
   script:
