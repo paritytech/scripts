@@ -30,6 +30,6 @@ USER nonroot:nonroot
 
 WORKDIR /nonroot
 
-COPY requirements.txt /tmp/requirements.txt
+COPY benchmarks/requirements.txt /tmp/requirements.txt
 
 RUN pip install -r /tmp/requirements.txt
