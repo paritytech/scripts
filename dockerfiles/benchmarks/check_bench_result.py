@@ -39,7 +39,7 @@ except KeyError:
 prometheus_client = PrometheusConnect(url=prometheus_url, disable_ssl=True)
 github_client = Github(github_token)
 
-def benchmark_last(project,benchmark):
+def benchmark_last_result(project,benchmark):
     """
     Get latest benchmark result from Victoria Metrics
     Returns "-1" if result not found
@@ -52,10 +52,23 @@ def benchmark_last(project,benchmark):
         last_benchmark_result = -1
     return last_benchmark_result
 
-def create_github_issue(benchmarks_list,github_org_repo):
+def benchmark_last_sha(project):
+    """
+    Get short sha of latest benchmark result from Victoria Metrics
+    """
+    query = f"parity_benchmark_specific_result_ns{{project=\"{project}\"}}[3d]"
+    query_result = prometheus_client.custom_query(query=query)
+    results = {}
+    for result in range(len(query_result)):
+        commit = query_result[result]['metric']['commit']
+        timestamp = query_result[result]['values'][0][0]
+        results[commit] = timestamp
+    sha = max(results, key=results.get)
+    return sha
+
+def create_github_issue(benchmarks_list):
     """Create github issue with list of benchmarks"""
-    repo = github_client.get_repo(github_org_repo)
-    last_sha = repo.get_commits()[1].sha
+    last_sha = benchmark_last_sha(github_repo)
     commit_url = f"https://github.com/{github_repo_full}/commit/"
     benchmarks_mstring = "\n".join(benchmarks_list)
     issue_text = f"""
@@ -65,10 +78,11 @@ Threshold: {threshold}%
 
 These benchmarks have regressions:
 
-| Benchmark name | Previous result [{last_sha[:8]}]({commit_url}{last_sha}) (ns/iter) | Current result [{current_sha[:8]}]({commit_url}{current_sha}) (ns/iter) | Difference (%) |
+| Benchmark name | Previous result [{last_sha}]({commit_url}{last_sha}) (ns/iter) | Current result [{current_sha[:8]}]({commit_url}{current_sha}) (ns/iter) | Difference (%) |
 |---|---|---|---|
 {benchmarks_mstring}
                  """
+    repo = github_client.get_repo(github_repo_full)
     github_issue = repo.create_issue(title="[benchmarks] Regression detected", body=issue_text)
     return github_issue
 
@@ -101,7 +115,7 @@ if __name__ == "__main__":
                 continue
             check_line_valid(result)
             benchmark_name,benchmark_current_value = get_name_value(result)
-            benchmark_last_value = benchmark_last(github_repo,benchmark_name)
+            benchmark_last_value = benchmark_last_result(github_repo,benchmark_name)
             if benchmark_last_value == -1:
                 print(benchmark_name,"is new and doesn't have any data yet, skipping")
                 continue
@@ -112,7 +126,7 @@ if __name__ == "__main__":
                     benchmarks_with_regression.append(string_to_add)
     if len(benchmarks_with_regression) > 0:
         print("Regression found, creating GitHub issue")
-        issue = create_github_issue(benchmarks_with_regression,github_repo_full)
+        issue = create_github_issue(benchmarks_with_regression)
         print(issue)
     else:
         print("No regressions")
