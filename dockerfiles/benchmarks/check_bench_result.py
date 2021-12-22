@@ -82,8 +82,7 @@ These benchmarks have regressions:
 |---|---|---|---|
 {benchmarks_mstring}
                  """
-    # repo = github_client.get_repo(github_repo_full)
-    repo = github_client.get_repo("tripleightech/gl-gh-test")
+    repo = github_client.get_repo(github_repo_full)
     github_issue = repo.create_issue(title="[benchmarks] Regression detected", body=issue_text)
     return github_issue
 
