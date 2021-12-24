@@ -54,7 +54,7 @@ RUN set -eux; \
   	chmod +x rustup-init && \
   	./rustup-init -y --no-modify-path --profile minimal --default-toolchain stable && \
   	rm rustup-init && \
-    chown -R root:nonroot ${RUSTUP_HOME} ${CARGO_HOME}; && \
+    chown -R root:nonroot ${RUSTUP_HOME} ${CARGO_HOME} && \
   	chmod -R g+w ${RUSTUP_HOME} ${CARGO_HOME} && \
 # install sccache
 	# cargo install sccache --features redis && \
