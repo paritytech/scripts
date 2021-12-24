@@ -41,6 +41,9 @@ RUN set -eux; \
 		libssl-dev clang lld libclang-dev make cmake \
 		git pkg-config curl time rhash ca-certificates \
 		python3 python3-pip lsof ruby git-restore-mtime xz-utils && \
+# add non-root user
+  groupadd -g 1000 nonroot && \
+  useradd -u 1000 -g 1000 -s /bin/bash -m nonroot && \
 # install recent jq; this step can be removed once jq >= 1.6 is available
 # through the distribution
   curl -sqL https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -o "$JQ_PATH" && \
@@ -58,7 +61,8 @@ RUN set -eux; \
   	chmod +x rustup-init; \
   	./rustup-init -y --no-modify-path --profile minimal --default-toolchain stable; \
   	rm rustup-init; \
-  	chmod -R a+w ${RUSTUP_HOME} ${CARGO_HOME}; \
+    chown -R root:nonroot ${RUSTUP_HOME} ${CARGO_HOME}; \
+  	chmod -R g+w ${RUSTUP_HOME} ${CARGO_HOME}; \
 # install sccache
 	# cargo install sccache --features redis; \
 	# FIXME: TEMPORARY OVERRIDE due to the sccache issue
@@ -73,10 +77,7 @@ RUN set -eux; \
 # apt clean up
 	apt-get autoremove -y; \
 	apt-get clean; \
-  rm -rf /var/lib/apt/lists/*; \
-# add non-root user
-  groupadd -g 1000 nonroot; \
-  useradd -u 1000 -g 1000 -s /bin/bash -m nonroot
+  rm -rf /var/lib/apt/lists/*
 # cache handler
 ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
