@@ -37,7 +37,7 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		libssl-dev clang lld libclang-dev make cmake \
 		git pkg-config curl time rhash ca-certificates \
-		jq ruby git-restore-mtime python3-pip && \
+		jq ruby git-restore-mtime python3-pip xz-utils && \
 # install minio client
 	curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc && \
 	chmod 755 /usr/local/bin/mc && \

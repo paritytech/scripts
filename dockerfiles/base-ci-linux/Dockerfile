@@ -40,7 +40,7 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		libssl-dev clang lld libclang-dev make cmake \
 		git pkg-config curl time rhash ca-certificates \
-		python3 python3-pip lsof ruby git-restore-mtime; \
+		python3 python3-pip lsof ruby git-restore-mtime xz-utils && \
 # install recent jq; this step can be removed once jq >= 1.6 is available
 # through the distribution
   curl -sqL https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -o "$JQ_PATH" && \
