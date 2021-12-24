@@ -38,6 +38,9 @@ RUN set -eux; \
 		libssl-dev clang lld libclang-dev make cmake \
 		git pkg-config curl time rhash ca-certificates \
 		jq ruby git-restore-mtime python3-pip xz-utils && \
+# add non-root user
+  groupadd -g 1000 nonroot && \
+  useradd -u 1000 -g 1000 -s /bin/bash -m nonroot && \
 # install minio client
 	curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc && \
 	chmod 755 /usr/local/bin/mc && \
@@ -51,7 +54,8 @@ RUN set -eux; \
   	chmod +x rustup-init && \
   	./rustup-init -y --no-modify-path --profile minimal --default-toolchain stable && \
   	rm rustup-init && \
-  	chmod -R a+w ${RUSTUP_HOME} ${CARGO_HOME} && \
+    chown -R root:nonroot ${RUSTUP_HOME} ${CARGO_HOME} && \
+  	chmod -R g+w ${RUSTUP_HOME} ${CARGO_HOME} && \
 # install sccache
 	# cargo install sccache --features redis && \
 	# FIXME: TEMPORARY OVERRIDE due to the sccache issue
@@ -66,10 +70,7 @@ RUN set -eux; \
 # apt clean up
 	apt-get autoremove -y && \
 	apt-get clean && \
-  rm -rf /var/lib/apt/lists/* && \
-# add non-root user
-  groupadd -g 1000 nonroot && \
-  useradd -u 1000 -g 1000 -s /bin/bash -m nonroot
+  rm -rf /var/lib/apt/lists/*
 # cache handler
 ENV	RUSTC_WRAPPER=sccache
 # show backtraces
