@@ -15,7 +15,10 @@ dockerfiles/multisig-ci/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-RUN pip install poetry && \
+RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" && \
+    chmod +x kubectl && \
+    mv kubectl /usr/local/bin/ && \
+    pip install poetry && \
     # add non-root user
     groupadd -g 10000 nonroot && \
     useradd -u 10000 -g 10000 -s /bin/bash -m nonroot
