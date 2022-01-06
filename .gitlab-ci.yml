@@ -364,7 +364,7 @@ container_scanning:
   tags:
     - kubernetes-parity-build
 
-ci-linux-test:
+ci-linux-test-substrate:
   stage:                           test
   variables:
     CI_IMAGE:                      "paritytech/ci-linux:staging"
@@ -375,6 +375,20 @@ ci-linux-test:
     - if: $IMAGE_NAME == "ci-linux"
   trigger:
     project:                       parity/substrate
+    branch:                        master
+    strategy:                      depend
+
+ci-linux-test-polkadot:
+  stage:                           test
+  variables:
+    CI_IMAGE:                      "paritytech/ci-linux:staging"
+    # this is to rewrite "-Dwarnings" we use in Polkadot CI since new warnings
+    # are often introduced and we do not want to fail on them in this case
+    RUSTFLAGS:                     "-Cdebug-assertions=y"
+  rules:
+    - if: $IMAGE_NAME == "ci-linux"
+  trigger:
+    project:                       parity/polkadot
     branch:                        master
     strategy:                      depend
 
