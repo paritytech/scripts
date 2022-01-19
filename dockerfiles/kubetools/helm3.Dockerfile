@@ -21,7 +21,7 @@ dockerfiles/kubetools/README.md" \
     io.parity.image.created="${BUILD_DATE}"
 
 RUN apk add --no-cache \
-        ca-certificates git jq make curl gettext bash shadow python3 py3-pip && \
+        ca-certificates git jq yq make curl gettext bash shadow python3 py3-pip && \
     pip3 install --no-cache --upgrade pip kubernetes && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
