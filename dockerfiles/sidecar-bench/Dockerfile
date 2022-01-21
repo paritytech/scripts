@@ -35,8 +35,4 @@ LABEL summary="Image for Substrate-api-sidecar benchmarks" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-# RUN set -eux && \
-#     npm install --global @substrate/api-sidecar
-
 COPY --from=builder /build/wrk/wrk /usr/local/bin
-# COPY ./lightweight-bench.lua /
