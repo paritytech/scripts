@@ -125,9 +125,11 @@ if __name__ == "__main__":
                     string_to_add = f"| {benchmark_name} | {benchmark_last_value} ns/iter | {benchmark_current_value} ns/iter | {diff}% |"
                     benchmarks_with_regression.append(string_to_add)
     if len(benchmarks_with_regression) > 0:
-        print("Regression found, creating GitHub issue")
-        issue = create_github_issue(benchmarks_with_regression)
-        print(issue)
+        print("Regression found")
+        # Uncomment after fixing https://github.com/paritytech/ci_cd/issues/302
+        # print("Regression found, creating GitHub issue")
+        # issue = create_github_issue(benchmarks_with_regression)
+        # print(issue)
     else:
         print("No regressions")
 
