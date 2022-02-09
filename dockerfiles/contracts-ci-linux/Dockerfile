@@ -46,6 +46,7 @@ RUN set -eux; \
 		--profile minimal --component rustfmt clippy rust-src && \
 	rustup default nightly && \
 	cargo install pwasm-utils-cli --bin wasm-prune && \
+	cargo install cargo-dylint dylint-link && \
 	cargo install cargo-contract && \
 # tried v0.1.5 and the latest master - both fail with https://github.com/hyperledger-labs/solang/issues/314
 	cargo install --git https://github.com/hyperledger-labs/solang --tag v0.1.2 && \
