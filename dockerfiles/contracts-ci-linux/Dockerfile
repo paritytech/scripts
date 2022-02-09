@@ -42,9 +42,9 @@ RUN set -eux; \
 	rm -rf binaryen-*/ && \
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
-	rustup toolchain install nightly --target wasm32-unknown-unknown \
+	rustup toolchain install nightly-2022-01-20 --target wasm32-unknown-unknown \
 		--profile minimal --component rustfmt clippy rust-src && \
-	rustup default nightly && \
+	rustup default nightly-2022-01-20 && \
 	cargo install pwasm-utils-cli --bin wasm-prune && \
 	cargo install cargo-dylint dylint-link && \
 	cargo install cargo-contract && \
