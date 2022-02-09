@@ -40,6 +40,7 @@ We always try to use the [latest possible](https://rust-lang.github.io/rustup-co
 **Rust tools & toolchains:**
 
 - `cargo-contract`
+- `cargo-dylint` and `dylint-link`
 - `pwasm-utils-cli`
 - `solang`
 - `substrate-contracts-node`
