@@ -77,6 +77,5 @@ send-becnh-result:
                         -u s
                         -l 'commit="'$CI_COMMIT_SHORT_SHA'",cirunner="'$runner'"'
                         -s $PROMETHEUS_URL
-    - check_bench_result artifacts/output.txt
 
 ```
