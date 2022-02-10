@@ -165,7 +165,7 @@ node-bench-regression-guard:
   script:
     - *push_to_docker_hub
 
-sidecar-bench:
+node-wrk:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
