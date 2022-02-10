@@ -41,3 +41,42 @@ export PROMETHEUS_URL=<url>        # Prometheus/VictoriaMetrics URL
 export TRESHOLD=20                 # Optional. Threshold to create github issue, default = 20
 python3 check_bench_result.py output.txt
 ```
+
+
+## push_bench_result.py
+
+The script sends metrics to Victoria Metrics.
+
+ci example:
+
+```yml
+
+send-becnh-result:
+  stage:                           send-becnh-result
+  image:                           paritytech/benchmarks:latest
+  variables:
+    PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
+  #get artifacts with text file that contains result
+  needs:
+    - job:                         benchmarks
+      artifacts:                   true
+  script:
+    - export RESULT=<some_result>
+    # send common result with general info
+    - push_bench_result.py -t common
+                           -p $CI_PROJECT_NAME
+                           -n superbench
+                           -r $RESULT
+                           -u s
+                           -s $PROMETHEUS_URL
+    # send specific result with detailed info
+    - push_bench_result -t specific
+                        -p $CI_PROJECT_NAME
+                        -n superbench
+                        -r $RESULT
+                        -u s
+                        -l 'commit="'$CI_COMMIT_SHORT_SHA'",cirunner="'$runner'"'
+                        -s $PROMETHEUS_URL
+    - check_bench_result artifacts/output.txt
+
+```
