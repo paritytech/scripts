@@ -18,7 +18,7 @@ dockerfiles/ansible/README.md" \
 
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    sshpass ssh rsync tini curl git
+    sshpass ssh rsync tini curl git ruby
 
 RUN pip install pip --upgrade
 RUN pip install ansible
