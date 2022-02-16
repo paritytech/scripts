@@ -104,6 +104,20 @@ ci-linux:
   script:
     - *push_to_staging
 
+# push ci-linux to pr for tests
+ci-linux-pr:
+  variables:                         &default-vars
+    REGISTRY_PATH:                   docker.io/paritypr
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+        changes:
+          - dockerfiles/ci-linux/Dockerfile
+      when: manual
+      allow_failure: true
+  <<:                              *docker_build
+  script:
+    - *push_to_staging
+
 ink-ci-linux:
   <<:                              *docker_build
   script:
