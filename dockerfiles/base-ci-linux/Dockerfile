@@ -31,16 +31,23 @@ COPY utility/base-ci-linux-config /root/.cargo/config
 ENV RUSTUP_HOME=/usr/local/rustup \
 	CARGO_HOME=/usr/local/cargo \
 	PATH=/usr/local/cargo/bin:$PATH \
-		CC=clang \
-		CXX=clang
+		CC=clang-13 \
+		CXX=clang-13
 
 # install tools and dependencies
 RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		libssl-dev clang lld libclang-dev make cmake \
+		libssl-dev make cmake \
 		git pkg-config curl time rhash ca-certificates \
-		python3 python3-pip lsof ruby git-restore-mtime xz-utils && \
+		python3 python3-pip lsof ruby git-restore-mtime xz-utils \
+# add clang 13 repo
+	curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -; \
+	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-13 main" >> /etc/apt/sources.list.d/llvm-toochain-buster-13.list; \
+	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-13 main" >> /etc/apt/sources.list.d/llvm-toochain-buster-13.list; \
+	apt-get -y update; \
+	apt-get install -y --no-install-recommends \
+		clang-13 lldb-13 lld-13 libclang-13-dev && \
 # add non-root user
   groupadd -g 1000 nonroot && \
   useradd -u 1000 -g 1000 -s /bin/bash -m nonroot && \
@@ -54,7 +61,7 @@ RUN set -eux; \
   curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc && \
   chmod 755 /usr/local/bin/mc && \
 # set a link to clang
-	update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100; \
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-13 100; \
 # install rustup, use minimum components
 	curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" \
 		-o rustup-init; \
