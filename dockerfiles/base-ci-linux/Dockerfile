@@ -40,7 +40,7 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		libssl-dev make cmake \
 		git pkg-config curl time rhash ca-certificates \
-		python3 python3-pip lsof ruby git-restore-mtime xz-utils \
+		python3 python3-pip lsof ruby git-restore-mtime xz-utils && \
 # add clang 13 repo
 	curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -; \
 	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-13 main" >> /etc/apt/sources.list.d/llvm-toochain-buster-13.list; \
