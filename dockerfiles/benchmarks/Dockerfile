@@ -12,19 +12,20 @@ LABEL summary="Image for benchmarks" \
 	description="Image to push benchmarks and evaluate them" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/benchmarks/Dockerfile" \
+	dockerfiles/benchmarks/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/benchmarks/README.md" \
+	dockerfiles/benchmarks/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
 COPY benchmarks/check_bench_result.py /usr/local/bin/check_bench_result
+COPY benchmarks/check_single_bench_result.py /usr/local/bin/check_single_bench_result
 COPY benchmarks/push_bench_result.py /usr/local/bin/push_bench_result
 
-RUN groupadd -g 10000 nonroot; \
-    useradd -u 10000 -g 10000 -s /bin/bash -m nonroot; \
-    mkdir /nonroot;\
-    chown nonroot. /nonroot
+RUN groupadd -g 10000 nonroot && \
+	useradd -u 10000 -g 10000 -s /bin/bash -m nonroot && \
+	mkdir /nonroot &&\
+	chown nonroot. /nonroot
 
 USER nonroot:nonroot
 
