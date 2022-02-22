@@ -79,3 +79,40 @@ send-becnh-result:
                         -s $PROMETHEUS_URL
 
 ```
+
+## check_single_bench_results.py
+
+Script compares provided result either with constant or with previuos value from Victoria Metrics.  
+If the result exceeds constant or threshold, scripts creates github issue.  
+2 env variables should exist: CI_COMMIT_SHA and GITHUB_TOKEN  
+
+ci example:
+
+```yml
+
+send-becnh-result:
+  stage:                           check-becnh-result
+  image:                           paritytech/benchmarks:latest
+  variables:
+    PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
+    GITHUB_REPO:                   "paritytech/jsonrpsee"
+  #get artifacts with text file that contains result
+  needs:
+    - job:                         benchmarks
+      artifacts:                   true
+  script:
+    - export RESULT=<some_result>
+    # To compare with previous result from Prometheus / Victoria Metrics:
+    - check_single_bench_result.py -m parity_benchmark_common_result_ms \ # Metric name
+                                   -p substrate-api-sidecar \             # Benchark project
+                                   -n sidecar \                           # Benchmark name
+                                   -s $PROMETHEUS_URL \                   # Prometheus server to take last value
+                                   -g $GITHUB_ORG \                       # GitHub Org for creating issue
+                                   -t 20 \                                # Threshold %
+                                   -v $RESULT                             # Result
+    # To compare with constant:
+    - check_single_bench_result.py -g 'org/repo'\    # GitHub Org for creating issue
+                                   -c 1 \            # Constant to compare
+                                   -v $RESULT        # Result
+
+```
