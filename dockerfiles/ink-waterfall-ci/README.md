@@ -31,6 +31,7 @@ We always use the [latest possible](https://rust-lang.github.io/rustup-component
 **Rust tools & toolchains:**
 
 - `cargo-contract`: Required to build ink! Wasm smart contracts.
+- `cargo-dylint` and `dylint-link`: Required to run `cargo-contract`.
 - `substrate-contracts-node`: Required to run a Substrate chain for smart contracts.
 - `wasm32-unknown-unknown`: The toolchain to compile Rust codebases for Wasm.
 

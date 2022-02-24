@@ -44,6 +44,8 @@ RUN	set -eux; \
 	mv geckodriver /usr/local/bin/ && \
 # `yarn` is needed to run `canvas-ui`
 	npm install --ignore-scripts -g yarn && \
+# `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
+	cargo install cargo-dylint dylint-link && \
 # `cargo-contract` is needed for building those examples. Here it's
 # force-rewritten above the stable version from the parent image.
 # `--force` rewrites the stable version installed in the parent image.
