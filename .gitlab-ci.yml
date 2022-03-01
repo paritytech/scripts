@@ -109,6 +109,11 @@ ink-ci-linux:
   script:
     - *push_to_staging
 
+parity-scale-codec:
+  <<:                              *docker_build
+  script:
+    - *push_to_staging
+
 ink-waterfall-ci:
   <<:                              *docker_build
   script:
