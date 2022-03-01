@@ -9,6 +9,7 @@ Used to build and test parity-scale-codec.
 - `parallel`: for running commands in parallel, without overlapping output
 - `codecov`: to upload the test coverage results
 - `binaryen`: needed by cargo-contract for optimizing Wasm files
+- `gnupg`
 
 **Inherited from `<base-ci-linux:latest>`**
 
