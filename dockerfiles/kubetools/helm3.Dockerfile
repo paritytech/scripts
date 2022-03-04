@@ -8,6 +8,7 @@ ARG HELMFILE_VERSION="0.140.0"
 ARG HELM_DIFF_PLUGIN_VERSION="3.1.3"
 ARG HELM_SECRETS_VERSION="3.12.0"
 ARG VALS_VERSION="0.15.0"
+ARG VAULT_VERSION="1.8.0"
 ARG KUBE_VERSION="1.20.8"
 
 # metadata
@@ -38,17 +39,22 @@ RUN apk add --no-cache \
     # https://github.com/roboll/helmfile/releases
     curl -L "https://github.com/roboll/helmfile/releases/download/v${HELMFILE_VERSION}/helmfile_linux_amd64" \
         -o /usr/local/bin/helmfile && \
-    # https://github.com/variantdev/vals/releases
+    # Install vals: https://github.com/variantdev/vals/releases
     wget -qO- https://github.com/variantdev/vals/releases/download/v${VALS_VERSION}/vals_${VALS_VERSION}_linux_amd64.tar.gz \
       | tar -xzf- && \
     mv vals /usr/local/bin/ && rm LICENSE README.md && \
+    # Install vault
+    wget -qO- https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip \
+      | unzip -d /usr/local/bin - && \
     chmod +x /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/helm && \
     chmod +x /usr/local/bin/helmfile && \
+    chmod +x /usr/local/bin/vault && \
     # test
     kubectl version --short=true --client && \
     helm version  && \
-    helmfile version
+    helmfile version && \
+    vault --version
 
 RUN set -x \
     && groupadd -g 1000 nonroot \
