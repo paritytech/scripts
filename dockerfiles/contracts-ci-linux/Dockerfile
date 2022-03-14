@@ -59,7 +59,7 @@ RUN set -eux; \
 	rustup show && \
 	cargo --version && \
 	solang --version && \
-	substrate-contracts-node --version && \
+	echo $( substrate-contracts-node --version | awk 'NF' ) && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
