@@ -50,6 +50,8 @@ RUN	set -eux; \
 	chmod +x binaryen-*/bin/wasm-opt && \
 	mv binaryen-*/bin/wasm-opt /usr/local/bin/ && \
 	rm -rf binaryen-*/ && \
+# `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
+	cargo install cargo-dylint dylint-link && \
 # The supported Rust nightly version must support the following components
 # to allow for a functioning CI pipeline:
 #

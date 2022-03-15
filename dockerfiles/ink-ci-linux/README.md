@@ -8,7 +8,8 @@ Used to build and test ink!.
 
 - `parallel`: for running commands in parallel, without overlapping output
 - `codecov`: to upload the test coverage results
-- `binaryen`: needed by cargo-contract for optimizing Wasm files
+- `binaryen`: needed by `cargo-contract` for optimizing Wasm files
+- `cargo-dylint` and `dylint-link`: needed by `cargo-contract` for running lints
 
 **Inherited from `<base-ci:latest>`**
 
