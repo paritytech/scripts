@@ -54,12 +54,16 @@ RUN set -eux; \
 	curl -L "https://gitlab.parity.io/parity/substrate-contracts-node/-/jobs/artifacts/master/raw/artifacts/substrate-contracts-node-linux/substrate-contracts-node?job=build-linux" \
 		-o /usr/local/cargo/bin/substrate-contracts-node && \
 	chmod +x /usr/local/cargo/bin/substrate-contracts-node && \
+# We use `estuary` as a lightweight cargo registry in the CI to test if
+# publishing `cargo-contract` to it and installing it from there works.
+	cargo install --git https://github.com/onelson/estuary.git --force && \
 # versions
 	yarn --version && \
 	rustup show && \
 	cargo --version && \
 	solang --version && \
 	echo $( substrate-contracts-node --version | awk 'NF' ) && \
+	estuary --version && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \

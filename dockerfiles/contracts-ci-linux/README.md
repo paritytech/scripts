@@ -45,6 +45,7 @@ We always try to use the [latest possible](https://rust-lang.github.io/rustup-co
 - `solang`
 - `substrate-contracts-node`
 - `wasm32-unknown-unknown`: The toolchain to compile Rust codebases for Wasm.
+- `estuary`: Lightweight cargo registry to test if publishing/installing works.
 
 [Click here](https://hub.docker.com/repository/docker/paritytech/contracts-ci-linux) for the registry.
 
