@@ -413,6 +413,17 @@ ink-ci-linux-test:
     branch:                        master
     strategy:                      depend
 
+contracts-ci-linux-test-gitspiegel:
+  stage:                           test
+  variables:
+    CI_IMAGE:                      "paritytech/contracts-ci-linux:staging"
+  rules:
+    - if: $IMAGE_NAME == "contracts-ci-linux"
+  trigger:
+    project:                       parity/mirrors/cargo-contract
+    branch:                        master
+    strategy:                      depend
+
 contracts-ci-linux-test:
   stage:                           test
   variables:
