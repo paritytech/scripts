@@ -125,6 +125,11 @@ contracts-ci-linux:
     - *push_to_staging
     - *publish_as_latest_too
 
+debian10:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 bridges-ci:
   <<:                              *docker_build
   script:
@@ -156,6 +161,11 @@ query-exporter:
     - *push_to_docker_hub
 
 redis-exporter:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
+molecule:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
