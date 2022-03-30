@@ -40,7 +40,7 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		libssl-dev make cmake \
 		git pkg-config curl time rhash ca-certificates \
-		python3 python3-pip lsof ruby git-restore-mtime xz-utils gnupg && \
+		python3 python3-pip lsof ruby git-restore-mtime xz-utils unzip gnupg && \
 # install bundler
 	gem install bundler && \
 # add clang 13 repo
