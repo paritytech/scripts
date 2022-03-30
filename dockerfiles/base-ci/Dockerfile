@@ -37,7 +37,7 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		libssl-dev clang lld libclang-dev make cmake \
 		git pkg-config curl time rhash ca-certificates \
-		jq ruby git-restore-mtime python3-pip xz-utils && \
+		jq ruby git-restore-mtime python3-pip xz-utils unzip && \
 # install bundler
 	gem install bundler && \
 # add non-root user
