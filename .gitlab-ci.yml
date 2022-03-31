@@ -112,7 +112,7 @@ ink-ci-linux:
 parity-scale-codec:
   <<:                              *docker_build
   script:
-    - *push_to_staging
+    - *push_to_docker_hub
 
 ink-waterfall-ci:
   <<:                              *docker_build
