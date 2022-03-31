@@ -119,6 +119,11 @@ ink-waterfall-ci:
   script:
     - *push_to_docker_hub
 
+smart-bench-ci:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 contracts-ci-linux:
   <<:                              *docker_build
   script:
