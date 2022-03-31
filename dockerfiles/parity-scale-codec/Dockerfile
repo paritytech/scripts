@@ -71,7 +71,7 @@ RUN	set -eux; \
 	# We require `xargo` so that `miri` runs properly
 	# We require `grcov` for coverage reporting and `rust-covfix` to improve it.
 	# We require `cargo-spellcheck` for automated spell-checking
-	cargo install grcov rust-covfix xargo && \
+	cargo install grcov rust-covfix xargo dylint-link && \
 	cargo install cargo-contract && \
 
 	# Stuff that compiles on stable.
