@@ -112,7 +112,7 @@ ink-ci-linux:
 parity-scale-codec:
   <<:                              *docker_build
   script:
-    - *push_to_docker_hub
+    - *push_to_staging
 
 ink-waterfall-ci:
   <<:                              *docker_build
@@ -399,7 +399,7 @@ ci-linux-test-substrate:
   rules:
     - if: $IMAGE_NAME == "ci-linux"
   trigger:
-    project:                       parity/substrate
+    project:                       parity/mirrors/substrate
     branch:                        master
     strategy:                      depend
 
@@ -413,7 +413,7 @@ ci-linux-test-polkadot:
   rules:
     - if: $IMAGE_NAME == "ci-linux"
   trigger:
-    project:                       parity/polkadot
+    project:                       parity/mirrors/polkadot
     branch:                        master
     strategy:                      depend
 
@@ -424,7 +424,7 @@ ink-ci-linux-test:
   rules:
     - if: $IMAGE_NAME == "ink-ci-linux"
   trigger:
-    project:                       parity/ink
+    project:                       parity/mirrors/ink
     branch:                        master
     strategy:                      depend
 
@@ -435,7 +435,7 @@ contracts-ci-linux-test:
   rules:
     - if: $IMAGE_NAME == "contracts-ci-linux"
   trigger:
-    project:                       parity/cargo-contract
+    project:                       parity/mirrors/cargo-contract
     branch:                        master
     strategy:                      depend
 
@@ -446,7 +446,7 @@ cachepot-ci-test:
   rules:
     - if: $IMAGE_NAME == "cachepot-ci"
   trigger:
-    project:                       parity/cachepot
+    project:                       parity/mirrors/cachepot
     branch:                        master
     strategy:                      depend
 
@@ -457,7 +457,18 @@ bridges-ci-test:
   rules:
     - if: $IMAGE_NAME == "bridges-ci"
   trigger:
-    project:                       parity/parity-bridges-common
+    project:                       parity/mirrors/parity-bridges-common
+    branch:                        master
+    strategy:                      depend
+
+parity-scale-codec-test:
+  stage:                           test
+  variables:
+    CI_IMAGE:                      "paritytech/parity-scale-codec:staging"
+  rules:
+    - if: $IMAGE_NAME == "parity-scale-codec"
+  trigger:
+    project:                       parity/mirrors/parity-scale-codec
     branch:                        master
     strategy:                      depend
 
@@ -510,3 +521,11 @@ bridges-ci-production:
       artifacts:                   false
   rules:
     - if: $IMAGE_NAME == "bridges-ci"
+
+parity-scale-codec-production:
+  <<:                              *push-after-triggered-pipeline
+  needs:
+    - job:                         parity-scale-codec-test
+      artifacts:                   false
+  rules:
+    - if: $IMAGE_NAME == "parity-scale-codec"
