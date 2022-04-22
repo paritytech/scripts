@@ -41,8 +41,8 @@ default:
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   - buildah info
-  - echo "$DOCKER_PASSWORD" |
-      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
+  - echo "$Docker_Hub_Pass_Parity" |
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
   - buildah logout "$REGISTRY_NAME"
@@ -55,15 +55,15 @@ default:
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
-  - echo "$DOCKER_PASSWORD" |
-      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
+  - echo "$Docker_Hub_Pass_Parity" |
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
   - buildah info
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:staging"
   - buildah logout "$REGISTRY_NAME"
 
 .publish_as_latest_too:            &publish_as_latest_too
-  - echo "$DOCKER_PASSWORD" |
-      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
+  - echo "$Docker_Hub_Pass_Parity" |
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
   - buildah info
   - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:latest"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
@@ -74,8 +74,8 @@ default:
   - env REGISTRY_AUTH_FILE= buildah pull "$REGISTRY_PATH/$IMAGE_NAME:staging"
   - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:production"
   - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
-  - echo "$DOCKER_PASSWORD" |
-      buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
+  - echo "$Docker_Hub_Pass_Parity" |
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
   - buildah info
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:production"
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
@@ -225,8 +225,8 @@ kubetools:
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
-    - echo "$DOCKER_PASSWORD" |
-        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
+    - echo "$Docker_Hub_Pass_Parity" |
+        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:helm2"
@@ -271,8 +271,8 @@ kubetools-helm3:
       --tag "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
       --file "dockerfiles/kubetools/helm3.Dockerfile" dockerfiles
     # Push to Dockerhub
-    - echo "$DOCKER_PASSWORD" |
-        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
+    - echo "$Docker_Hub_Pass_Parity" |
+        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:helm3"
     - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
@@ -307,8 +307,8 @@ terraform:
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
-    - echo "$DOCKER_PASSWORD" |
-        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
+    - echo "$Docker_Hub_Pass_Parity" |
+        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
@@ -343,8 +343,8 @@ sops:
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
-    - echo "$DOCKER_PASSWORD" |
-        buildah login --username "$DOCKER_USER" --password-stdin "$REGISTRY_NAME"
+    - echo "$Docker_Hub_Pass_Parity" |
+        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
