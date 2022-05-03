@@ -2,6 +2,9 @@ ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
 
+# 'Parity Security Team <security@parity.io>'
+ARG GPG_KEYID=9D4B2B6EB8F97156D19669A9FF0812D491B96798
+
 FROM docker.io/library/ubuntu:latest
 
 # metadata
@@ -24,8 +27,7 @@ RUN set -x \
 
 USER nonroot:nonroot
 
-# add gpg pubkey 'Parity Security Team <security@parity.io>'
-RUN curl -LfSs "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x9D4B2B6EB8F97156D19669A9FF0812D491B96798&options=mr&exact=on" | gpg --import - \
+RUN curl -LfSs "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x${GPG_KEYID}&options=mr&exact=on" | gpg --import - \
   && gpg --list-keys
 
 WORKDIR /home/nonroot
