@@ -20,3 +20,9 @@ USER root
 RUN apt-get install -yq --no-install-recommends rpm
 
 USER nonroot:nonroot
+
+RUN >> ~nonroot/.rpmmacros echo %_signature gpg && \
+    >> ~nonroot/.rpmmacros echo %_gpg_path /home/nonroot/.gnupg && \
+    >> ~nonroot/.rpmmacros echo %_gpg_name security@parity.io && \
+    >> ~nonroot/.rpmmacros echo %_gpg /usr/bin/gpg && \
+    >> ~nonroot/.rpmmacros echo %__gpg_sign_cmd %{__gpg} gpg --force-v3-sigs --batch --verbose --no-armor -u "%{_gpg_name}" -sbo %{__signature_filename} --digest-algo sha256 %{__plaintext_filename}
