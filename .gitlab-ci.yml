@@ -190,6 +190,21 @@ node-wrk:
   script:
     - *push_to_docker_hub
 
+gnupg:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
+rpm:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
+deb:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 # special case as version tags are introduced
 kubetools:
   <<:                              *docker_build
