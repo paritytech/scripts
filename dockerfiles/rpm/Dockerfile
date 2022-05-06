@@ -20,3 +20,5 @@ USER root
 RUN apt-get install -yq --no-install-recommends rpm
 
 USER nonroot:nonroot
+
+COPY rpmmacros /home/nonroot/.rpmmacros
