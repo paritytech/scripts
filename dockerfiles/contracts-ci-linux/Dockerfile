@@ -64,6 +64,11 @@ RUN set -eux; \
 	solang --version && \
 	echo $( substrate-contracts-node --version | awk 'NF' ) && \
 	estuary --version && \
+# Temporary Rust version override for clippy until ICE in nightly
+# clippy is fixed (https://github.com/rust-lang/rust-clippy/issues/8821).
+	rustup toolchain install nightly-2022-05-05 --target wasm32-unknown-unknown \
+		--profile minimal --component rustfmt clippy rust-src && \
+	rustup default nightly-2022-05-05 && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
