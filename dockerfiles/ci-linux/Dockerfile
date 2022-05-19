@@ -29,7 +29,8 @@ RUN set -eux && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 	# install cargo tools
 	cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck && \
-	cargo install --version 0.4.2 diener && \
+  # diener can be installed from crates.io when https://github.com/bkchr/diener/issues/15 is fixed
+	cargo install --git https://github.com/paritytech/diener --branch all-packages && \
 	# wasm-bindgen-cli version should match the one pinned in substrate
 	# https://github.com/paritytech/substrate/blob/master/bin/node/browser-testing/Cargo.toml#L15
 	cargo install --version 0.2.73 wasm-bindgen-cli && \
