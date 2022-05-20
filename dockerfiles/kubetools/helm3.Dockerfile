@@ -9,7 +9,7 @@ ARG HELM_DIFF_PLUGIN_VERSION="3.1.3"
 ARG HELM_SECRETS_VERSION="3.12.0"
 ARG VALS_VERSION="0.15.0"
 ARG VAULT_VERSION="1.8.0"
-ARG KUBE_VERSION="1.20.8"
+ARG KUBE_VERSION="1.21.10"
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
