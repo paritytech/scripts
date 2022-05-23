@@ -382,29 +382,36 @@ sops:
 #### stage:                        test
 
 container_scanning:
+  # https://aquasecurity.github.io/trivy/v0.28.0/docs/integrations/gitlab-ci/
   image:
     name:                          docker.io/aquasec/trivy:latest
     entrypoint:                    [""]
   variables:
-    FULL_IMAGE_NAME:               $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
     GIT_STRATEGY:                  none
+    TRIVY_USERNAME:                "$CI_REGISTRY_USER"
+    TRIVY_PASSWORD:                "$CI_REGISTRY_PASSWORD"
+    TRIVY_AUTH_URL:                "$CI_REGISTRY"
+    TRIVY_NO_PROGRESS:             "true"
+    TRIVY_CACHE_DIR:               ".trivycache/"
+    FULL_IMAGE_NAME:               $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
   script:
     - trivy --version
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
     - time trivy image --clear-cache
     # update vulnerabilities db
-    - time trivy --download-db-only --no-progress --cache-dir .trivycache/
-    # Build report
-    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress --format template --template "@/contrib/gitlab.tpl"
+    - time trivy image --download-db-only
+    # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
+    - time trivy image --exit-code 0 --format template --template "@/contrib/gitlab.tpl"
         --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$FULL_IMAGE_NAME"
-    # Print report
-    - time trivy --exit-code 0 --cache-dir .trivycache/ --no-progress "$FULL_IMAGE_NAME"
-    # Fail on high and critical vulnerabilities
-    - time trivy --exit-code 1 --cache-dir .trivycache/ --severity CRITICAL --no-progress "$FULL_IMAGE_NAME"
+    # Prints full report
+    - time trivy image --exit-code 0 "$FULL_IMAGE_NAME"
+    # Fail on critical vulnerabilities
+    - time trivy image --exit-code 1 --severity CRITICAL "$FULL_IMAGE_NAME"
   cache:
     # TODO: move this cache to k8s volume when it's configured
     paths:
       - .trivycache/
+  # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/
   artifacts:
     when:                          always
     reports:
