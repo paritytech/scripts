@@ -255,11 +255,17 @@ kubetools-helm3:
     <<:                            *default-vars
     IMAGE_NAME:                    kubetools
     # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
-    BUILD_KUBE_VERSION:            "1.20.0"
+    KUBE_VERSION:             "1.21.10"
     # https://github.com/helm/helm/releases
-    BUILD_HELM_VERSION:            "3.5.3"
-    BUILD_HELMFILE_VERSION:        "0.140.0"
-    BUILD_HELM_DIFF_PLUGIN_VERSION: "3.1.3"
+    HELM_VERSION:             "3.6.2"
+    HELMFILE_VERSION:         "0.140.0"
+    HELM_DIFF_PLUGIN_VERSION: "3.1.3"
+    # https://github.com/jkroepke/helm-secrets
+    HELM_SECRETS_VERSION:     "3.13.0"
+    # https://github.com/variantdev/vals/releases
+    VALS_VERSION:             "0.15.0"
+    # https://releases.hashicorp.com/vault/
+    VAULT_VERSION:            "1.8.0"
 
   script:
     - |
@@ -267,30 +273,37 @@ kubetools-helm3:
       |
       | # build of kubetools image
       |
-      | KUBE_VERSION = $BUILD_KUBE_VERSION
-      | HELM_VERSION = $BUILD_HELM_VERSION
-      | BUILD_HELMFILE_VERSION = $BUILD_HELMFILE_VERSION
-      | BUILD_HELM_DIFF_PLUGIN_VERSION = $BUILD_HELM_DIFF_PLUGIN_VERSION
-      |
+      | 
+      | HELM_VERSION = $ELM_VERSION
+      | HELMFILE_VERSION = $HELMFILE_VERSION
+      | HELM_DIFF_PLUGIN_VERSION = $HELM_DIFF_PLUGIN_VERSION
+      | HELM_SECRETS_VERSION = $HELM_SECRETS_VERSION
+      | KUBE_VERSION = $KUBE_VERSION
+      | VALS_VERSION= $VALS_VERSION
+      | VAULT_VERSION= $VAULT_VERSION
+      | 
       EOT
     - buildah bud
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
-      --build-arg KUBE_VERSION="$BUILD_KUBE_VERSION"
-      --build-arg HELM_VERSION="$BUILD_HELM_VERSION"
-      --build-arg HELMFILE_VERSION="$BUILD_HELMFILE_VERSION"
-      --build-arg HELM_DIFF_PLUGIN_VERSION="$BUILD_HELM_DIFF_PLUGIN_VERSION"
+      --build-arg KUBE_VERSION="$KUBE_VERSION"
+      --build-arg HELM_VERSION="$HELM_VERSION"
+      --build-arg HELMFILE_VERSION="$HELMFILE_VERSION"
+      --build-arg HELM_DIFF_PLUGIN_VERSION="$HELM_DIFF_PLUGIN_VERSION"
+      --build-arg HELM_SECRETS_VERSION="$HELM_SECRETS_VERSION"
+      --build-arg VALS_VERSION="$VALS_VERSION"
+      --build-arg VAULT_VERSION="$VAULT_VERSION"
       --tag "$REGISTRY_PATH/kubetools:helm3"
-      --tag "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
+      --tag "$REGISTRY_PATH/kubetools:$HELM_VERSION"
       --file "dockerfiles/kubetools/helm3.Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:helm3"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$HELM_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 terraform:
