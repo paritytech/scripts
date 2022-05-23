@@ -388,9 +388,6 @@ container_scanning:
     entrypoint:                    [""]
   variables:
     GIT_STRATEGY:                  none
-    TRIVY_USERNAME:                "$CI_REGISTRY_USER"
-    TRIVY_PASSWORD:                "$CI_REGISTRY_PASSWORD"
-    TRIVY_AUTH_URL:                "$CI_REGISTRY"
     TRIVY_NO_PROGRESS:             "true"
     TRIVY_CACHE_DIR:               ".trivycache/"
     FULL_IMAGE_NAME:               $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
