@@ -273,6 +273,7 @@ kubetools-helm3:
       |
       | # build of kubetools image
       |
+      | 
       | HELM_VERSION = $ELM_VERSION
       | HELMFILE_VERSION = $HELMFILE_VERSION
       | HELM_DIFF_PLUGIN_VERSION = $HELM_DIFF_PLUGIN_VERSION
@@ -289,7 +290,7 @@ kubetools-helm3:
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg KUBE_VERSION="$KUBE_VERSION"
       --build-arg HELM_VERSION="$HELM_VERSION"
-      --build-arg HELMFILE_VERSION="$ELMFILE_VERSION"
+      --build-arg HELMFILE_VERSION="$HELMFILE_VERSION"
       --build-arg HELM_DIFF_PLUGIN_VERSION="$HELM_DIFF_PLUGIN_VERSION"
       --build-arg HELM_SECRETS_VERSION="$HELM_SECRETS_VERSION"
       --build-arg VALS_VERSION="$VALS_VERSION"
@@ -302,7 +303,7 @@ kubetools-helm3:
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:helm3"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$BUILD_HELM_VERSION"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$HELM_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 terraform:
