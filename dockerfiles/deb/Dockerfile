@@ -1,8 +1,9 @@
-ARG VCS_REF=master
-ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
 
 FROM ${REGISTRY_PATH}/gnupg:latest
+
+ARG VCS_REF=master
+ARG BUILD_DATE=""
 
 # metadata
 LABEL summary="DEB packaging/signing toolchain" \
