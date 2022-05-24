@@ -274,7 +274,7 @@ kubetools-helm3:
       | # build of kubetools image
       |
       | 
-      | HELM_VERSION = $ELM_VERSION
+      | HELM_VERSION = $HELM_VERSION
       | HELMFILE_VERSION = $HELMFILE_VERSION
       | HELM_DIFF_PLUGIN_VERSION = $HELM_DIFF_PLUGIN_VERSION
       | HELM_SECRETS_VERSION = $HELM_SECRETS_VERSION
