@@ -7,8 +7,6 @@ ARG KEY_ID=9D4B2B6EB8F97156D19669A9FF0812D491B96798
 ARG KEY_SERVER=hkps://keys.mailvelope.com
 ARG VCS_REF=master
 ARG BUILD_DATE=""
-ARG UID=1005
-ARG GID=1005
 
 # metadata
 LABEL summary="Base image with Parity-Keyring" \
