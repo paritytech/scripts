@@ -16,7 +16,7 @@ LABEL summary="Base image with Parity-Keyring" \
 	description="Parity Keyring base container" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/dockerfiles/parity-keyring/Dockerfile" \
-	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/dockerfiles/gnupg/README.md" \
+	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/dockerfiles/parity-keyring/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
