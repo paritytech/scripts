@@ -6,6 +6,8 @@ FROM docker.io/library/ubuntu:latest
 ARG GPG_KEYID=9D4B2B6EB8F97156D19669A9FF0812D491B96798
 ARG VCS_REF=master
 ARG BUILD_DATE=""
+ARG UID=1000
+ARG GID=1000
 
 # metadata
 LABEL summary="Base image for GnuPG operations" \
@@ -22,8 +24,8 @@ LABEL summary="Base image for GnuPG operations" \
 RUN apt-get update && apt-get install -yq --no-install-recommends bash ca-certificates curl gnupg
 
 RUN set -x \
-    && groupadd -g 1000 nonroot \
-    && useradd -u 1000 -g 1000 -s /bin/bash -m nonroot
+    && groupadd -g $GID nonroot \
+    && useradd -u $UID -g $GID -s /bin/bash -m nonroot
 
 USER nonroot:nonroot
 
