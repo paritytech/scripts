@@ -19,7 +19,11 @@ LABEL summary="RPM packaging/signing toolchain" \
 
 USER root
 RUN apt-get install -yq --no-install-recommends rpm
-
+RUN ln -s /usr/bin/gpg /usr/bin/gpg2
+COPY rpm/rpmmacros /home/nonroot/.rpmmacros
+COPY rpm/start.sh /home/nonroot/start.sh
+RUN chown nonroot .rpmmacros && \
+	chown nonroot start.sh
 USER nonroot:nonroot
 
-COPY rpm/rpmmacros /home/nonroot/.rpmmacros
+ENTRYPOINT [ "/home/nonroot/start.sh" ]
