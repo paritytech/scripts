@@ -23,12 +23,7 @@ RUN ln -s /usr/bin/gpg /usr/bin/gpg2
 
 COPY rpm/rpmmacros /home/user/.rpmmacros
 COPY rpm/rpmmacros /root/.rpmmacros
-# COPY rpm/entrypoint.sh /home/user/entrypoint.sh
-# RUN chown user /home/user/.rpmmacros && \
-# 	chown user /home/user/entrypoint.sh
-# USER user
 
-# ENTRYPOINT [ "/home/user/entrypoint.sh" ]
 ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
 
 CMD ["rpm --version", "/bin/bash"]

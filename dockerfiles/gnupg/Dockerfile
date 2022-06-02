@@ -22,7 +22,6 @@ LABEL summary="Base image for GnuPG operations" \
 RUN apt-get update && apt-get install -yq --no-install-recommends bash ca-certificates curl gnupg
 
 COPY gnupg/entrypoint.sh /usr/local/bin/entrypoint.sh
-# COPY gnupg/run.sh /usr/local/bin/run.sh
 
 RUN curl -LfSs "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x${GPG_KEYID}&options=mr&exact=on" | gpg --import - \
   && gpg --list-keys
