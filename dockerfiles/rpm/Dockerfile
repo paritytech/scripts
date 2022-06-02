@@ -17,13 +17,21 @@ LABEL summary="RPM packaging/signing toolchain" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
+
 USER root
 RUN apt-get install -yq --no-install-recommends rpm
 RUN ln -s /usr/bin/gpg /usr/bin/gpg2
-COPY rpm/rpmmacros /home/nonroot/.rpmmacros
-COPY rpm/start.sh /home/nonroot/start.sh
-RUN chown nonroot .rpmmacros && \
-	chown nonroot start.sh
-USER nonroot:nonroot
 
-ENTRYPOINT [ "/home/nonroot/start.sh" ]
+RUN /usr/local/bin/entrypoint.sh
+RUN /usr/local/bin/run.sh
+
+COPY rpm/rpmmacros /home/user/.rpmmacros
+COPY rpm/rpmmacros /root/.rpmmacros
+COPY rpm/entrypoint.sh /home/user/entrypoint.sh
+RUN chown user /home/user/.rpmmacros && \
+	chown user /home/user/entrypoint.sh
+USER user
+
+ENTRYPOINT [ "/home/user/entrypoint.sh" ]
+
+CMD ["rpm --version", "/bin/bash"]

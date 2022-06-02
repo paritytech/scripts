@@ -6,8 +6,6 @@ FROM docker.io/library/ubuntu:latest
 ARG GPG_KEYID=9D4B2B6EB8F97156D19669A9FF0812D491B96798
 ARG VCS_REF=master
 ARG BUILD_DATE=""
-ARG UID=1000
-ARG GID=1000
 
 # metadata
 LABEL summary="Base image for GnuPG operations" \
@@ -23,14 +21,12 @@ LABEL summary="Base image for GnuPG operations" \
 
 RUN apt-get update && apt-get install -yq --no-install-recommends bash ca-certificates curl gnupg
 
-RUN set -x \
-    && groupadd -g $GID nonroot \
-    && useradd -u $UID -g $GID -s /bin/bash -m nonroot
-
-USER nonroot:nonroot
+COPY gnupg/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY gnupg/run.sh /usr/local/bin/run.sh
+COPY gnupg/run.sh /usr/local/bin/run.sh
 
 RUN curl -LfSs "https://keyserver.ubuntu.com/pks/lookup?op=get&search=0x${GPG_KEYID}&options=mr&exact=on" | gpg --import - \
   && gpg --list-keys
 
-WORKDIR /home/nonroot
-CMD ["/bin/bash"]
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh",  "/usr/local/bin/run.sh" ]
+CMD ["gpg --version | head -n1", "/bin/bash"]

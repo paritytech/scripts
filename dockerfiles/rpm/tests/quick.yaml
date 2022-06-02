@@ -1,0 +1,48 @@
+schemaVersion: '2.0.0'
+globalEnvVars:
+  - key: "LOCAL_USER_ID"
+    value: "1234"
+
+# Quick set of tests
+fileExistenceTests:
+  - name: 'Check presence of .rpmmacros'
+    path: '/home/user/.rpmmacros'
+    shouldExist: true
+    uid: 9001
+    permissions: -rw-r--r--
+commandTests:
+  - name: "user"
+    setup: []
+    command: "whoami"
+    args: []
+    expectedOutput: ["user"]
+  - name: "uid"
+    setup: []
+    command: "id"
+    args: ["-u"]
+    expectedOutput: ["9001"]
+  - name: "gid"
+    setup: []
+    command: "id"
+    args: ["-g"]
+    expectedOutput: ["9001"]
+  - name:  "apt-get upgrade"
+    command: "apt-get"
+    args: ["-qqs", "upgrade"]
+    excludedOutput: [".*Inst.*Security.* | .*Security.*Inst.*"]
+    excludedError: [".*Inst.*Security.* | .*Security.*Inst.*"]
+  - name:  "rpm version"
+    command: "rpm"
+    args: ["--version"]
+    expectedOutput: ["RPM"]
+  - name:  "gpg2 version"
+    command: "gpg2"
+    args: ["--version"]
+    expectedOutput: ["gpg.*2.*"]
+metadataTest:
+  labels:
+    - key: maintainer
+      value: devops-team@parity.io
+  exposedPorts: []
+  volumes: []
+  user: "user"
