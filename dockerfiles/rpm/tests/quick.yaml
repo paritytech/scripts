@@ -1,31 +1,15 @@
 schemaVersion: '2.0.0'
 globalEnvVars:
   - key: "LOCAL_USER_ID"
-    value: "1234"
+    value: "1005"
 
 # Quick set of tests
 fileExistenceTests:
   - name: 'Check presence of .rpmmacros'
     path: '/home/user/.rpmmacros'
     shouldExist: true
-    uid: 9001
     permissions: -rw-r--r--
 commandTests:
-  - name: "user"
-    setup: []
-    command: "whoami"
-    args: []
-    expectedOutput: ["user"]
-  - name: "uid"
-    setup: []
-    command: "id"
-    args: ["-u"]
-    expectedOutput: ["9001"]
-  - name: "gid"
-    setup: []
-    command: "id"
-    args: ["-g"]
-    expectedOutput: ["9001"]
   - name:  "apt-get upgrade"
     command: "apt-get"
     args: ["-qqs", "upgrade"]
@@ -45,4 +29,3 @@ metadataTest:
       value: devops-team@parity.io
   exposedPorts: []
   volumes: []
-  user: "user"
