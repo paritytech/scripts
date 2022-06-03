@@ -20,4 +20,5 @@ LABEL summary="DEB packaging/signing toolchain" \
 USER root
 RUN apt-get install -yq --no-install-recommends reprepro
 
-USER nonroot:nonroot
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
+CMD ["reprepro --version", "/bin/bash"]

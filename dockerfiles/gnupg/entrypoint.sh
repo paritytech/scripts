@@ -12,9 +12,9 @@ fi
 echo "User 'user' created"
 
 export HOME=/home/user
-chown -R user:user $HOME
+chown -R user $HOME
 mkdir -p $HOME/.gnupg
 chmod 700 $HOME/.gnupg
-chown -R user:user $HOME/.gnupg
+chown -R user $HOME/.gnupg
 
 exec chroot --userspec=user / sh -c "cd ${HOME}; $@"
