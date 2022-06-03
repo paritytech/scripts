@@ -7,7 +7,7 @@ in the container with the UIDs of your local system.
 
 While we could make an image with UID that could be passed as ARG, this will likely always endup
 being the wrong UID. For this reason, this image is creating the users at runtime.
-By default, the UID is `9001` but you may customize it using the `LOCAL_USER_ID` environment variable.
+By default, the UID is `1000` but you may customize it using the `LOCAL_USER_ID` environment variable.
 
 This will allow downstream images such as `paritytech/rpm` and `paritytech/deb` to be ran with the "right"
 UID and allows mapping the gpg-agent socket for the right UID.
@@ -24,6 +24,13 @@ UID and allows mapping the gpg-agent socket for the right UID.
 ```Dockerfile
 FROM docker.io/paritytech/gnupg:latest
 ```
+
+In your downstream image, you will want to set the `ENTRYPOINT` as:
+```
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
+```
+
+You can check the `rpm` and `deb` images for sample use.
 
 ## Tests
 
