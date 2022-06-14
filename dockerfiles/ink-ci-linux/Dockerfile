@@ -84,12 +84,6 @@ RUN	set -eux; \
 	cargo --version && \
 	cargo-contract --version && \
 	wasm-opt --version && \
-#
-# Temporary Rust version override for clippy until ICE in nightly
-# clippy is fixed (https://github.com/rust-lang/rust-clippy/issues/8821).
-	rustup toolchain install nightly-2022-05-05 --target wasm32-unknown-unknown \
-		--profile minimal --component rustfmt clippy miri rust-src llvm-tools-preview && \
-	rustup default nightly-2022-05-05 && \
 # Clean up and remove compilation artifacts that a cargo install creates (>250M).
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
 # apt clean up
