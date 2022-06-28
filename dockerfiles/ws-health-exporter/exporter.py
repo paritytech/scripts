@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# Taken from https://gitlab.parity.io/parity/infrastructure/ansible/collections/chain_operations/-/raw/master/roles/ws_health_exporter/files/exporter.py
 
 import sys
 import os
