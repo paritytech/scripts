@@ -17,7 +17,7 @@ dockerfiles/ws-health-exporter/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 RUN pip install --no-cache-dir prometheus-client websocket-client apscheduler flask
-COPY exporter.py .
+COPY ws-health-exporter/exporter.py .
 
 USER nobody:nogroup
 
