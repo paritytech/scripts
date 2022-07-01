@@ -39,7 +39,8 @@ RUN set -eux && \
 		libxcb-shape0-dev libxcb-xfixes0-dev \
         zlib1g-dev librust-zip+deflate-miniz-dev gnupg2 bubblewrap && \
 # setup nvcc
-    curl -fsSL https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/7fa2af80.pub | apt-key add - && \
+    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/3bf863cc.pub && \
+    apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu2004/x86_64/7fa2af80.pub && \
     echo "deb https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64 /" > /etc/apt/sources.list.d/cuda.list && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
