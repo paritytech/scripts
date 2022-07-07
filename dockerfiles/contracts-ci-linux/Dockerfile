@@ -10,7 +10,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.title="${REGISTRY_PATH}/contracts-ci-linux" \
 	io.parity.image.description="Inherits from base-ci:latest. \
 llvm-dev, clang, zlib1g-dev, npm, yarn, wabt, binaryen. \
-rust nightly, rustfmt, clippy, rust-src, solang, substrate-contracts-node" \
+rust nightly, rustfmt, clippy, rust-src, substrate-contracts-node" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/contracts-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -48,8 +48,6 @@ RUN set -eux; \
 	cargo install pwasm-utils-cli --bin wasm-prune && \
 	cargo install cargo-dylint dylint-link && \
 	cargo install cargo-contract && \
-# tried v0.1.5 and the latest master - both fail with https://github.com/hyperledger-labs/solang/issues/314
-	cargo install --git https://github.com/hyperledger-labs/solang --tag v0.1.2 && \
 # download the latest `substrate-contracts-node` binary
 	curl -L "https://gitlab.parity.io/parity/substrate-contracts-node/-/jobs/artifacts/master/raw/artifacts/substrate-contracts-node-linux/substrate-contracts-node?job=build-linux" \
 		-o /usr/local/cargo/bin/substrate-contracts-node && \
@@ -61,7 +59,6 @@ RUN set -eux; \
 	yarn --version && \
 	rustup show && \
 	cargo --version && \
-	solang --version && \
 	echo $( substrate-contracts-node --version | awk 'NF' ) && \
 	estuary --version && \
 # cargo clean up
