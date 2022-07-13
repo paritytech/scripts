@@ -1,4 +1,4 @@
-FROM docker.io/library/alpine:latest
+FROM docker.io/library/alpine:3.15
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
