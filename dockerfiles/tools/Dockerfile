@@ -1,4 +1,4 @@
-FROM docker.io/library/alpine:3.15
+FROM docker.io/library/alpine:3.16
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
@@ -31,7 +31,10 @@ RUN curl -sS -L "https://github.com/prometheus/prometheus/releases/download/v${P
 
 RUN set -x \
     && groupadd -g 1000 nonroot \
-    && useradd -u 1000 -g 1000 -s /bin/bash -m nonroot
+    && useradd -u 1000 -g 1000 -s /bin/bash -m nonroot \
+    && git config --global --add safe.directory '*' \
+    && cp /root/.gitconfig /home/nonroot/.gitconfig \
+    && chown nonroot:nonroot /home/nonroot/.gitconfig
 
 USER nonroot:nonroot
 CMD ["/bin/bash"]
