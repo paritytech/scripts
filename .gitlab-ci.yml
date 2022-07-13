@@ -170,6 +170,11 @@ redis-exporter:
   script:
     - *push_to_docker_hub
 
+rusty-cachier-env:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 molecule:
   <<:                              *docker_build
   script:
