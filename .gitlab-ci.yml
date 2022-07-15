@@ -200,6 +200,11 @@ gnupg:
   script:
     - *push_to_docker_hub
 
+parity-keyring:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 rpm:
   <<:                              *docker_build
   script:
