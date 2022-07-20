@@ -49,7 +49,7 @@ RUN set -eux; \
 	cargo install cargo-dylint dylint-link && \
 	cargo install cargo-contract && \
 # download the latest `substrate-contracts-node` binary
-    curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mirrors/substrate-contracts-node/-/jobs/1685841/artifacts/download?job=bud-linux' && \
+    curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mirrors/substrate-contracts-node/-/jobs/artifacts/main/download?job=build-linux' && \
 	unzip substrate-contracts-node.zip && \
 	mv artifacts/substrate-contracts-node-linux/substrate-contracts-node /usr/local/cargo/bin/substrate-contracts-node && \
 	rm -r artifacts substrate-contracts-node.zip && \
