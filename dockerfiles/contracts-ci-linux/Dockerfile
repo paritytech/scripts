@@ -45,7 +45,6 @@ RUN set -eux; \
 	rustup toolchain install nightly-2022-07-28 --target wasm32-unknown-unknown \
 		--profile minimal --component rustfmt clippy rust-src && \
 	rustup default nightly-2022-07-28 && \
-	cargo install pwasm-utils-cli --bin wasm-prune && \
 	cargo install cargo-dylint dylint-link && \
 	cargo install cargo-contract && \
 # download the latest `substrate-contracts-node` binary
