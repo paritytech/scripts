@@ -67,9 +67,9 @@ RUN	set -eux; \
 # and targets can be used for this docker image.
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
-	rustup toolchain install nightly --target wasm32-unknown-unknown \
+	rustup toolchain install nightly-2022-07-28 --target wasm32-unknown-unknown \
 		--profile minimal --component rustfmt clippy miri rust-src llvm-tools-preview && \
-	rustup default nightly && \
+	rustup default nightly-2022-07-28 && \
 # We require `xargo` so that `miri` runs properly
 # We require `grcov` for coverage reporting and `rust-covfix` to improve it.
 # We require `cargo-spellcheck` for automated spell-checking
