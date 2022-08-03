@@ -44,7 +44,11 @@ RUN set -eux; \
 # adds those components, wasm target and sets the profile to minimal
 	rustup toolchain install nightly-2022-07-28 --target wasm32-unknown-unknown \
 		--profile minimal --component rustfmt clippy rust-src && \
-	rustup default nightly-2022-07-28 && \
+	# Alias pinned toolchain as nightly, otherwise it appears as though we
+	# don't have a nightly toolchain (i.e rustc +nightly --version is empty)
+	ln -s /usr/local/rustup/toolchains/nightly-2022-07-28-x86_64-unknown-linux-gnu \
+ 	   	/usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
+	rustup default nightly && \
 	cargo install cargo-dylint dylint-link && \
 	cargo install cargo-contract && \
 # download the latest `substrate-contracts-node` binary
