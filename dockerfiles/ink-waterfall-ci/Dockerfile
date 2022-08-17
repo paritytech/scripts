@@ -26,6 +26,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN	set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
+# Required because of `libp2p-core failed to invoke protoc` during Substrate installation
+	protobuf-compiler \
 # `redis-cli` is needed to interact with ci/cd's redis
 	redis-tools \
 # npm is needed to install `yarn`
