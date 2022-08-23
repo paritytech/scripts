@@ -31,6 +31,8 @@ Used to build and test Substrate-based projects.
 **Rust tools & toolchains:**
 
 - `cargo-web`
+- `cargo-hack`
+- `cargo-nextest`
 - `sccache`
 - `wasm-pack`
 - `wasm-bindgen`
