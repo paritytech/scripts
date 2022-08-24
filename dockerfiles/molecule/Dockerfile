@@ -23,7 +23,7 @@ RUN pip install --no-cache-dir  \
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-       docker.io \
+       docker.io jq \
     && rm -rf /var/lib/apt/lists/* \
     && rm -Rf /usr/share/doc && rm -Rf /usr/share/man \
     && apt-get clean
