@@ -9,8 +9,8 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/ink-ci-linux" \
 	io.parity.image.description="Inherits from docker.io/paritytech/base-ci. \
-rust nightly, clippy, rustfmt, miri, rust-src grcov, rust-covfix, llvm-tools-preview, \
-cargo-contract, xargo, binaryen, parallel, codecov" \
+rust nightly, clippy, rustfmt, miri, rust-src, rustc-dev, grcov, rust-covfix, \
+llvm-tools-preview, cargo-contract, xargo, binaryen, parallel, codecov" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/ink-ci-linux/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -69,9 +69,9 @@ RUN	set -eux; \
 # adds those components, wasm target and sets the profile to minimal
     rustup component add rust-src --toolchain stable && \
 	rustup toolchain install nightly-2022-07-28 --target wasm32-unknown-unknown \
-		--profile minimal --component rustfmt clippy miri rust-src llvm-tools-preview && \
-	# Alias pinned toolchain as nightly, otherwise it appears as though we
-	# don't have a nightly toolchain (i.e rustc +nightly --version is empty)
+		--profile minimal --component rustfmt clippy miri rust-src rustc-dev llvm-tools-preview && \
+# Alias pinned toolchain as nightly, otherwise it appears as though we
+# don't have a nightly toolchain (i.e rustc +nightly --version is empty)
 	ln -s /usr/local/rustup/toolchains/nightly-2022-07-28-x86_64-unknown-linux-gnu \
  	   	/usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
 	rustup default stable && \
