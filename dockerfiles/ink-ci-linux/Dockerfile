@@ -67,7 +67,8 @@ RUN	set -eux; \
 # and targets can be used for this docker image.
 # Installs the latest common nightly for the listed components,
 # adds those components, wasm target and sets the profile to minimal
-    rustup component add rust-src --toolchain stable && \
+ 	target add wasm32-unknown-unknown --toolchain stable && \
+ 	rustup component add rust-src --toolchain stable && \
 	rustup toolchain install nightly-2022-07-28 --target wasm32-unknown-unknown \
 		--profile minimal --component rustfmt clippy miri rust-src rustc-dev llvm-tools-preview && \
 # Alias pinned toolchain as nightly, otherwise it appears as though we
