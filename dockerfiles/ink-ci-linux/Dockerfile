@@ -24,12 +24,14 @@ ENV SHELL /bin/bash
 ENV CXX=/usr/bin/clang++-10
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN	set -eux; \
-# Needed for running commands in parallel, without overlapping output.
-# gnupg is only needed to verify the signature of the codecov uploader.
+RUN set -eux; \
 	apt-get -y update && \
+
+	# Needed for running commands in parallel, without overlapping output.
+	# gnupg is only needed to verify the signature of the codecov uploader.
 	apt-get install -y --no-install-recommends parallel gnupg && \
-# codecov uploader
+
+	# codecov uploader
 	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov && \
 	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM && \
 	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
@@ -39,8 +41,9 @@ RUN	set -eux; \
 	chmod +x codecov && \
 	mv codecov /usr/local/bin/codecov && \
 	rm -f codecov.SHA256SUM codecov.SHA256SUM.sig && \
-# `binaryen` is needed by `cargo-contract` for optimizing Wasm files.
-# We fetch the latest release which contains a Linux binary.
+
+	# `binaryen` is needed by `cargo-contract` for optimizing Wasm files.
+	# We fetch the latest release which contains a Linux binary.
 	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases | \
 		egrep --only-matching 'https://github.com/WebAssembly/binaryen/releases/download/version_[0-9]+/binaryen-version_[0-9]+-x86_64-linux.tar.gz' | \
 		head -n1 | \
@@ -50,47 +53,51 @@ RUN	set -eux; \
 	chmod +x binaryen-*/bin/wasm-opt && \
 	mv binaryen-*/bin/wasm-opt /usr/local/bin/ && \
 	rm -rf binaryen-*/ && \
-# `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
-	cargo install cargo-dylint dylint-link && \
-# The supported Rust nightly version must support the following components
-# to allow for a functioning CI pipeline:
-#
-#  - cargo: General build tool.
-#  - rustfmt: Rust formatting tool.
-#  - clippy: Rust linter.
-#  - miri: Rust interpreter with additional safety checks.
-#
-# We also need to install the wasm32-unknown-unknown target to test
-# ink! smart contracts compilation for this target architecture.
-#
-# Only Rust nightly builds supporting all of the above mentioned components
-# and targets can be used for this docker image.
-# Installs the latest common nightly for the listed components,
-# adds those components, wasm target and sets the profile to minimal
+
+	# The stable toolchain is used to build ink! itself through the use of the
+	# `RUSTC_BOOSTRAP=1` environment variable. We also need to install the
+	# `wasm32-unknown-unknown` target since that's the platform that ink! smart contracts
+	# run on.
+	rustup target add wasm32-unknown-unknown --toolchain stable && \
+	rustup component add rust-src --toolchain stable && \
+	rustup default stable && \
+
+	# We also use the nightly toolchain to lint ink!. We perform checks using RustFmt,
+	# Cargo Clippy, and Miri.
+	#
+	# Note that we pin the nightly toolchain since it often creates breaking changes during
+	# the RustFmt and Clippy stages of the CI.
 	rustup toolchain install nightly-2022-07-28 --target wasm32-unknown-unknown \
 		--profile minimal --component rustfmt clippy miri rust-src rustc-dev llvm-tools-preview && \
-# Alias pinned toolchain as nightly, otherwise it appears as though we
-# don't have a nightly toolchain (i.e rustc +nightly --version is empty)
+
+	# Alias pinned toolchain as nightly, otherwise it appears as though we
+	# don't have a nightly toolchain (i.e rustc +nightly --version is empty)
 	ln -s /usr/local/rustup/toolchains/nightly-2022-07-28-x86_64-unknown-linux-gnu \
 		/usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
-	rustup default nightly && \
-# We require `xargo` so that `miri` runs properly
-# We require `grcov` for coverage reporting and `rust-covfix` to improve it.
-# We require `cargo-spellcheck` for automated spell-checking
-	cargo install grcov rust-covfix xargo && \
+
+	# `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
+	cargo install cargo-dylint dylint-link && \
+
+	# Install the latest released version of `cargo-contract`
 	cargo install cargo-contract && \
 
-# Stuff that compiles on stable.
-  cargo +stable install cargo-spellcheck && \
+	# We require `grcov` for coverage reporting and `rust-covfix` to improve it.
+	# We require `xargo` so that `miri` runs properly
+	cargo install grcov rust-covfix xargo && \
 
-# versions
+	# Automated spell-checking
+	cargo install cargo-spellcheck && \
+
+	# Versions
 	rustup show && \
 	cargo --version && \
 	cargo-contract --version && \
 	wasm-opt --version && \
-# Clean up and remove compilation artifacts that a cargo install creates (>250M).
+
+	# Clean up and remove compilation artifacts that a cargo install creates (>250M).
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
-# apt clean up
+
+	# apt clean up
 	apt-get remove -y gnupg && \
 	apt-get autoremove -y && \
 	apt-get clean && \
