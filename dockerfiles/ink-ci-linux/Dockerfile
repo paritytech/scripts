@@ -58,7 +58,7 @@ RUN	set -eux; \
     # `RUSTC_BOOSTRAP=1` environment variable. We also need to install the
     # `wasm32-unknown-unknown` target since that's the platform that ink! smart contracts
     # run on.
- 	target add wasm32-unknown-unknown --toolchain stable && \
+ 	rustup target add wasm32-unknown-unknown --toolchain stable && \
  	rustup component add rust-src --toolchain stable && \
 	rustup default stable && \
 
