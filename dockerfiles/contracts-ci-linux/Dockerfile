@@ -23,7 +23,6 @@ WORKDIR /builds
 ENV SHELL /bin/bash
 ENV DEBIAN_FRONTEND=noninteractive
 
-# install tools and dependencies
 RUN set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
@@ -69,28 +68,29 @@ RUN set -eux; \
     # Install the latest released version of `cargo-contract`
 	cargo install cargo-contract && \
 
-# download the latest `substrate-contracts-node` binary
+    # Download the latest `substrate-contracts-node` binary
     curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mirrors/substrate-contracts-node/-/jobs/artifacts/main/download?job=build-linux' && \
 	unzip substrate-contracts-node.zip && \
 	mv artifacts/substrate-contracts-node-linux/substrate-contracts-node /usr/local/cargo/bin/substrate-contracts-node && \
 	rm -r artifacts substrate-contracts-node.zip && \
 	chmod +x /usr/local/cargo/bin/substrate-contracts-node && \
 
-# We use `estuary` as a lightweight cargo registry in the CI to test if
-# publishing `cargo-contract` to it and installing it from there works.
+    # We use `estuary` as a lightweight cargo registry in the CI to test if
+    # publishing `cargo-contract` to it and installing it from there works.
 	cargo install --git https://github.com/onelson/estuary.git --force && \
-# versions
+
+    # Versions
 	yarn --version && \
 	rustup show && \
 	cargo --version && \
 	echo $( substrate-contracts-node --version | awk 'NF' ) && \
 	estuary --version && \
 
-# cargo clean up
-# removes compilation artifacts cargo install creates (>250M)
+    # cargo clean up
+    # removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache && \
 
-# apt clean up
+    # apt clean up
 	apt-get autoremove -y && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
