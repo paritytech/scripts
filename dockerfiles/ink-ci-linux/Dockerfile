@@ -24,11 +24,11 @@ ENV SHELL /bin/bash
 ENV CXX=/usr/bin/clang++-10
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN	set -eux; \
+RUN set -eux; \
+	apt-get -y update && \
 
     # Needed for running commands in parallel, without overlapping output.
     # gnupg is only needed to verify the signature of the codecov uploader.
-	apt-get -y update && \
 	apt-get install -y --no-install-recommends parallel gnupg && \
 
     # codecov uploader
@@ -75,6 +75,12 @@ RUN	set -eux; \
 	ln -s /usr/local/rustup/toolchains/nightly-2022-07-28-x86_64-unknown-linux-gnu \
  	   	/usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
 
+    # `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
+	cargo install cargo-dylint dylint-link && \
+
+    # Install the latest released version of `cargo-contract`
+	cargo install cargo-contract && \
+
     # We require `grcov` for coverage reporting and `rust-covfix` to improve it.
     # We require `xargo` so that `miri` runs properly
 	cargo install grcov rust-covfix xargo && \
@@ -82,13 +88,7 @@ RUN	set -eux; \
     # Automated spell-checking
  	cargo install cargo-spellcheck && \
 
-    # `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
-	cargo install cargo-dylint dylint-link && \
-
-    # Install the latest released version of `cargo-contract`
-	cargo install cargo-contract && \
-
-    # versions
+    # Versions
 	rustup show && \
 	cargo --version && \
 	cargo-contract --version && \
