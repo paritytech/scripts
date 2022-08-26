@@ -85,7 +85,7 @@ default:
 
 # Build and push to docker hub
 ansible:
-  # <<:                              *docker_build
+  stage: build
   script:
     - *push_to_docker_hub
   tags:
