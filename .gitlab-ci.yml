@@ -86,6 +86,8 @@ default:
 # Build and push to docker hub
 ansible:
   stage: build
+  variables: 
+    IMAGE_NAME: ansible
   script:
     - *push_to_docker_hub
   tags:
