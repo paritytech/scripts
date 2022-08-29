@@ -588,4 +588,3 @@ ansible:
       #       artifacts:                   false
       #   rules:
       #     - if: $IMAGE_NAME == "parity-scale-codec"
-
