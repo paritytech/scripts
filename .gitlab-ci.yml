@@ -89,6 +89,7 @@ ansible:
   stage: build
   variables: 
     IMAGE_NAME: ansible
+  image:                           quay.io/buildah/stable
   script:
     - *push_to_docker_hub
   tags:
