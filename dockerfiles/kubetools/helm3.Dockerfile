@@ -10,6 +10,7 @@ ARG HELM_SECRETS_VERSION
 ARG KUBE_VERSION
 ARG VALS_VERSION
 ARG VAULT_VERSION
+ARG KUSTOMIZE_VERSION
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
@@ -28,24 +29,38 @@ RUN apk add --no-cache \
     pip3 install --no-cache --upgrade pip kubernetes && \
     ln -s /usr/bin/python3 /usr/bin/python && \
     # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
+    echo "Installing kubectl" && \
     curl -L "https://dl.k8s.io/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl" \
         -o /usr/local/bin/kubectl && \
     # https://github.com/helm/helm/releases
+    echo "Installing helm" && \
     curl -L "https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz" \
         -o helm.tar.gz && \
     tar -zxf helm.tar.gz linux-amd64/helm && \
     mv linux-amd64/helm /usr/local/bin/helm && \
     rm -rf helm.tar.gz linux-amd64 && \
     # https://github.com/roboll/helmfile/releases
+    echo "Installing helmfile" && \
     curl -L "https://github.com/roboll/helmfile/releases/download/v${HELMFILE_VERSION}/helmfile_linux_amd64" \
         -o /usr/local/bin/helmfile && \
     # Install vals: https://github.com/variantdev/vals/releases
-    wget -qO- https://github.com/variantdev/vals/releases/download/v${VALS_VERSION}/vals_${VALS_VERSION}_linux_amd64.tar.gz \
-      | tar -xzf- && \
+    echo "Installing vals" && \
+    curl -L https://github.com/variantdev/vals/releases/download/v${VALS_VERSION}/vals_${VALS_VERSION}_linux_amd64.tar.gz \
+      | -o vals.tar.gz && \
+    tar -zxf vals.tar.gz vals && \
     mv vals /usr/local/bin/ && rm LICENSE README.md && \
     # Install vault
+    echo "Installing vault" && \
     wget -qO- https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip \
       | unzip -d /usr/local/bin - && \
+    # Install kustomize
+    echo "Installing kustomize" && \
+    curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz \
+        -o kustomize.tar.gz && \
+    tar -zxf kustomize.tar.gz kustomize && \
+    mv kustomize /usr/local/bin/helm && \
+    rm -rf kustomize.tar.gz && \
+    chmod +x  /usr/local/bin/kustomize && \
     chmod +x /usr/local/bin/kubectl && \
     chmod +x /usr/local/bin/helm && \
     chmod +x /usr/local/bin/helmfile && \
@@ -54,7 +69,9 @@ RUN apk add --no-cache \
     kubectl version --short=true --client && \
     helm version  && \
     helmfile version && \
-    vault --version
+    vault --version && \
+    vals version && \
+    kustomize version
 
 RUN set -x \
     && groupadd -g 1000 nonroot \

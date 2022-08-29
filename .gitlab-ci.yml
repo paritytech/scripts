@@ -288,7 +288,8 @@ kubetools-helm3:
     VALS_VERSION:             "0.18.0"
     # https://releases.hashicorp.com/vault/
     VAULT_VERSION:            "1.11.2"
-
+    # https://github.com/kubernetes-sigs/kustomize/releases
+    KUSTOMIZE_VERSION:        "4.5.7"
   script:
     - |
       cat <<-EOT
@@ -301,8 +302,9 @@ kubetools-helm3:
       | HELM_DIFF_PLUGIN_VERSION = $HELM_DIFF_PLUGIN_VERSION
       | HELM_SECRETS_VERSION = $HELM_SECRETS_VERSION
       | KUBE_VERSION = $KUBE_VERSION
-      | VALS_VERSION= $VALS_VERSION
-      | VAULT_VERSION= $VAULT_VERSION
+      | VALS_VERSION = $VALS_VERSION
+      | VAULT_VERSION = $VAULT_VERSION
+      | KUSTOMIZE_VERSION = $KUSTOMIZE_VERSION
       |
       EOT
     - buildah bud
@@ -317,6 +319,7 @@ kubetools-helm3:
       --build-arg HELM_SECRETS_VERSION="$HELM_SECRETS_VERSION"
       --build-arg VALS_VERSION="$VALS_VERSION"
       --build-arg VAULT_VERSION="$VAULT_VERSION"
+      --build-arg KUSTOMIZE_VERSION="$KUSTOMIZE_VERSION"
       --tag "$REGISTRY_PATH/kubetools:helm3"
       --tag "$REGISTRY_PATH/kubetools:$HELM_VERSION"
       --file "dockerfiles/kubetools/helm3.Dockerfile" dockerfiles
