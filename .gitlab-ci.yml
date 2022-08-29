@@ -94,7 +94,8 @@ ansible:
   script:
     - *push_to_docker_hub
   tags:
-    - radu-test-kubernetes-parity-build 
+    - kubernetes-parity-build 
+      # - radu-test-kubernetes-parity-build 
 
       # base-ci-linux:
       #   <<:                              *docker_build
