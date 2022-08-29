@@ -39,7 +39,7 @@ default:
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
-      --device /dev/fuse
+      --device /smarter-devices/fuse
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   - buildah info
     #   - echo "$Docker_Hub_Pass_Parity" |
