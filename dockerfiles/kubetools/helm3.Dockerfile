@@ -45,20 +45,20 @@ RUN apk add --no-cache \
         -o /usr/local/bin/helmfile && \
     # Install vals: https://github.com/variantdev/vals/releases
     echo "Installing vals" && \
-    curl -L https://github.com/variantdev/vals/releases/download/v${VALS_VERSION}/vals_${VALS_VERSION}_linux_amd64.tar.gz \
-      | -o vals.tar.gz && \
+    curl -L "https://github.com/variantdev/vals/releases/download/v${VALS_VERSION}/vals_${VALS_VERSION}_linux_amd64.tar.gz" \
+        -o vals.tar.gz && \
     tar -zxf vals.tar.gz vals && \
-    mv vals /usr/local/bin/ && rm LICENSE README.md && \
+    mv vals /usr/local/bin/ && \
     # Install vault
     echo "Installing vault" && \
-    wget -qO- https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip \
+    wget -qO- "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" \
       | unzip -d /usr/local/bin - && \
     # Install kustomize
     echo "Installing kustomize" && \
-    curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz \
+    curl -L "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" \
         -o kustomize.tar.gz && \
     tar -zxf kustomize.tar.gz kustomize && \
-    mv kustomize /usr/local/bin/helm && \
+    mv kustomize /usr/local/bin/kustomize && \
     rm -rf kustomize.tar.gz && \
     chmod +x  /usr/local/bin/kustomize && \
     chmod +x /usr/local/bin/kubectl && \
