@@ -59,7 +59,7 @@ RUN set -eux; \
 	# `wasm32-unknown-unknown` target since that's the platform that ink! smart contracts
 	# run on.
 	rustup target add wasm32-unknown-unknown --toolchain stable && \
-	rustup component add rust-src --toolchain stable && \
+	rustup component add rust-src clippy rustfmt --toolchain stable && \
 	rustup default stable && \
 
 	# We also use the nightly toolchain to lint ink!. We perform checks using RustFmt,
