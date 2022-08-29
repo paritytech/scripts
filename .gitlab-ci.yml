@@ -40,6 +40,7 @@ default:
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+      --device /dev/fuse
   - buildah info
     #   - echo "$Docker_Hub_Pass_Parity" |
     #       buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
