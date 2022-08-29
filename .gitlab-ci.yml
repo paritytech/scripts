@@ -38,6 +38,7 @@ default:
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   - buildah info
@@ -590,3 +591,4 @@ ansible:
       #       artifacts:                   false
       #   rules:
       #     - if: $IMAGE_NAME == "parity-scale-codec"
+
