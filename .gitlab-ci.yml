@@ -69,6 +69,7 @@ default:
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
   - buildah logout "$REGISTRY_NAME"
 
+
 .push_to_production:               &push_to_production
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
   - env REGISTRY_AUTH_FILE= buildah pull "$REGISTRY_PATH/$IMAGE_NAME:staging"
@@ -587,3 +588,4 @@ ansible:
       #       artifacts:                   false
       #   rules:
       #     - if: $IMAGE_NAME == "parity-scale-codec"
+
