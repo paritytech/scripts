@@ -78,8 +78,17 @@ RUN set -eux; \
 	# `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
 	cargo install cargo-dylint dylint-link && \
 
-	# Install the latest released version of `cargo-contract`
-	cargo install cargo-contract && \
+	# Install the latest `cargo-contract`
+	cargo install --git https://github.com/paritytech/cargo-contract \
+        --locked --branch master --force && \
+
+    # Download the latest `substrate-contracts-node` binary
+	curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mirrors/substrate-contracts-node/-/jobs/artifacts/main/download?job=build-linux' && \
+	unzip substrate-contracts-node.zip && \
+	mv artifacts/substrate-contracts-node-linux/substrate-contracts-node /usr/local/cargo/bin/substrate-contracts-node && \
+	rm -r artifacts substrate-contracts-node.zip && \
+	chmod +x /usr/local/cargo/bin/substrate-contracts-node && \
+
 
 	# We require `grcov` for coverage reporting and `rust-covfix` to improve it.
 	# We require `xargo` so that `miri` runs properly
