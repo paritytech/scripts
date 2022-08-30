@@ -78,8 +78,9 @@ RUN set -eux; \
 	# `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
 	cargo install cargo-dylint dylint-link && \
 
-	# Install the latest released version of `cargo-contract`
-	cargo install cargo-contract && \
+	# Install the latest `cargo-contract`
+	cargo install --git https://github.com/paritytech/cargo-contract \
+        --locked --branch master --force && \
 
 	# We require `grcov` for coverage reporting and `rust-covfix` to improve it.
 	# We require `xargo` so that `miri` runs properly
