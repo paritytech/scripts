@@ -63,17 +63,9 @@ RUN set -eux; \
 	rustup default stable && \
 
 	# We also use the nightly toolchain to lint ink!. We perform checks using RustFmt,
-	# Cargo Clippy, and Miri.
-	#
-	# Note that we pin the nightly toolchain since it often creates breaking changes during
-	# the RustFmt and Clippy stages of the CI.
-	rustup toolchain install nightly-2022-07-28 --target wasm32-unknown-unknown \
+	# Cargo, Clippy, and Miri.
+	rustup toolchain install nightly --target wasm32-unknown-unknown \
 		--profile minimal --component rustfmt clippy miri rust-src rustc-dev llvm-tools-preview && \
-
-	# Alias pinned toolchain as nightly, otherwise it appears as though we
-	# don't have a nightly toolchain (i.e rustc +nightly --version is empty)
-	ln -s /usr/local/rustup/toolchains/nightly-2022-07-28-x86_64-unknown-linux-gnu \
-		/usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
 
 	# `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
 	cargo install cargo-dylint dylint-link && \
