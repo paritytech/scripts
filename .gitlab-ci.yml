@@ -331,6 +331,29 @@ kubetools-helm3:
     - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$HELM_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
+kubetools-kubectl:
+  <<:                              *docker_build
+  variables:
+    <<:                            *default-vars
+    KUBE_VERSION:                  "1.22.15"
+  script:
+    - buildah bud
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --build-arg KUBE_VERSION="$KUBE_VERSION"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:kubectl"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:kubectl-$KUBE_VERSION"
+      --file "dockerfiles/$IMAGE_NAME/kubectl-1.22.Dockerfile" dockerfiles
+    # Push to Dockerhub
+    - echo "$Docker_Hub_Pass_Parity" |
+        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+    - buildah info
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:kubectl"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:kubectl-$KUBE_VERSION"
+    - buildah logout "$REGISTRY_NAME"
+
 terraform:
   <<:                              *docker_build
   variables:
