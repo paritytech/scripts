@@ -269,11 +269,10 @@ kubetools:
     - buildah logout "$REGISTRY_NAME"
 
 # waits until kubetools job above is deprecated, "latest" tag remains after the old image
-kubetools-helm3:
+kubetools-helm:
   <<:                              *docker_build
   variables:
     <<:                            *default-vars
-    IMAGE_NAME:                    kubetools
     # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
     KUBE_VERSION:             "1.24.3"
     # https://github.com/helm/helm/releases
@@ -323,8 +322,8 @@ kubetools-helm3:
       # To retain backwards compatibility to old name
       --tag "$REGISTRY_PATH/kubetools:helm3"
       --tag "$REGISTRY_PATH/kubetools:$HELM_VERSION"
-      --tag "$REGISTRY_PATH/kubetools-helm:latest"
-      --tag "$REGISTRY_PATH/kubetools-helm:$HELM_VERSION"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$HELM_VERSION"
       --file "dockerfiles/kubetools/helm/helm3.Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
@@ -332,6 +331,8 @@ kubetools-helm3:
     - buildah info
     - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:helm3"
     - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$HELM_VERSION"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$HELM_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 kubetools-kubectl:
@@ -346,15 +347,15 @@ kubetools-kubectl:
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg KUBE_VERSION="$KUBE_VERSION"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME-kubectl:latest"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME-kubectl:$KUBE_VERSION"
-      --file "dockerfiles/$IMAGE_NAME/kubectl/Dockerfile" dockerfiles
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$KUBE_VERSION"
+      --file "dockerfiles/kubetools/kubectl/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME-kubectl:latest"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME-kubectl:$KUBE_VERSION"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$KUBE_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 terraform:
