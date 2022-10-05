@@ -258,7 +258,7 @@ kubetools:
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:helm2"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
-      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+      --file "dockerfiles/$IMAGE_NAME/helm/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
@@ -320,9 +320,12 @@ kubetools-helm3:
       --build-arg VALS_VERSION="$VALS_VERSION"
       --build-arg VAULT_VERSION="$VAULT_VERSION"
       --build-arg KUSTOMIZE_VERSION="$KUSTOMIZE_VERSION"
+      # To retain backwards compatibility to old name
       --tag "$REGISTRY_PATH/kubetools:helm3"
       --tag "$REGISTRY_PATH/kubetools:$HELM_VERSION"
-      --file "dockerfiles/kubetools/helm3.Dockerfile" dockerfiles
+      --tag "$REGISTRY_PATH/kubetools-helm:latest"
+      --tag "$REGISTRY_PATH/kubetools-helm:$HELM_VERSION"
+      --file "dockerfiles/kubetools/helm/helm3.Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
@@ -343,15 +346,15 @@ kubetools-kubectl:
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --build-arg KUBE_VERSION="$KUBE_VERSION"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME:kubectl"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME:kubectl-$KUBE_VERSION"
-      --file "dockerfiles/$IMAGE_NAME/kubectl-1.22.Dockerfile" dockerfiles
+      --tag "$REGISTRY_PATH/$IMAGE_NAME-kubectl:latest"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME-kubectl:$KUBE_VERSION"
+      --file "dockerfiles/$IMAGE_NAME/kubectl/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:kubectl"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:kubectl-$KUBE_VERSION"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME-kubectl:latest"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME-kubectl:$KUBE_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 terraform:
