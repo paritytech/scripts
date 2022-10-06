@@ -362,7 +362,7 @@ terraform:
   variables:
     <<:                            *default-vars
     # https://releases.hashicorp.com/terraform/
-    TERRAFORM_VERSION:             "1.0.4"
+    TERRAFORM_VERSION:             "1.1.0"
     # https://releases.hashicorp.com/vault/
     VAULT_VERSION:                 "1.8.0"
   script:
