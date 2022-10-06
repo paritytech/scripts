@@ -319,7 +319,6 @@ kubetools-helm:
       --build-arg VALS_VERSION="$VALS_VERSION"
       --build-arg VAULT_VERSION="$VAULT_VERSION"
       --build-arg KUSTOMIZE_VERSION="$KUSTOMIZE_VERSION"
-      # To retain backwards compatibility to old name
       --tag "$REGISTRY_PATH/kubetools:helm3"
       --tag "$REGISTRY_PATH/kubetools:$HELM_VERSION"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
