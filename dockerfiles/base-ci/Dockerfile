@@ -35,7 +35,7 @@ ENV	DEBIAN_FRONTEND=noninteractive
 RUN set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
-		libssl-dev clang lld libclang-dev make cmake \
+		libssl-dev clang lld libclang-dev make cmake protobuf-compiler \
 		git pkg-config curl time rhash ca-certificates \
 		jq ruby ruby-bundler git-restore-mtime python3-pip xz-utils unzip && \
 # add non-root user
