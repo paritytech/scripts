@@ -21,9 +21,9 @@ RUN set -eux && \
 	# install `rust-src` component for ui test
 	rustup component add rust-src rustfmt clippy && \
 	# install specific Rust nightly, default is stable, use minimum components
-	rustup toolchain install nightly-2022-07-25 --profile minimal --component rustfmt clippy && \
-	# "alias" pinned nightly-2022-07-25 toolchain as nightly
-	ln -s /usr/local/rustup/toolchains/nightly-2022-07-25-x86_64-unknown-linux-gnu /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
+	rustup toolchain install nightly-2022-10-10 --profile minimal --component rustfmt clippy && \
+	# "alias" pinned nightly-2022-10-10 toolchain as nightly
+	ln -s /usr/local/rustup/toolchains/nightly-2022-10-10-x86_64-unknown-linux-gnu /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
 	# install wasm toolchain
 	rustup target add wasm32-unknown-unknown && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
