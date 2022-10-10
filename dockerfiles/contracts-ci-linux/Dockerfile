@@ -54,12 +54,12 @@ RUN set -eux; \
 	#
 	# Note that we pin the nightly toolchain since it often creates breaking changes during
 	# the RustFmt and Clippy stages of the CI.
-	rustup toolchain install nightly-2022-07-28 --target wasm32-unknown-unknown \
+	rustup toolchain install nightly-2022-10-10 --target wasm32-unknown-unknown \
 		--profile minimal --component rustfmt clippy rust-src && \
 
 	# Alias pinned toolchain as nightly, otherwise it appears as though we
 	# don't have a nightly toolchain (i.e rustc +nightly --version is empty)
-	ln -s /usr/local/rustup/toolchains/nightly-2022-07-28-x86_64-unknown-linux-gnu \
+	ln -s /usr/local/rustup/toolchains/nightly-2022-10-10-x86_64-unknown-linux-gnu \
 		/usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
 
 	# `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
