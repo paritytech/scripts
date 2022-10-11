@@ -79,7 +79,7 @@ RUN	set -eux; \
 # `substrate-contracts-node` is a Substrate chain with smart contract functionality.
 # `--locked` ensures the project's `Cargo.lock` is used.
 	cargo install --git https://github.com/paritytech/substrate-contracts-node.git \
-		--locked --branch main && \
+		--locked --branch main --force && \
 # We additionally install the `substrate-contracts-node` as `substrate-contracts-rand-extension`.
 # This installation though is a modified `substrate-contracts-node`, so that ink!'s
 # `rand-extension` chain extension example is included in the runtime.
