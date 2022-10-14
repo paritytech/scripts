@@ -274,7 +274,7 @@ send-becnh-result:
   stage:                           send-becnh-result
   image:                           paritytech/benchmarks:latest
   variables:
-    PROMETHEUS_URL:                "http://pushgateway.parity-build.parity.io"
+    PROMETHEUS_URL:                "https://pushgateway.parity-build.parity.io"
   #get artifacts with text file that contains result
   needs:
     - job:                         benchmarks
@@ -305,7 +305,7 @@ send-becnh-result:
                        --name sidecar \
                        --result 33333 \
                        --unit ms \
-                       --prometheus-server http://pushgateway.parity-build.parity.io
+                       --prometheus-server https://pushgateway.parity-build.parity.io
 ```
 
 ## check_single_bench_results.py
@@ -322,7 +322,7 @@ send-becnh-result:
   stage:                           check-becnh-result
   image:                           paritytech/benchmarks:latest
   variables:
-    PROMETHEUS_URL:                "http://pushgateway.parity-build.parity.io"
+    PROMETHEUS_URL:                "https://pushgateway.parity-build.parity.io"
     GITHUB_REPO:                   "paritytech/jsonrpsee"
   #get artifacts with text file that contains result
   needs:
