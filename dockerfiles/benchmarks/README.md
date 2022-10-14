@@ -264,7 +264,7 @@ python3 check_bench_result.py output.txt
 ## push_bench_result.py
 
 The script sends metrics to PushGateway, which is scraped by Prometheus.
-All metrics from Prometheus get pushed to Thanos.:w
+All metrics from Prometheus get pushed to Thanos.
 /
 
 ci example:
