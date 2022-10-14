@@ -1,5 +1,12 @@
 Docker image to push and check benchmark results
 
+Long term storage metrics is done with Thanos now
+https://github.com/paritytech/devops/wiki/DevOps-Internal%3A-Thanos
+
+### Thanos Query Frontend https://thanos.parity-mgmt.parity.io/
+
+TODO:
+- [ ] do a request example to get metrics from Thanos
 ## check_bench_result.py
 
 The script takes an output file of `carg bench`, compares current result with the 
@@ -50,12 +57,12 @@ The script sends metrics to Victoria Metrics.
 ci example:
 
 ```yml
-
 send-becnh-result:
   stage:                           send-becnh-result
   image:                           paritytech/benchmarks:latest
   variables:
     PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
+    PROMETHEUS_URL:                "http://pushgateway.parity-build.parity.io"
   #get artifacts with text file that contains result
   needs:
     - job:                         benchmarks
@@ -78,6 +85,14 @@ send-becnh-result:
                         -l 'commit="'$CI_COMMIT_SHORT_SHA'",cirunner="'$runner'"'
                         -s $PROMETHEUS_URL
 
+ 
+     # example with values
+     push_bench_result --type common \
+                       --project substrate-api-sidecar \
+                       --name sidecar \
+                       --result 33333 \
+                       --unit ms \
+                       --prometheus-server http://pushgateway.parity-build.parity.io
 ```
 
 ## check_single_bench_results.py
@@ -110,9 +125,24 @@ send-becnh-result:
                                    -g $GITHUB_ORG \                       # GitHub Org for creating issue
                                    -t 20 \                                # Threshold %
                                    -v $RESULT                             # Result
+
+    # example with values
+     check_single_bench_result.py --metric parity_benchmark_common_result_ms  \
+                                  --project substrate-api-sidecar \
+                                  --name sidecar \
+                                  --prometheus-server 'http://vm-longterm.parity-build.parity.io' \
+                                  --github-repo 'paritytech/substrate-api-sidecar' \
+                                  --threshold 20 \
+                                  --value 35000
+
     # To compare with constant:
     - check_single_bench_result.py -g 'org/repo'\    # GitHub Org for creating issue
                                    -c 1 \            # Constant to compare
                                    -v $RESULT        # Result
 
+    # example with values
+	  check_single_bench_result.py --github-repo 'paritytech/substrate-api-sidecar' \
+                                   --constant 35000 \
+                                   --value 37461.43
 ```
+

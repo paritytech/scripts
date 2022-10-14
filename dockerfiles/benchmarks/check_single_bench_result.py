@@ -93,7 +93,9 @@ def get_arguments():
     return args
 
 
-def is_metric_exceed_threshold(value1: float, value2: float, threshold: int) -> bool:
+def is_metric_exceed_threshold(
+    value1: float, value2: float, threshold: int
+) -> bool:
     return abs(100 - value1 * 100 / value2) > threshold
 
 
@@ -102,7 +104,10 @@ def is_metric_exceed_constant(value: float, constant: int) -> bool:
 
 
 def get_benchmark_last_result(
-    metric_name: str, project: str, benchmark: str, prometheus_client: PrometheusConnect
+    metric_name: str,
+    project: str,
+    benchmark: str,
+    prometheus_client: PrometheusConnect,
 ) -> float:
     """
     Get latest benchmark result from Victoria Metrics
@@ -160,6 +165,7 @@ def main():
         last_result = get_benchmark_last_result(
             args.metric, args.project, args.name, prometheus_client
         )
+        print("Last benchmark result is", last_result)
         is_metric_exceed = is_metric_exceed_threshold(
             float(args.value), last_result, int(args.threshold)
         )
