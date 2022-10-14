@@ -96,7 +96,7 @@ def create_metric(args):
 
 def send_metric(server, metric_name, metric_value):
     """
-    Sends metric to Victoria Metrics server
+    Sends metric to Prometheus push gateway
     https://github.com/VictoriaMetrics/VictoriaMetrics#how-to-import-data-in-prometheus-exposition-format
 
     https://github.com/prometheus/pushgateway#command-line
