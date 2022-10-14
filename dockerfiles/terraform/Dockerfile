@@ -19,7 +19,7 @@ dockerfiles/terraform/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 RUN apk add --no-cache \
-		ca-certificates git jq make curl gettext bash shadow; \
+		ca-certificates git jq make curl gettext bash shadow openssh-client; \
 	curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
 		-o terraform.zip; \
 	unzip terraform.zip	-d /usr/local/bin/ terraform; \

@@ -60,12 +60,12 @@ RUN	set -eux; \
 #
 # Note that we pin the nightly toolchain since it often creates breaking changes during
 # the rustfmt and clippy stages of the CI.
-	rustup toolchain install nightly-2022-07-28 --target wasm32-unknown-unknown \
+	rustup toolchain install nightly-2022-10-10 --target wasm32-unknown-unknown \
 		--profile minimal --component rustfmt clippy miri rust-src rustc-dev llvm-tools-preview && \
 
 # Alias pinned toolchain as nightly, otherwise it appears as though we
 # don't have a nightly toolchain (i.e rustc +nightly --version is empty)
-	ln -s /usr/local/rustup/toolchains/nightly-2022-07-28-x86_64-unknown-linux-gnu \
+	ln -s /usr/local/rustup/toolchains/nightly-2022-10-10-x86_64-unknown-linux-gnu \
 		/usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
 
 # `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
@@ -79,7 +79,7 @@ RUN	set -eux; \
 # `substrate-contracts-node` is a Substrate chain with smart contract functionality.
 # `--locked` ensures the project's `Cargo.lock` is used.
 	cargo install --git https://github.com/paritytech/substrate-contracts-node.git \
-		--locked --branch main && \
+		--locked --branch main --force && \
 # We additionally install the `substrate-contracts-node` as `substrate-contracts-rand-extension`.
 # This installation though is a modified `substrate-contracts-node`, so that ink!'s
 # `rand-extension` chain extension example is included in the runtime.
