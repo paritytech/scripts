@@ -69,7 +69,7 @@ def get_arguments():
         help="Metric unit (ns,s,bytes,info...)",
     )
     parser.add_argument(
-        "--prometheus-server",
+        "--prometheus-pushgateway",
         "-s",
         type=str,
         required=True,
