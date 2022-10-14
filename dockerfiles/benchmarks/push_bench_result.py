@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Push data to Victoria Metrics
+Push data to Promethues Pushgateway
 Usage: python3 push_bench_result.py -t <common(default)|specific|test> \
                                  -p <benchmark_name> \
                                  -n <benchmark_project> \
@@ -35,7 +35,7 @@ import requests
 
 def get_arguments():
     parser = argparse.ArgumentParser(
-        description="Push data to Victoria Metrics."
+        description="Push data to Promethues Pushgateway."
     )
     parser.add_argument(
         "--type",
@@ -96,8 +96,7 @@ def create_metric(args):
 
 def send_metric(server, metric_name, metric_value):
     """
-    Sends metric to Prometheus push gateway
-    https://github.com/VictoriaMetrics/VictoriaMetrics#how-to-import-data-in-prometheus-exposition-format
+    Sends metric to Prometheus Pushgateway
 
     https://github.com/prometheus/pushgateway#command-line
     echo "some_metric 3.14" | curl --data-binary @- http://pushgateway.example.org:9091/metrics/job/some_job

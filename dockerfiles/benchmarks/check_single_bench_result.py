@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
-Script compares provided result either with constant or with previuos value from Victoria Metrics.
+Script compares provided result either with constant or with previuos value
+from Thanos.
 If the result exceeds constant or threshold, scripts creates github issue.
 2 env variables should exist: CI_COMMIT_SHA and GITHUB_TOKEN
 
@@ -114,7 +115,7 @@ def get_benchmark_last_result(
     prometheus_client: PrometheusConnect,
 ) -> float:
     """
-    Get latest benchmark result from Victoria Metrics
+    Get latest benchmark result from Thanos.
     Returns "-1" if result not found
     :param metric_name: Full metric name (e.g. parity_benchmark_common_result_ms)
     :param project: Project name

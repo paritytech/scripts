@@ -60,7 +60,7 @@ except Exception as e:
 
 def benchmark_last_result(project, benchmark):
     """
-    Get latest benchmark result from Victoria Metrics
+    Get latest benchmark result from Thanos.
     Returns "-1" if result not found
     """
     query = f'last_over_time(parity_benchmark_common_result_ns{{project="{project}",benchmark="{benchmark}"}}[1y])'
@@ -74,7 +74,7 @@ def benchmark_last_result(project, benchmark):
 
 def benchmark_last_sha(project):
     """
-    Get short sha of latest benchmark result from Thanos
+    Get short sha of latest benchmark result from Thanos.
     """
     query = f'parity_benchmark_specific_result_ns{{project="{project}"}}[3d]'
     query_result = prometheus_client.custom_query(query=query)
