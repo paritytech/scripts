@@ -274,7 +274,6 @@ send-becnh-result:
   stage:                           send-becnh-result
   image:                           paritytech/benchmarks:latest
   variables:
-    PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
     PROMETHEUS_URL:                "http://pushgateway.parity-build.parity.io"
   #get artifacts with text file that contains result
   needs:
