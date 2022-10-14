@@ -8,6 +8,7 @@ Usage: python3 push_bench_result.py -t <common(default)|specific|test> \
                                  -u <benchmark_units (default: ns)> \
                                  -l <additinal_labels_for_specific_benchmarks>
                                  -s <prometheus_server>
+
 Example: python3 push_bench_result.py -t specific \
                                    -p $CI_PROJECT_NAME \
                                    -n superbench \
@@ -16,6 +17,15 @@ Example: python3 push_bench_result.py -t specific \
                                    -l 'commit="1qw2f43984uf",cirunner="ci5"' \
                                    -s 'http://prometheus.address'
 If you need to pass some variables to the label then string should look like: 'commit="'$commit'",cirunner="'$runner'"'
+
+EXAMPLE:
+./push_bench_result.py --type common \
+                       --project substrate-api-sidecar \
+                       --name sidecar \
+                       --result 34444 \
+                       --unit ms \
+                       --prometheus-server http://pushgateway.parity-build.parity.io
+Metric 'parity_benchmark_common_result_ms{project="substrate-api-sidecar",benchmark="sidecar"} 34444' was successfully   sent
 """
 
 import sys
@@ -95,8 +105,6 @@ def send_metric(server, metric_name, metric_value):
     url = f"{server}/metrics/job/${metric_name}"
     # \n is required to signal end of input stream
     data = f"{metric_name} {metric_value}\n"
-    print("metric_name", metric_name)
-    print("metric_value", metric_value)
     return requests.post(url, data=data)
 
 
