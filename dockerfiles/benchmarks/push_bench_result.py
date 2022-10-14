@@ -24,7 +24,7 @@ EXAMPLE:
                        --name sidecar \
                        --result 34444 \
                        --unit ms \
-                       --prometheus-server http://pushgateway.parity-build.parity.io
+                       --prometheus-server https://pushgateway.parity-build.parity.io
 Metric 'parity_benchmark_common_result_ms{project="substrate-api-sidecar",benchmark="sidecar"} 34444' was successfully   sent
 """
 

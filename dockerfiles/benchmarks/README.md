@@ -249,7 +249,7 @@ export GITHUB_TOKEN=<token>        # Github token with repo permissions
 export CI_PROJECT_NAME=<project>   # Github project
 export GITHUB_ORG=<org>            # Optional. Github organisation, default = paritytech
 export CI_COMMIT_SHA=<current_sha> # Latest commit sha in master
-export PROMETHEUS_URL=<url>        # Prometheus/VictoriaMetrics URL
+export PROMETHEUS_URL=<url>        # Prometheus/ Thanos URL
 export TRESHOLD=20                 # Optional. Threshold to create github issue, default = 20
 python3 check_bench_result.py output.txt
 
@@ -263,7 +263,9 @@ python3 check_bench_result.py output.txt
 
 ## push_bench_result.py
 
-The script sends metrics to Victoria Metrics.
+The script sends metrics to PushGateway, which is scraped by Prometheus.
+All metrics from Prometheus get pushed to Thanos.:w
+/
 
 ci example:
 
@@ -309,7 +311,7 @@ send-becnh-result:
 
 ## check_single_bench_results.py
 
-Script compares provided result either with constant or with previuos value from Victoria Metrics.  
+Script compares provided result either with constant or with previuos value from Thanos
 If the result exceeds constant or threshold, scripts creates github issue.  
 2 env variables should exist: CI_COMMIT_SHA and GITHUB_TOKEN  
 
@@ -321,7 +323,7 @@ send-becnh-result:
   stage:                           check-becnh-result
   image:                           paritytech/benchmarks:latest
   variables:
-    PROMETHEUS_URL:                "http://vm-longterm.parity-build.parity.io"
+    PROMETHEUS_URL:                "http://pushgateway.parity-build.parity.io"
     GITHUB_REPO:                   "paritytech/jsonrpsee"
   #get artifacts with text file that contains result
   needs:
@@ -329,7 +331,7 @@ send-becnh-result:
       artifacts:                   true
   script:
     - export RESULT=<some_result>
-    # To compare with previous result from Prometheus / Victoria Metrics:
+    # To compare with previous result from Prometheus / Thanos:
     - check_single_bench_result.py -m parity_benchmark_common_result_ms \ # Metric name
                                    -p substrate-api-sidecar \             # Benchark project
                                    -n sidecar \                           # Benchmark name
