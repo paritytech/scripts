@@ -101,7 +101,7 @@ def send_metric(server, metric_name, metric_value):
     https://github.com/prometheus/pushgateway#command-line
     echo "some_metric 3.14" | curl --data-binary @- http://pushgateway.example.org:9091/metrics/job/some_job
     """
-    url = f"{server}/metrics/job/${metric_name}"
+    url = f"{server}/metrics/job/{metric_name}"
     # \n is required to signal end of input stream
     data = f"{metric_name} {metric_value}\n"
     return requests.post(url, data=data)
