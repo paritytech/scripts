@@ -7,7 +7,7 @@ Usage: python3 push_bench_result.py -t <common(default)|specific|test> \
                                  -r <benchmark_result> \
                                  -u <benchmark_units (default: ns)> \
                                  -l <additinal_labels_for_specific_benchmarks>
-                                 -s <prometheus_server>
+                                 -s <prometheus_pushgateway>
 
 Example: python3 push_bench_result.py -t specific \
                                    -p $CI_PROJECT_NAME \
@@ -111,7 +111,7 @@ def main():
     args = get_arguments()
     metric_name, metric_value = create_metric(args)
     send_metric_result = send_metric(
-        args.prometheus_server, metric_name, metric_value
+        args.prometheus_pushgateway, metric_name, metric_value
     )
     if send_metric_result.text == "" and send_metric_result.status_code < 400:
         print(f"Metric '{metric_name} {metric_value}' was successfully sent")
