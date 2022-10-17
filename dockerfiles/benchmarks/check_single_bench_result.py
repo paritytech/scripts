@@ -1,23 +1,24 @@
 #!/usr/bin/env python3
 """
-Script compares provided result either with constant or with previuos value from Victoria Metrics.
+Script compares provided result either with constant or with previuos value
+from Thanos.
 If the result exceeds constant or threshold, scripts creates github issue.
 2 env variables should exist: CI_COMMIT_SHA and GITHUB_TOKEN
 
 Examples:
-To compare with previous result from Prometheus / Victoria Metrics:
-check_single_bench_result.py -m parity_benchmark_common_result_ms \
-                             -p substrate-api-sidecar \
-                             -n sidecar \
-                             -s 'http://prometheus.io/' \
-                             -g 'org/repo'\
-                             -t 20 \
-                             -v 15
+To compare with previous result from Prometheus / Thanos
+check_single_bench_result.py --metric parity_benchmark_common_result_ms  \
+                             --project substrate-api-sidecar \
+                             --name sidecar \
+                             --prometheus-server 'https://thanos.parity-mgmt.parity.io/' \
+                             --github-repo 'paritytech/substrate-api-sidecar' \
+                             --threshold 20 \
+                             --value 35000
+
 To compare with constant:
 check_single_bench_result.py -g 'org/repo'\
                              -c 1 \
                              -v 15
-
 """
 
 import argparse
@@ -26,6 +27,10 @@ from sys import exit
 
 from prometheus_api_client import PrometheusConnect
 from github import Github
+
+import urllib3
+
+urllib3.disable_warnings()
 
 
 def get_arguments():
@@ -93,7 +98,9 @@ def get_arguments():
     return args
 
 
-def is_metric_exceed_threshold(value1: float, value2: float, threshold: int) -> bool:
+def is_metric_exceed_threshold(
+    value1: float, value2: float, threshold: int
+) -> bool:
     return abs(100 - value1 * 100 / value2) > threshold
 
 
@@ -102,10 +109,13 @@ def is_metric_exceed_constant(value: float, constant: int) -> bool:
 
 
 def get_benchmark_last_result(
-    metric_name: str, project: str, benchmark: str, prometheus_client: PrometheusConnect
+    metric_name: str,
+    project: str,
+    benchmark: str,
+    prometheus_client: PrometheusConnect,
 ) -> float:
     """
-    Get latest benchmark result from Victoria Metrics
+    Get latest benchmark result from Thanos.
     Returns "-1" if result not found
     :param metric_name: Full metric name (e.g. parity_benchmark_common_result_ms)
     :param project: Project name
@@ -160,6 +170,7 @@ def main():
         last_result = get_benchmark_last_result(
             args.metric, args.project, args.name, prometheus_client
         )
+        print("Last benchmark result is", last_result)
         is_metric_exceed = is_metric_exceed_threshold(
             float(args.value), last_result, int(args.threshold)
         )
