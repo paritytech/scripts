@@ -11,7 +11,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
       io.parity.image.revision="${VCS_REF}" \
       io.parity.image.created="${BUILD_DATE}"
 
-RUN apk add --no-cache --update curl unzip bash shadow
+RUN apk add --no-cache --update curl unzip bash shadow jq
 COPY node-bench-regression-guard/node-bench-regression-guard /usr/local/bin/node-bench-regression-guard
 
 RUN set -x \
