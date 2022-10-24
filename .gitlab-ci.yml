@@ -175,6 +175,11 @@ rusty-cachier-env:
   script:
     - *push_to_docker_hub
 
+mitogen:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 molecule:
   <<:                              *docker_build
   script:
