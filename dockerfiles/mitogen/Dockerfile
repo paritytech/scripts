@@ -31,7 +31,19 @@ ENV ANSIBLE_STRATEGY=mitogen_linear
 ENV ANSIBLE_STRATEGY_PLUGINS=/opt/mitogen/ansible_mitogen/plugins/strategy
 RUN  cd /opt && git clone --depth 1 --branch v0.3.3 https://github.com/mitogen-hq/mitogen.git
 
-# TODO: switch to non-root here after 'FF_DISABLE_UMASK_FOR_DOCKER_EXECUTOR' is properly set in gitlab ci
+ARG WORKDIR=/work
+RUN groupadd --gid 10001 nonroot && \
+    useradd  --home-dir /home/nonroot \
+             --create-home \
+             --shell /bin/bash \
+             --gid nonroot \
+             --groups nonroot \
+             --uid 10000 nonroot
+RUN chown -R nonroot. /home/nonroot
+RUN mkdir ${WORKDIR}
+RUN chown -R nonroot. ${WORKDIR}
+USER 10000:10001
+WORKDIR ${WORKDIR}
 
 ENTRYPOINT ["/usr/bin/tini", "--"]
 
