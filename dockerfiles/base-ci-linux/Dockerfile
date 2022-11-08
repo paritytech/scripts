@@ -38,7 +38,7 @@ ENV RUSTUP_HOME=/usr/local/rustup \
 RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		libssl-dev make cmake \
+		libssl-dev make cmake graphviz \
 		git pkg-config curl time rhash ca-certificates \
 		python3 python3-pip lsof ruby ruby-bundler git-restore-mtime xz-utils unzip gnupg protobuf-compiler && \
 # add clang 13 repo
