@@ -97,6 +97,9 @@ RUN set -eux; \
 	# Automated spell-checking
 	cargo install cargo-spellcheck && \
 
+	# More faster test runner for Rust projects than cargo-test 
+	cargo install cargo-nextest  && \
+
 	# Versions
 	rustup show && \
 	cargo --version && \
