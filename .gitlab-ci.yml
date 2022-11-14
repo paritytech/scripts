@@ -10,6 +10,7 @@ stages:
 variables:                         &default-vars
   REGISTRY_PATH:                   docker.io/paritytech
   REGISTRY_NAME:                   docker.io
+  CI_IMAGE:                        quay.io/buildah/stable:v1.27
 
 default:
   cache:                           {}
@@ -22,7 +23,7 @@ default:
 
 .build:                            &docker_build
   stage:                           build
-  image:                           quay.io/buildah/stable
+  image:                           $CI_IMAGE
   rules:
     - if: $IMAGE_NAME == $CI_JOB_NAME
   tags:
@@ -564,7 +565,7 @@ parity-scale-codec-test:
 
 ci-linux-production:
   stage:                           prod
-  image:                           quay.io/buildah/stable
+  image:                           $CI_IMAGE
   rules:
     - if: $IMAGE_NAME == "ci-linux"
   script:
@@ -574,7 +575,7 @@ ci-linux-production:
 
 ink-ci-linux-production:           &push-after-triggered-pipeline
   stage:                           prod
-  image:                           quay.io/buildah/stable
+  image:                           $CI_IMAGE
   needs:
     - job:                         ink-ci-linux-test
       artifacts:                   false
