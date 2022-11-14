@@ -30,7 +30,7 @@ RUN set -eux && \
 	# install cargo tools
 	cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck cargo-nextest cargo-hack \
 	            mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-last-changed && \
-	cargo install --version 0.4.2 diener && \
+	cargo install --version 0.4.4 diener && \
 	# wasm-bindgen-cli version should match the one pinned in substrate
 	# https://github.com/paritytech/substrate/blob/master/bin/node/browser-testing/Cargo.toml#L15
 	cargo install --version 0.2.73 wasm-bindgen-cli && \
@@ -46,6 +46,3 @@ RUN set -eux && \
 	# cargo clean up
 	# removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache
-
-# TODO: switch to non-root here when substrate will work with latest rust nightlies again
-# USER nonroot:nonroot
