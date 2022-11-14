@@ -30,8 +30,7 @@ RUN set -eux && \
 	# install cargo tools
 	cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck cargo-nextest cargo-hack \
 	            mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-last-changed && \
-	# install diener 0.4.4
-	cargo install --git https://github.com/paritytech/diener --rev fb4833ae21c3e415c4ca604fb72533013887d4a4 && \
+	cargo install --version 0.4.2 diener && \
 	# wasm-bindgen-cli version should match the one pinned in substrate
 	# https://github.com/paritytech/substrate/blob/master/bin/node/browser-testing/Cargo.toml#L15
 	cargo install --version 0.2.73 wasm-bindgen-cli && \
