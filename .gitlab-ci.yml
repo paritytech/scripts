@@ -344,7 +344,7 @@ kubetools-kubectl:
   <<:                              *docker_build
   variables:
     <<:                            *default-vars
-    KUBE_VERSION:                  "1.22.15"
+    KUBE_VERSION:                  "1.24.7"
   script:
     - buildah bud
       --format=docker
