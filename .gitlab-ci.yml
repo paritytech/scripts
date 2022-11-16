@@ -82,7 +82,27 @@ default:
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - buildah logout "$REGISTRY_NAME"
 
+.docker_build_only:                &docker_build_only
+  - buildah bud
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date +%Y%m%d)"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+
 #### stage:                        build
+
+# Only build in PR
+
+ci-linux:
+  <<:                              *docker_build
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+      changes:
+        - dockerfiles/ci-linux/**
+  script:
+    - *docker_build_only
 
 # Build and push to docker hub
 ansible:
