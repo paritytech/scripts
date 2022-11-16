@@ -95,19 +95,136 @@ default:
 
 # Only build in PR
 
-ci-linux-pr:
+.docker_build_pr:                  &docker_build_pr
   stage:                           build
   image:                           $CI_IMAGE
-  rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
-      changes:
-        - dockerfiles/ci-linux/**
-  variables:
-    IMAGE_NAME:                    "ci-linux"
   script:
     - *docker_build_only
   tags:
     - kubernetes-parity-build
+
+ci-linux-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ci-linux"
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+      changes:
+        - dockerfiles/${IMAGE_NAME}/**
+
+# ansible-pr:
+#   <<: *docker_build_pr
+#   variables:
+#     IMAGE_NAME:                    "ansible"
+#   rules:
+#     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+#       changes:
+#         - dockerfiles/ansible/**
+
+# base-ci-linux-pr:
+#   <<: *docker_build_pr
+#   variables:
+#     IMAGE_NAME:                    "base-ci-linux"
+#   rules:
+#     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+#       changes:
+#         - dockerfiles/base-ci-linux/**
+
+# base-ci-pr:
+#   <<: *docker_build_pr
+#   variables:
+#     IMAGE_NAME:                    "base-ci"
+#   rules:
+#     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+#       changes:
+#         - dockerfiles/base-ci/**
+
+# ci-linux-pr:
+#   <<: *docker_build_pr
+#   variables:
+#     IMAGE_NAME:                    "ci-linux"
+#   rules:
+#     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+#       changes:
+#         - dockerfiles/ci-linux/**
+
+# ink-ci-linux-pr:
+#   <<: *docker_build_pr
+#   variables:
+#     IMAGE_NAME:                    "ink-ci-linux"
+#   rules:
+#     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+#       changes:
+#         - dockerfiles/ink-ci-linux/**
+
+# parity-scale-codec-pr:
+
+
+# ink-waterfall-ci-pr:
+
+
+# smart-bench-ci-pr:
+
+
+# contracts-ci-linux-pr:
+
+# debian10-pr:
+
+# bridges-ci-pr:
+
+# cachepot-ci-pr:
+
+
+# awscli-pr:
+
+
+# tools-pr:
+
+
+# benchmarks-pr:
+
+
+# query-exporter-pr:
+
+
+# redis-exporter-pr:
+
+
+# rusty-cachier-env-pr:
+
+
+# mitogen-pr:
+
+
+# molecule-pr:
+
+
+# multisig-ci-pr:
+
+
+# node-bench-regression-guard-pr:
+
+
+# node-wrk-pr:
+
+
+# gnupg-pr:
+
+
+# parity-keyring-pr:
+
+
+# rpm-pr:
+
+
+# deb-pr:
+
+
+# lz4-pr:
+
+
+# ws-health-exporter:
+
 
 # Build and push to docker hub
 ansible:

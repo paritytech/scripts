@@ -47,3 +47,4 @@ RUN set -eux && \
 	# cargo clean up
 	# removes compilation artifacts cargo install creates (>250M)
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache
+
