@@ -14,6 +14,7 @@ variables:                         &default-vars
 
 default:
   cache:                           {}
+  interruptible:                   true
   retry:
     max: 2
     when:
@@ -82,7 +83,170 @@ default:
   - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - buildah logout "$REGISTRY_NAME"
 
+.docker_build_only:                &docker_build_only
+  - buildah bud
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date +%Y%m%d)"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+
 #### stage:                        build
+
+# Only build in PR
+
+.docker_build_pr:                  &docker_build_pr
+  stage:                           build
+  image:                           $CI_IMAGE
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+      changes:
+        - dockerfiles/${IMAGE_NAME}/**
+  script:
+    - *docker_build_only
+  tags:
+    - kubernetes-parity-build
+
+ansible-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ansible"
+
+awscli-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "awscli"
+
+base-ci-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "base-ci"
+
+base-ci-linux-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "base-ci-linux"
+
+benchmarks-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "benchmarks"
+
+bridges-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "bridges"
+
+cachepot-ci-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "cachepot-ci"
+
+ci-linux-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ci-linux"
+
+contracts-ci-linux-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "contracts-ci-linux"
+
+ink-ci-linux-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ink-ci-linux"
+
+ink-waterfall-ci-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ink-waterfall-ci"
+
+lz4-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "lz4"
+
+mitogen-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "mitogen"
+
+molecule-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "molecule"
+
+multisig-ci-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "multisig-ci"
+
+node-bench-regression-guard-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "node-bench-regression-guard"
+
+node-wrk-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "node-wrk"
+
+parity-keyring-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "parity-keyring"
+
+parity-scale-codec-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "parity-scale-codec"
+
+query-exporter-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "query-exporter"
+
+redis-exporter-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "redis-exporter"
+
+rpm-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "rpm"
+
+rusty-cachier-env-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "rusty-cachier-env"
+
+smart-bench-ci-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ink-waterfall-ci"
+
+sops-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "sops"
+
+terraform-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "terraform"
+
+tools-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "tools"
+
+ws-health-exporter-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ws-health-exporter"
 
 # Build and push to docker hub
 ansible:
