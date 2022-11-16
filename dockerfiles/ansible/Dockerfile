@@ -40,4 +40,3 @@ RUN chown -R nonroot. ${WORKDIR}
 USER 10000:10001
 WORKDIR ${WORKDIR}
 ENTRYPOINT ["/usr/bin/tini", "--"]
-

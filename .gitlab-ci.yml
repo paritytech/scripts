@@ -98,64 +98,39 @@ default:
 .docker_build_pr:                  &docker_build_pr
   stage:                           build
   image:                           $CI_IMAGE
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+      changes:
+        - dockerfiles/${IMAGE_NAME}/**
   script:
     - *docker_build_only
   tags:
     - kubernetes-parity-build
 
+ansible-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ansible"
+
+base-ci-linux-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "base-ci-linux"
+
+base-ci-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "base-ci"
+
 ci-linux-pr:
   <<: *docker_build_pr
   variables:
     IMAGE_NAME:                    "ci-linux"
-  rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
-      changes:
-        - dockerfiles/${IMAGE_NAME}/**
 
-# ansible-pr:
-#   <<: *docker_build_pr
-#   variables:
-#     IMAGE_NAME:                    "ansible"
-#   rules:
-#     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
-#       changes:
-#         - dockerfiles/ansible/**
-
-# base-ci-linux-pr:
-#   <<: *docker_build_pr
-#   variables:
-#     IMAGE_NAME:                    "base-ci-linux"
-#   rules:
-#     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
-#       changes:
-#         - dockerfiles/base-ci-linux/**
-
-# base-ci-pr:
-#   <<: *docker_build_pr
-#   variables:
-#     IMAGE_NAME:                    "base-ci"
-#   rules:
-#     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
-#       changes:
-#         - dockerfiles/base-ci/**
-
-# ci-linux-pr:
-#   <<: *docker_build_pr
-#   variables:
-#     IMAGE_NAME:                    "ci-linux"
-#   rules:
-#     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
-#       changes:
-#         - dockerfiles/ci-linux/**
-
-# ink-ci-linux-pr:
-#   <<: *docker_build_pr
-#   variables:
-#     IMAGE_NAME:                    "ink-ci-linux"
-#   rules:
-#     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
-#       changes:
-#         - dockerfiles/ink-ci-linux/**
+ink-ci-linux-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ink-ci-linux"
 
 # parity-scale-codec-pr:
 
