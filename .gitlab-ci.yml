@@ -102,6 +102,8 @@ ci-linux-pr:
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
       changes:
         - dockerfiles/ci-linux/**
+  variables:
+    IMAGE_NAME:                    "ci-linux"
   script:
     - *docker_build_only
   tags:
