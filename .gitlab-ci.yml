@@ -14,6 +14,7 @@ variables:                         &default-vars
 
 default:
   cache:                           {}
+  interruptible:                   true
   retry:
     max: 2
     when:
@@ -112,94 +113,140 @@ ansible-pr:
   variables:
     IMAGE_NAME:                    "ansible"
 
-base-ci-linux-pr:
+awscli-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "base-ci-linux"
+    IMAGE_NAME:                    "awscli"
 
 base-ci-pr:
   <<: *docker_build_pr
   variables:
     IMAGE_NAME:                    "base-ci"
 
+base-ci-linux-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "base-ci-linux"
+
+benchmarks-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "benchmarks"
+
+bridges-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "bridges"
+
+cachepot-ci-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "cachepot-ci"
+
 ci-linux-pr:
   <<: *docker_build_pr
   variables:
     IMAGE_NAME:                    "ci-linux"
+
+contracts-ci-linux-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "contracts-ci-linux"
 
 ink-ci-linux-pr:
   <<: *docker_build_pr
   variables:
     IMAGE_NAME:                    "ink-ci-linux"
 
-# parity-scale-codec-pr:
+ink-waterfall-ci-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ink-waterfall-ci"
 
+lz4-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "lz4"
 
-# ink-waterfall-ci-pr:
+mitogen-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "mitogen"
 
+molecule-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "molecule"
 
-# smart-bench-ci-pr:
+multisig-ci-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "multisig-ci"
 
+node-bench-regression-guard-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "node-bench-regression-guard"
 
-# contracts-ci-linux-pr:
+node-wrk-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "node-wrk"
 
-# debian10-pr:
+parity-keyring-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "parity-keyring"
 
-# bridges-ci-pr:
+parity-scale-codec-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "parity-scale-codec"
 
-# cachepot-ci-pr:
+query-exporter-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "query-exporter"
 
+redis-exporter-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "redis-exporter"
 
-# awscli-pr:
+rpm-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "rpm"
 
+rusty-cachier-env-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "rusty-cachier-env"
 
-# tools-pr:
+smart-bench-ci-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ink-waterfall-ci"
 
+sops-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "sops"
 
-# benchmarks-pr:
+terraform-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "terraform"
 
+tools-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "tools"
 
-# query-exporter-pr:
-
-
-# redis-exporter-pr:
-
-
-# rusty-cachier-env-pr:
-
-
-# mitogen-pr:
-
-
-# molecule-pr:
-
-
-# multisig-ci-pr:
-
-
-# node-bench-regression-guard-pr:
-
-
-# node-wrk-pr:
-
-
-# gnupg-pr:
-
-
-# parity-keyring-pr:
-
-
-# rpm-pr:
-
-
-# deb-pr:
-
-
-# lz4-pr:
-
-
-# ws-health-exporter:
-
+ws-health-exporter-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ws-health-exporter"
 
 # Build and push to docker hub
 ansible:
