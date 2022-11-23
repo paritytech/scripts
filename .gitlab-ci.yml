@@ -168,6 +168,15 @@ lz4-pr:
   variables:
     IMAGE_NAME:                    "lz4"
 
+mdbook-utils-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "mdbook-utils"
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+      changes:
+        - dockerfiles/mdbook-utils/**
+
 mitogen-pr:
   <<: *docker_build_pr
   variables:
@@ -336,6 +345,11 @@ redis-exporter:
     - *push_to_docker_hub
 
 rusty-cachier-env:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
+mdbook-utils:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
