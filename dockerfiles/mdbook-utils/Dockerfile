@@ -29,3 +29,12 @@ RUN apt-get update -y && \
     ./rustup-init -y --no-modify-path --profile minimal --default-toolchain stable && \
     rm rustup-init && \
     cargo install mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-last-changed
+
+RUN set -x \
+    && groupadd -g 1000 nonroot \
+    && useradd -u 1000 -g 1000 -s /bin/bash -m nonroot \
+    && git config --global --add safe.directory '*' \
+    && cp /root/.gitconfig /home/nonroot/.gitconfig \
+    && chown nonroot:nonroot /home/nonroot/.gitconfig
+
+USER nonroot:nonroot
