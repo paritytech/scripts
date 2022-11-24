@@ -11,9 +11,9 @@ Used to build and test Substrate-based projects.
 **Dependencies and Tools:**
 
 - `libssl-dev`
-- `clang-14`
-- `lld-14`
-- `libclang-14-dev`
+- `clang-15`
+- `lld-15`
+- `libclang-15-dev`
 - `make`
 - `cmake`
 - `git`
