@@ -28,7 +28,8 @@ RUN set -eux && \
 	rustup target add wasm32-unknown-unknown && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 	# install cargo tools
-	cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck cargo-hack  && \
+	cargo install cargo-web wasm-pack cargo-spellcheck cargo-hack  && \
+	cargo install cargo-deny --version 0.13.4 && \
 	cargo install cargo-nextest --version 0.9.43 && \
 	# diener 0.4.5 NOTE: before upgrading please test new version with companion build
 	# example can be found here: https://github.com/paritytech/substrate/pull/12710
