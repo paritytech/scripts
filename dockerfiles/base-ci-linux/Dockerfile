@@ -31,8 +31,8 @@ COPY utility/base-ci-linux-config /root/.cargo/config
 ENV RUSTUP_HOME=/usr/local/rustup \
 	CARGO_HOME=/usr/local/cargo \
 	PATH=/usr/local/cargo/bin:$PATH \
-		CC=clang-15 \
-		CXX=clang-15
+		CC=clang-14 \
+		CXX=clang-14
 
 # install tools and dependencies
 RUN set -eux; \
@@ -41,13 +41,13 @@ RUN set -eux; \
 		libssl-dev make cmake graphviz \
 		git pkg-config curl time rhash ca-certificates \
 		python3 python3-pip lsof ruby ruby-bundler git-restore-mtime xz-utils unzip gnupg protobuf-compiler && \
-# add clang 15 repo
+# add clang 14 repo
 	curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -; \
-	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-15 main" >> /etc/apt/sources.list.d/llvm-toochain-buster-15.list; \
-	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-15 main" >> /etc/apt/sources.list.d/llvm-toochain-buster-15.list; \
+	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-14 main" >> /etc/apt/sources.list.d/llvm-toochain-buster-14.list; \
+	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-14 main" >> /etc/apt/sources.list.d/llvm-toochain-buster-14.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
-		clang-15 lldb-15 lld-15 libclang-15-dev && \
+		clang-14 lldb-14 lld-14 libclang-14-dev && \
 # add non-root user
   groupadd -g 1000 nonroot && \
   useradd -u 1000 -g 1000 -s /bin/bash -m nonroot && \
@@ -61,7 +61,9 @@ RUN set -eux; \
   curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc && \
   chmod 755 /usr/local/bin/mc && \
 # set a link to clang
-	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-15 100; \
+	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-14 100; \
+# set a link to ldd
+  update-alternatives --install /usr/bin/ld ld /usr/bin/ld.lld-14 100; \
 # install rustup, use minimum components
 	curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" \
 		-o rustup-init; \
