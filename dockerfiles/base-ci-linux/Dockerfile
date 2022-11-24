@@ -62,6 +62,8 @@ RUN set -eux; \
   chmod 755 /usr/local/bin/mc && \
 # set a link to clang
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-14 100; \
+# set a link to ldd
+  update-alternatives --install /usr/bin/ld ld /usr/bin/ld.lld-14 100; \
 # install rustup, use minimum components
 	curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" \
 		-o rustup-init; \
