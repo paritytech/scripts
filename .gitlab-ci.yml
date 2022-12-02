@@ -242,6 +242,11 @@ sops-pr:
   variables:
     IMAGE_NAME:                    "sops"
 
+substrate-session-keys-grabber-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "substrate-session-keys-grabber"
+
 terraform-pr:
   <<: *docker_build_pr
   variables:
@@ -613,6 +618,12 @@ sops:
     - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
+substrate-session-keys-grabber:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+  variables:
+    IMAGE_NAME:                    "substrate-session-keys-grabber"
 
 #### stage:                        test
 
