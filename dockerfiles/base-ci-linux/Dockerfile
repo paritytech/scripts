@@ -1,4 +1,4 @@
-FROM docker.io/library/debian:buster-slim
+FROM docker.io/library/debian:bullseye-slim
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
