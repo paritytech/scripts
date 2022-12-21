@@ -4,6 +4,9 @@ ARG REGISTRY_PATH=docker.io/paritytech
 
 FROM ${REGISTRY_PATH}/base-ci-linux:latest
 
+ARG YJ_CHECKSUM=8ce43e40fda9a28221dabc0d7228e2325d1e959cd770487240deb47e02660986
+ARG YJ_PATH=/bin/yq
+
 # metadata
 LABEL summary="Image for Substrate-based projects." \
 	name="${REGISTRY_PATH}/ci-linux" \
@@ -33,6 +36,18 @@ RUN set -eux && \
 	# diener 0.4.6 NOTE: before upgrading please test new version with companion build
 	# example can be found here: https://github.com/paritytech/substrate/pull/12710
 	cargo install --git https://github.com/paritytech/diener --rev 6497d6a49a199e4b0a8d08b58c76f6e799eea4f1 && \
+
+	# diesel-cli is used by the publishing automation (publish-crates script)
+	cargo install --quiet diesel_cli --version 1.4.1 --no-default-features --features postgres && \
+
+	# postgres & sudo are used by the publishing automation (publish-crates script)
+	apt install -y --no-install-recommends postgresql-11 libpq-dev sudo && \
+
+	# yj is used by the publishing automation (publish-crates script)
+	curl -sSLf -o "$YJ_PATH" https://github.com/sclevine/yj/releases/download/v5.1.0/yj-linux-amd64 && \
+	echo "$YJ_CHECKSUM $YJ_PATH" | sha256sum --check && \
+	chmod +x "$YJ_PATH" && \
+
 	# wasm-bindgen-cli version should match the one pinned in substrate
 	# https://github.com/paritytech/substrate/blob/master/bin/node/browser-testing/Cargo.toml#L15
 	cargo install --version 0.2.73 wasm-bindgen-cli && \
