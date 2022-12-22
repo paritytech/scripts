@@ -14,7 +14,7 @@ from websocket import create_connection
 
 LOGGING_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
-PORT = 8001
+PORT = os.environ.get("PORT", "8001")
 WS_NODE_URL = os.environ.get("NODE_URL", "ws://127.0.0.1:5556")
 WS_TIMEOUT = 60
 ws_metrics = {
