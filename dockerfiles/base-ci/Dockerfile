@@ -37,7 +37,7 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		libssl-dev clang lld libclang-dev make cmake protobuf-compiler \
 		git pkg-config curl time rhash ca-certificates \
-		jq ruby ruby-bundler git-restore-mtime python3-pip xz-utils unzip && \
+		jq ruby ruby-bundler git-restore-mtime python3-pip xz-utils zstd unzip && \
 # add non-root user
   groupadd -g 1000 nonroot && \
   useradd -u 1000 -g 1000 -s /bin/bash -m nonroot && \
