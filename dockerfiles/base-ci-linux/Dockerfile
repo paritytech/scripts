@@ -40,7 +40,7 @@ RUN set -eux; \
 	apt-get install -y --no-install-recommends \
 		libssl-dev make cmake graphviz \
 		git pkg-config curl time rhash ca-certificates \
-		python3 python3-pip lsof ruby ruby-bundler git-restore-mtime xz-utils unzip gnupg protobuf-compiler && \
+		python3 python3-pip lsof ruby ruby-bundler git-restore-mtime xz-utils zstd unzip gnupg protobuf-compiler && \
 # add clang 14 repo
 	curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -; \
 	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-14 main" >> /etc/apt/sources.list.d/llvm-toochain-buster-14.list; \
