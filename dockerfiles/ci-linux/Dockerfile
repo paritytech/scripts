@@ -18,6 +18,11 @@ LABEL summary="Image for Substrate-based projects." \
 
 # install tools and dependencies
 RUN set -eux && \
+	# install git from backports
+	echo deb http://deb.debian.org/debian buster-backports main | tee /etc/apt/sources.list.d/buster-backports.list  && \
+	apt-get -y update; \
+	apt install -y -t buster-backports git; \
+	git --version;\
 	# install `rust-src` component for ui test
 	rustup component add rust-src rustfmt clippy && \
 	# install specific Rust nightly, default is stable, use minimum components
@@ -29,7 +34,7 @@ RUN set -eux && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 	# install cargo tools
 	cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck cargo-hack \
-	            mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-last-changed && \
+	  mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-last-changed && \
 	cargo install cargo-nextest --locked && \
 	# diener 0.4.6 NOTE: before upgrading please test new version with companion build
 	# example can be found here: https://github.com/paritytech/substrate/pull/12710
