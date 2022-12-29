@@ -22,7 +22,7 @@ RUN set -eux && \
 	echo deb http://deb.debian.org/debian buster-backports main | tee /etc/apt/sources.list.d/buster-backports.list  && \
 	apt-get -y update; \
 	apt install -y -t buster-backports git; \
-	git --version;\
+	git --version; \
 	# install `rust-src` component for ui test
 	rustup component add rust-src rustfmt clippy && \
 	# install specific Rust nightly, default is stable, use minimum components
