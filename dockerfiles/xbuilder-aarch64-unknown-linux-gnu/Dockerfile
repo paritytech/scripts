@@ -7,6 +7,7 @@ LABEL summary="Cross Builder for aarch64-unknown-linux-gnu targets" \
 	name="${REGISTRY_PATH}/xbuilder-aarch64-unknown-linux-gnu" \
 	maintainer="devops-team@parity.io" \
 	version="1.0" \
+    io.parity.image.authors="chevdor@gmail.com, devops-team@parity.io" \
 	description="Parity xbuilder-aarch64-unknown-linux-gnu container" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/dockerfiles/parity-keyring/Dockerfile" \
