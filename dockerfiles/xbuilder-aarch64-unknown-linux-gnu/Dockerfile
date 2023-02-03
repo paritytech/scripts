@@ -17,15 +17,14 @@ LABEL summary="Cross Builder for aarch64-unknown-linux-gnu targets" \
 
 USER root
 
-RUN apt update && apt upgrade -y
-RUN apt install -y \
+RUN apt update && apt upgrade -y && \
+    apt install -y \
         g++-aarch64-linux-gnu libc6-dev-arm64-cross \
         pkg-config libssl-dev \
         protobuf-compiler clang make bsdmainutils && \
-        rm -rf /var/lib/apt/lists/* /tmp/* && apt clean
-
-RUN rustup target add aarch64-unknown-linux-gnu
-RUN rustup toolchain install stable-aarch64-unknown-linux-gnu
+        rm -rf /var/lib/apt/lists/* /tmp/* && apt clean && \
+    rustup target add aarch64-unknown-linux-gnu && \
+    rustup toolchain install stable-aarch64-unknown-linux-gnu
 
 WORKDIR /app
 
