@@ -38,7 +38,7 @@ RUN set -eux && \
 	cargo install cargo-nextest --locked && \
 	# diener 0.4.6 NOTE: before upgrading please test new version with companion build
 	# example can be found here: https://github.com/paritytech/substrate/pull/12710
-	cargo install --git https://github.com/paritytech/diener --rev 6497d6a49a199e4b0a8d08b58c76f6e799eea4f1 && \
+	cargo install diener --version 0.4.6 && \
 	# wasm-bindgen-cli version should match the one pinned in substrate
 	# https://github.com/paritytech/substrate/blob/master/bin/node/browser-testing/Cargo.toml#L15
 	cargo install --version 0.2.73 wasm-bindgen-cli && \
