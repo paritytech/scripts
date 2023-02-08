@@ -262,6 +262,11 @@ ws-health-exporter-pr:
   variables:
     IMAGE_NAME:                    "ws-health-exporter"
 
+xbuilder-aarch64-unknown-linux-gnu:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "xbuilder-aarch64-unknown-linux-gnu"
+
 # Build and push to docker hub
 ansible:
   <<:                              *docker_build
@@ -410,6 +415,11 @@ lz4:
     - *push_to_docker_hub
 
 ws-health-exporter:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
+xbuilder-aarch64-unknown-linux-gnu:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
