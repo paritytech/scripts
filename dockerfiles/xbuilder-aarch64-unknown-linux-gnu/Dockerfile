@@ -1,6 +1,6 @@
 ARG REGISTRY_PATH=docker.io/paritytech
 
-FROM rust:latest
+FROM docker.io/library/rust:latest
 
 # metadata
 LABEL summary="Cross Builder for aarch64-unknown-linux-gnu targets" \
