@@ -26,7 +26,7 @@ RUN apk add --no-cache \
 
 RUN	curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" \
 		-o vault.zip; \
-	unzip vault.zip	-d /usr/local/bin/ vault; \
+	unzip vault.zip	-d /usr/local/bin/vault; \
 	rm vault.zip; \
 	chmod +x /usr/local/bin/vault
 
