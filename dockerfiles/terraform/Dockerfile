@@ -22,13 +22,13 @@ RUN apk add --no-cache \
 		ca-certificates git jq make curl gettext bash shadow openssh-client; \
 	curl "https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip" \
 		-o terraform.zip; \
-	unzip terraform.zip	-d /usr/local/bin/ terraform; \
+	unzip terraform.zip	-d /usr/local/bin/terraform; \
 	rm terraform.zip; \
 	chmod +x /usr/local/bin/terraform
 
 RUN	curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" \
 		-o vault.zip; \
-	unzip vault.zip	-d /usr/local/bin/ vault; \
+	unzip vault.zip	-d /usr/local/bin/vault; \
 	rm vault.zip; \
 	chmod +x /usr/local/bin/vault
 
