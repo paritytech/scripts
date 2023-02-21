@@ -22,7 +22,7 @@ RUN set -eux && \
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 
-FROM node:16-slim
+FROM node:18-slim
 
 LABEL summary="Image for Substrate-api-sidecar benchmarks" \
 	name="${REGISTRY_PATH}/sidecar-bench" \
