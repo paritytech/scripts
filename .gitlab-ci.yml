@@ -138,6 +138,11 @@ bridges-pr:
   variables:
     IMAGE_NAME:                    "bridges"
 
+bridges-cumulus-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "bridges-cumulus"
+
 cachepot-ci-pr:
   <<: *docker_build_pr
   variables:
@@ -323,6 +328,11 @@ bridges-ci:
   <<:                              *docker_build
   script:
     - *push_to_staging
+
+bridges-cumulus-ci:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
 
 cachepot-ci:
   <<:                              *docker_build
