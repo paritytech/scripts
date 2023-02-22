@@ -138,10 +138,10 @@ bridges-pr:
   variables:
     IMAGE_NAME:                    "bridges"
 
-bridges-cumulus-pr:
+polkadotjs-cli-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "bridges-cumulus"
+    IMAGE_NAME:                    "polkadotjs-cli"
 
 cachepot-ci-pr:
   <<: *docker_build_pr
@@ -329,7 +329,7 @@ bridges-ci:
   script:
     - *push_to_staging
 
-bridges-cumulus-ci:
+polkadotjs-cli:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub

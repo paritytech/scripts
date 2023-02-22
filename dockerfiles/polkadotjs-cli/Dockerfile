@@ -7,12 +7,12 @@ ARG REGISTRY_PATH=docker.io/paritytech
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
-	io.parity.image.title="${REGISTRY_PATH}/bridges-cumulus" \
-	io.parity.image.description="Image to use for Bridges Cumulus scripts;" \
+	io.parity.image.title="${REGISTRY_PATH}/polkadotjs-cli" \
+	io.parity.image.description="Image to use for polkadotjs;" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/bridges-cumulus/Dockerfile" \
+dockerfiles/polkadotjs-cli/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/bridges-cumulus/README.md" \
+dockerfiles/polkadotjs-cli/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
