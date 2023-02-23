@@ -6,6 +6,7 @@ stages:
   - build
   - test
   - prod
+  - publish-docker-description
 
 variables:                         &default-vars
   REGISTRY_PATH:                   docker.io/paritytech
@@ -91,6 +92,23 @@ default:
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+
+.publish-docker-image-description:
+  stage:                  publish-docker-description
+  image:                  paritytech/dockerhub-description
+  variables:
+    DOCKERHUB_REPOSITORY: paritytech/$IMAGE_NAME
+    DOCKER_USERNAME:      $Docker_Hub_User_Parity
+    DOCKER_PASSWORD:      $Docker_Hub_Pass_Parity
+    README_FILEPATH:      $CI_PROJECT_DIR/dockerfiles/$IMAGE_NAME/README.md
+  rules:
+  - if: $CI_COMMIT_REF_NAME == "sk-docker-description"
+    changes:
+    - dockerfiles/$IMAGE_NAME/README.md
+  script:
+    - cd / && sh entrypoint.sh
+  tags:
+    - kubernetes-parity-build
 
 #### stage:                        build
 
@@ -827,3 +845,11 @@ parity-scale-codec-production:
       artifacts:                   false
   rules:
     - if: $IMAGE_NAME == "parity-scale-codec"
+
+# Publish images descriptions to hub.docker.com
+
+publish-ansible-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           ansible
+    SHORT_DESCRIPTION:    "ansible utility Docker Image."
