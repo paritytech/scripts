@@ -102,7 +102,7 @@ default:
     DOCKER_PASSWORD:      $Docker_Hub_Pass_Parity
     README_FILEPATH:      $CI_PROJECT_DIR/dockerfiles/$IMAGE_NAME/README.md
   rules:
-  - if: $CI_COMMIT_REF_NAME == "sk-docker-description"
+  - if: $CI_COMMIT_REF_NAME == "514"
     changes:
     - dockerfiles/$IMAGE_NAME/README.md
   script:
