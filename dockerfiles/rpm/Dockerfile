@@ -19,7 +19,11 @@ LABEL summary="RPM packaging/signing toolchain" \
 
 USER root
 RUN apt-get install -yq --no-install-recommends rpm
+RUN ln -s /usr/bin/gpg /usr/bin/gpg2
 
-USER nonroot:nonroot
+COPY rpm/rpmmacros /home/user/.rpmmacros
+COPY rpm/rpmmacros /root/.rpmmacros
 
-COPY rpm/rpmmacros /home/nonroot/.rpmmacros
+ENTRYPOINT [ "/usr/local/bin/entrypoint.sh" ]
+
+CMD ["rpm --version", "/bin/bash"]

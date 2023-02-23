@@ -1,0 +1,29 @@
+schemaVersion: '2.0.0'
+
+commandTests:
+  - name: "root"
+    setup: []
+    command: "whoami"
+    args: []
+    expectedOutput: ["root"]
+  - name: "uid"
+    setup: []
+    command: "id"
+    args: ["-u"]
+    expectedOutput: ["0"]
+  - name: "gid"
+    setup: []
+    command: "id"
+    args: ["-g"]
+    expectedOutput: ["0"]
+  - name:  "apt-get upgrade"
+    command: "apt-get"
+    args: ["-qqs", "upgrade"]
+    excludedOutput: [".*Inst.*Security.* | .*Security.*Inst.*"]
+    excludedError: [".*Inst.*Security.* | .*Security.*Inst.*"]
+metadataTest:
+  labels:
+    - key: maintainer
+      value: devops-team@parity.io
+  exposedPorts: []
+  volumes: []
