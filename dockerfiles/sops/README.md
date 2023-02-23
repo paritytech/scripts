@@ -1,1 +1,1 @@
-Image containing the Sops and Vault binaries.
+# Image containing the Sops and Vault binaries.

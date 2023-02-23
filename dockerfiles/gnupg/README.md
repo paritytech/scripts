@@ -16,3 +16,4 @@ Used as base for tooling that requires gnupg.
 ```Dockerfile
 FROM docker.io/paritytech/gnupg:latest
 ```
+

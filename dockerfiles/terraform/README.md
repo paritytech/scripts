@@ -1,1 +1,1 @@
-Image containing the Terraform and Vault binaries.
+# Image containing the Terraform and Vault binaries.
