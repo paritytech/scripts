@@ -1,4 +1,4 @@
-Docker image to push and check benchmark results
+# Docker image to push and check benchmark results
 
 Long term storage metrics is done with Thanos now
 https://github.com/paritytech/devops/wiki/DevOps-Internal%3A-Thanos
@@ -7,7 +7,7 @@ https://github.com/paritytech/devops/wiki/DevOps-Internal%3A-Thanos
 
 ## check_bench_result.py
 
-The script takes an output file of `carg bench`, compares current result with the 
+The script takes an output file of `carg bench`, compares current result with the
 latest result and creates a github issue if the threshold is exceeded.
 
 
@@ -254,7 +254,7 @@ export TRESHOLD=20                 # Optional. Threshold to create github issue,
 python3 check_bench_result.py output.txt
 
 
-export CI_PROJECT_NAME=jsonrpsee   
+export CI_PROJECT_NAME=jsonrpsee
 export PROMETHEUS_URL="https://thanos.parity-mgmt.parity.io"
 export TRESHOLD=20
 python3 check_bench_result.py output.txt
@@ -298,7 +298,7 @@ send-becnh-result:
                         -l 'commit="'$CI_COMMIT_SHORT_SHA'",cirunner="'$runner'"'
                         -s $PROMETHEUS_URL
 
- 
+
      # example with values
      push_bench_result --type common \
                        --project substrate-api-sidecar \
@@ -311,8 +311,8 @@ send-becnh-result:
 ## check_single_bench_results.py
 
 Script compares provided result either with constant or with previuos value from Thanos
-If the result exceeds constant or threshold, scripts creates github issue.  
-2 env variables should exist: CI_COMMIT_SHA and GITHUB_TOKEN  
+If the result exceeds constant or threshold, scripts creates github issue.
+2 env variables should exist: CI_COMMIT_SHA and GITHUB_TOKEN
 
 ci example:
 
@@ -358,4 +358,3 @@ send-becnh-result:
                                    --constant 35000 \
                                    --value 37461.43
 ```
-

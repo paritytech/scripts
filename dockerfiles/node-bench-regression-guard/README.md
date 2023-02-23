@@ -24,3 +24,4 @@ Just `bundle install && bundle exec ruby run-tests.rb`.
 ### Dependencies
 
 The test script uses `faker` and `minitest` as the external dependencies. The main script (`node-bench-regression-guard`) is dependency-free and relies solely on Ruby's standard library.
+

@@ -58,3 +58,4 @@ test-contracts:
         script:
             - cargo build ...
 ```
+
