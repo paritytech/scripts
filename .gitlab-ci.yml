@@ -102,7 +102,7 @@ default:
     DOCKER_PASSWORD:      $Docker_Hub_Pass_Parity
     README_FILEPATH:      $CI_PROJECT_DIR/dockerfiles/$IMAGE_NAME/README.md
   rules:
-  - if: $CI_COMMIT_REF_NAME == "514"
+  - if: $CI_COMMIT_REF_NAME == "master"
     changes:
     - dockerfiles/$IMAGE_NAME/README.md
   script:
@@ -852,4 +852,214 @@ publish-ansible-docker-image-description:
   extends:                .publish-docker-image-description
   variables:
     IMAGE_NAME:           ansible
-    SHORT_DESCRIPTION:    "ansible utility Docker Image."
+    SHORT_DESCRIPTION:    "ansible utility Docker image."
+
+publish-awscli-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           awscli
+    SHORT_DESCRIPTION:    "awscli utility Docker image."
+
+publish-base-ci-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           base-ci
+    SHORT_DESCRIPTION:    "base-ci utility Docker image."
+
+publish-base-ci-linux-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           base-ci-linux
+    SHORT_DESCRIPTION:    "base-ci-linux utility Docker image."
+
+publish-benchmarks-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           benchmarks
+    SHORT_DESCRIPTION:    "benchmarks utility Docker image."
+
+publish-bridges-ci-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           bridges-ci
+    SHORT_DESCRIPTION:    "bridges-ci utility Docker image."
+
+publish-cachepot-ci-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           cachepot-ci
+    SHORT_DESCRIPTION:    "cachepot-ci utility Docker image."
+
+publish-ci-linux-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           ci-linux
+    SHORT_DESCRIPTION:    "ci-linux utility Docker image."
+
+publish-contracts-ci-linux-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           contracts-ci-linux
+    SHORT_DESCRIPTION:    "contracts-ci-linux utility Docker image."
+
+publish-deb-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           deb
+    SHORT_DESCRIPTION:    "deb utility Docker image."
+
+publish-debian10-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           debian10
+    SHORT_DESCRIPTION:    "debian10 utility Docker image."
+
+publish-gnupg-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           gnupg
+    SHORT_DESCRIPTION:    "gnupg utility Docker image."
+
+publish-ink-ci-linux-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           ink-ci-linux
+    SHORT_DESCRIPTION:    "ink-ci-linux utility Docker image."
+
+publish-ink-waterfall-ci-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           ink-waterfall-ci
+    SHORT_DESCRIPTION:    "ink-waterfall-ci utility Docker image."
+
+publish-kubetools-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           kubetools
+    SHORT_DESCRIPTION:    "kubetools utility Docker image."
+
+publish-lz4-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           lz4
+    SHORT_DESCRIPTION:    "lz4 utility Docker image."
+
+publish-mdbook-utils-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           mdbook-utils
+    SHORT_DESCRIPTION:    "mdbook-utils utility Docker image."
+
+publish-mitogen-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           mitogen
+    SHORT_DESCRIPTION:    "mitogen utility Docker image."
+
+publish-molecule-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           molecule
+    SHORT_DESCRIPTION:    "molecule utility Docker image."
+
+publish-multisig-ci-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           multisig-ci
+    SHORT_DESCRIPTION:    "multisig-ci utility Docker image."
+
+publish-node-bench-regression-guard-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           node-bench-regression-guard
+    SHORT_DESCRIPTION:    "node-bench-regression-guard utility Docker image."
+
+publish-node-wrk-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           node-wrk
+    SHORT_DESCRIPTION:    "node-wrk utility Docker image."
+
+publish-parity-keyring-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           parity-keyring
+    SHORT_DESCRIPTION:    "parity-keyring utility Docker image."
+
+publish-parity-scale-codec-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           parity-scale-codec
+    SHORT_DESCRIPTION:    "parity-scale-codec utility Docker image."
+
+publish-polkadotjs-cli-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           polkadotjs-cli
+    SHORT_DESCRIPTION:    "polkadotjs-cli utility Docker image."
+
+publish-query-exporter-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           query-exporter
+    SHORT_DESCRIPTION:    "query-exporter utility Docker image."
+
+publish-redis-exporter-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           redis-exporter
+    SHORT_DESCRIPTION:    "redis-exporter utility Docker image."
+
+publish-rpm-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           rpm
+    SHORT_DESCRIPTION:    "rpm utility Docker image."
+
+publish-rusty-cachier-env-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           rusty-cachier-env
+    SHORT_DESCRIPTION:    "rusty-cachier-env utility Docker image."
+
+publish-smart-bench-ci-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           smart-bench-ci
+    SHORT_DESCRIPTION:    "smart-bench-ci utility Docker image."
+
+publish-sops-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           sops
+    SHORT_DESCRIPTION:    "sops utility Docker image."
+
+publish-substrate-session-keys-grabber-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           substrate-session-keys-grabber
+    SHORT_DESCRIPTION:    "substrate-session-keys-grabber utility Docker image."
+
+publish-terraform-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           terraform
+    SHORT_DESCRIPTION:    "terraform utility Docker image."
+
+publish-tools-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           tools
+    SHORT_DESCRIPTION:    " utility Docker image."
+
+publish-ws-health-exporter-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           ws-health-exporter
+    SHORT_DESCRIPTION:    "ws-health-exporter utility Docker image."
+
+publish-xbuilder-aarch64-unknown-linux-gnu-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           xbuilder-aarch64-unknown-linux-gnu
+    SHORT_DESCRIPTION:    "xbuilder-aarch64-unknown-linux-gnu utility Docker image."
