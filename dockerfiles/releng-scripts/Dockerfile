@@ -4,8 +4,8 @@ FROM docker.io/library/ubuntu:latest
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
-ARG UID=1000
-ARG GID=1000
+ARG UID=10000
+ARG GID=10000
 
 # metadata
 LABEL summary="Base image for GnuPG operations" \
@@ -26,8 +26,8 @@ WORKDIR /scripts
 COPY . .
 
 RUN set -x \
-    && groupadd -g $GID nonroot \
-    && useradd -u $UID -g $GID -s /bin/bash -m nonroot
+	&& groupadd -g $GID nonroot \
+	&& useradd -u $UID -g $GID -s /bin/bash -m nonroot
 
 USER nonroot:nonroot
 
