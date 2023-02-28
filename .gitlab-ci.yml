@@ -727,6 +727,7 @@ releng-scripts-download:
 
 releng-scripts:
   <<: *docker_build
+  stage: prod
   needs:
     - job: releng-scripts-download
       artifacts: true
