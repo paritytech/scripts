@@ -726,7 +726,7 @@ releng-scripts-download:
     - kubernetes-parity-build
 
 releng-scripts:
-  <<: *docker-build
+  <<: *docker_build
   needs:
     - job: releng-scripts-download
       artifacts: true
