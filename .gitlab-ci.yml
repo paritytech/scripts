@@ -728,6 +728,8 @@ releng-scripts-download:
 releng-scripts:
   <<: *docker_build
   stage: prod
+  rules:
+    - if: $IMAGE_NAME == "releng-scripts"
   needs:
     - job: releng-scripts-download
       artifacts: true
