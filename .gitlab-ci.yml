@@ -290,6 +290,23 @@ xbuilder-aarch64-unknown-linux-gnu:
   variables:
     IMAGE_NAME:                    "xbuilder-aarch64-unknown-linux-gnu"
 
+releng-scripts-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "releng-scripts"
+  script:
+    - cd dockerfiles/$IMAGE_NAME
+    - git clone https://github.com/paritytech/releng-scripts
+    - mv Dockerfile releng-scripts/
+    - cd releng-scripts/
+    - buildah bud
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date +%Y%m%d)"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
+      --file "Dockerfile"
+
 # Build and push to docker hub
 ansible:
   <<:                              *docker_build
@@ -662,6 +679,26 @@ substrate-session-keys-grabber:
     - *push_to_docker_hub
   variables:
     IMAGE_NAME:                    "substrate-session-keys-grabber"
+
+releng-scripts:
+  <<:                              *docker_build
+  script:
+    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
+    - buildah version
+    - buildah bud
+        --format=docker
+        --build-arg VCS_REF="$CI_COMMIT_SHA"
+        --build-arg BUILD_DATE="$(date +%Y%m%d)"
+        --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+        --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+        --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+        --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+    - buildah info
+    - echo "$Docker_Hub_Pass_Parity" |
+        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - buildah logout "$REGISTRY_NAME"
 
 #### stage:                        test
 
