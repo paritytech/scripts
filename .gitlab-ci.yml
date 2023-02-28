@@ -102,7 +102,7 @@ default:
     DOCKER_PASSWORD:      $Docker_Hub_Pass_Parity
     README_FILEPATH:      $CI_PROJECT_DIR/dockerfiles/$IMAGE_NAME/README.md
   rules:
-  - if: $CI_COMMIT_REF_NAME == "master"
+  - if: $IMAGE_NAME == $CI_JOB_NAME
     changes:
     - dockerfiles/$IMAGE_NAME/README.md
   script:
@@ -701,8 +701,6 @@ substrate-session-keys-grabber:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
-  variables:
-    IMAGE_NAME:                    "substrate-session-keys-grabber"
 
 # releng-scripts needs custom ci config because files are in a separate repo
 releng-scripts-download:
@@ -727,11 +725,10 @@ releng-scripts-download:
 
 releng-scripts:
   <<: *docker_build
+  stage: prod
   needs:
     - job: releng-scripts-download
       artifacts: true
-  variables:
-    IMAGE_NAME:                    "releng-scripts"
   script:
     - mv dockerfiles/$IMAGE_NAME/Dockerfile artifacts/releng-scripts/
     - cd artifacts/releng-scripts/
