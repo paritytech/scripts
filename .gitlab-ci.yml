@@ -290,15 +290,39 @@ xbuilder-aarch64-unknown-linux-gnu:
   variables:
     IMAGE_NAME:                    "xbuilder-aarch64-unknown-linux-gnu"
 
+# releng-scripts needs custom config because files are in a separate repo
+releng-scripts-download-pr:
+  stage:                           build
+  image:                           "paritytech/ci-linux:production"
+  artifacts:
+    name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
+    when: on_success
+    expire_in: 3 hours
+    paths:
+      - ./artifacts/
+  variables:
+    GIT_FETCH: 0
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+      changes:
+        - dockerfiles/releng-scripts/**
+  script:
+    - mkdir -p artifacts/
+    - cd artifacts/
+    - git clone https://github.com/paritytech/releng-scripts
+  tags:
+    - kubernetes-parity-build
+
 releng-scripts-pr:
   <<: *docker_build_pr
+  needs:
+    - job: releng-scripts-download-pr
+      artifacts: true
   variables:
     IMAGE_NAME:                    "releng-scripts"
   script:
-    - cd dockerfiles/$IMAGE_NAME
-    - git clone https://github.com/paritytech/releng-scripts
-    - mv Dockerfile releng-scripts/
-    - cd releng-scripts/
+    - mv dockerfiles/$IMAGE_NAME/Dockerfile artifacts/releng-scripts/
+    - cd artifacts/releng-scripts/
     - buildah bud
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
