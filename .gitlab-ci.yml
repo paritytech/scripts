@@ -701,8 +701,6 @@ substrate-session-keys-grabber:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
-  variables:
-    IMAGE_NAME:                    "substrate-session-keys-grabber"
 
 # releng-scripts needs custom ci config because files are in a separate repo
 releng-scripts-download:
