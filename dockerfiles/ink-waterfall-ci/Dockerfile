@@ -86,7 +86,7 @@ RUN	set -eux; \
 # This enables us to test in the waterfall that the `rand-extension`
 # integration with Substrate still works.
 	git clone --depth 1 https://github.com/paritytech/substrate-contracts-node.git && \
-	curl -s https://raw.githubusercontent.com/paritytech/ink/master/examples/rand-extension/runtime/chain-extension-example.rs \
+	curl -s https://raw.githubusercontent.com/paritytech/ink/master/integration-tests/rand-extension/runtime/chain-extension-example.rs \
 		>> substrate-contracts-node/runtime/src/lib.rs && \
 	sed -i 's/type ChainExtension = ();/type ChainExtension = FetchRandomExtension;/g' substrate-contracts-node/runtime/src/lib.rs && \
 	sed -i 's/name = "substrate-contracts-node"/name = "substrate-contracts-node-rand-extension"/g' substrate-contracts-node/node/Cargo.toml && \
