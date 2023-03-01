@@ -1,2 +1,1 @@
 # Ansible utility Docker image
-
