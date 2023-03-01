@@ -126,6 +126,7 @@ default:
   tags:
     - kubernetes-parity-build
 
+
 ansible-pr:
   <<: *docker_build_pr
   variables:
