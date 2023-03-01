@@ -120,7 +120,7 @@ default:
   rules:
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
       changes:
-        - dockerfiles/$IMAGE_NAME/Dockerfile
+        - dockerfiles/$IMAGE_NAME/*
   script:
     - *docker_build_only
   tags:
