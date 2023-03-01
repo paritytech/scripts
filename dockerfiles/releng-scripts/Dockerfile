@@ -19,7 +19,12 @@ LABEL summary="Base image for GnuPG operations" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-RUN apt-get update && apt-get install -yq --no-install-recommends bash ca-certificates curl gnupg
+RUN apt-get update && apt-get install -yq --no-install-recommends ca-certificates bash jq unzip curl && \
+	curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "/tmp/awscliv2.zip" && \
+	unzip "/tmp/awscliv2.zip" && rm "/tmp/awscliv2.zip" && \
+	/aws/install && rm -rf /aws && \
+	apt -yq remove ca-certificates unzip && apt -yq autoremove && \
+	aws --version
 
 WORKDIR /scripts
 
