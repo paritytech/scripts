@@ -153,10 +153,10 @@ benchmarks-pr:
   variables:
     IMAGE_NAME:                    "benchmarks"
 
-bridges-pr:
+bridges-ci-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "bridges"
+    IMAGE_NAME:                    "bridges-ci"
 
 polkadotjs-cli-pr:
   <<: *docker_build_pr
