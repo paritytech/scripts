@@ -1,11 +1,11 @@
-# A health checker for Substrate-based nodes
+# A WebSocket health checker for Substrate-based nodes
 
 The script:
-* open a WebSocket connection 
-* run `system_health` and `system_syncState` API methods
-* close the WebSocket connection
+* opens a WebSocket connection 
+* runs `system_health` and `system_syncState` API methods
+* closes the WebSocket connection
 * checks results: common health state, number of peers, state of syncing, block syncing drift
-* expose health data as a Prometheus endpoint and a simple HTTP probe (can be useful as probes for k8s)
+* exposes health data as a Prometheus endpoint and a simple HTTP probe (can be useful as probes for k8s)
 
 ## Configuration
 It can be configured using environment variables:
