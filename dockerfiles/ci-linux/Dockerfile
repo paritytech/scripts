@@ -46,6 +46,9 @@ RUN set -eux && \
 	cargo install --version 0.2.73 wasm-bindgen-cli && \
 	# install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
 	cargo +nightly install wasm-gc && \
+	# install cargo hfuzz and honggfuzz dependencies
+	apt-get install -y binutils-dev libunwind-dev libblocksruntime-dev && \
+	cargo install honggfuzz && \
 	# versions
 	rustup show && \
 	cargo --version && \
