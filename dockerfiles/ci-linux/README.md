@@ -38,6 +38,7 @@ Used to build and test Substrate-based projects.
 - `wasm-bindgen`
 - `cargo-deny`
 - `cargo-spellcheck`: Required for the CI to do automated spell-checking.
+- `cargo-hfuzz`
 - `wasm32-unknown-unknown` toolchain
 - `mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-last-changed`
 
