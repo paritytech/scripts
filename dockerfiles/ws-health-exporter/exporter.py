@@ -65,7 +65,7 @@ def run_error(msg):
     sys.exit(1)
 
 
-def pars_config(config):
+def parse_config(config):
     env = Env()
     # WSHE_LOG_LEVEL
     # it checks debug CLI flag to keep backward compatibility with old versions
@@ -177,7 +177,7 @@ def health_readiness():
 
 
 if __name__ == '__main__':
-    pars_config(app_config)
+    parse_config(app_config)
 
     # set up console log handler
     console = logging.StreamHandler()
