@@ -57,10 +57,7 @@ RUN set -eux; \
     chown -R root:nonroot ${RUSTUP_HOME} ${CARGO_HOME} && \
   	chmod -R g+w ${RUSTUP_HOME} ${CARGO_HOME} && \
 # install sccache
-	# cargo install sccache --features redis && \
-	# FIXME: TEMPORARY OVERRIDE due to the sccache issue
-	# https://github.com/mozilla/sccache/issues/663
-	cargo install --git https://github.com/mozilla/sccache  --rev 6628e1f70db3d583cb5e79210603ad878de3d315 --features redis && \
+	cargo install sccache; \
 # versions
 	rustup show && \
 	cargo --version && \
@@ -71,7 +68,5 @@ RUN set -eux; \
 	apt-get autoremove -y && \
 	apt-get clean && \
   rm -rf /var/lib/apt/lists/*
-# cache handler
-ENV	RUSTC_WRAPPER=sccache
 # show backtraces
-ENV RUST_BACKTRACE=1
+ENV	RUST_BACKTRACE=1

@@ -30,8 +30,6 @@ RUN rustup toolchain install nightly --target wasm32-unknown-unknown \
 	rustc -vV && \
     cargo -V
 
-# cache handler
-ENV	RUSTC_WRAPPER=sccache
 # show backtraces
 ENV RUST_BACKTRACE=1
 

@@ -67,9 +67,7 @@ RUN set -eux && \
 	apt-get autoremove -y && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/*
-# cache handler
-ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
-  	RUST_BACKTRACE=1
+ENV	RUST_BACKTRACE=1
 
 CMD ["bash", "-l"]
