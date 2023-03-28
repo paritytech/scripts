@@ -11,7 +11,7 @@ Used to build and test Substrate-based projects.
 **Inherited from `<base-ci-linux:latest>`:**
 
 - `libssl-dev`
-- `clang-7`
+- `clang`
 - `lld`
 - `libclang-dev`
 - `make`

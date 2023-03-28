@@ -20,11 +20,6 @@ LABEL summary="Image for Substrate-based projects." \
 
 # install tools and dependencies
 RUN set -eux && \
-	# install git from backports
-	echo deb http://deb.debian.org/debian buster-backports main | tee /etc/apt/sources.list.d/buster-backports.list  && \
-	apt-get -y update; \
-	apt install -y -t buster-backports git; \
-	git --version; \
 	# install `rust-src` component for ui test
 	rustup component add rust-src rustfmt clippy && \
 	# install specific Rust nightly, default is stable, use minimum components
@@ -47,6 +42,7 @@ RUN set -eux && \
 	# install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
 	cargo +nightly install wasm-gc && \
 	# install cargo hfuzz and honggfuzz dependencies
+	apt-get -y update && \
 	apt-get install -y binutils-dev libunwind-dev libblocksruntime-dev && \
 	cargo install honggfuzz && \
 	# versions
