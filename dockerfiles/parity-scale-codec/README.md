@@ -14,7 +14,7 @@ Used to build and test parity-scale-codec.
 **Inherited from `<base-ci-linux:latest>`**
 
 - `libssl-dev`
-- `clang-13`
+- `clang`
 - `lld`
 - `libclang-dev`
 - `make`
