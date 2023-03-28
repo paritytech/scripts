@@ -25,6 +25,7 @@ WORKDIR /builds
 
 # config for wasm32-unknown-unknown & clang
 COPY utility/base-ci-linux-config /root/.cargo/config
+COPY utility/debian-llvm-clang.key /etc/apt/trusted.gpg.d/debian-llvm-clang.gpg
 
 ENV RUSTUP_HOME=/usr/local/rustup \
 	CARGO_HOME=/usr/local/cargo \
@@ -40,7 +41,6 @@ RUN set -eux; \
 		git pkg-config curl time rhash ca-certificates jq \
 		python3 python3-pip lsof ruby ruby-bundler git-restore-mtime xz-utils zstd unzip gnupg protobuf-compiler && \
 # add clang 14 repo
-	curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -; \
 	echo "deb http://apt.llvm.org/${DEBIAN_CODENAME}/ llvm-toolchain-${DEBIAN_CODENAME}-14 main" >> /etc/apt/sources.list.d/llvm-toochain-${DEBIAN_CODENAME}-14.list; \
 	echo "deb-src http://apt.llvm.org/${DEBIAN_CODENAME}/ llvm-toolchain-${DEBIAN_CODENAME}-14 main" >> /etc/apt/sources.list.d/llvm-toochain-${DEBIAN_CODENAME}-14.list; \
 	apt-get -y update; \
