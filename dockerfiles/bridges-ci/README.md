@@ -1,12 +1,12 @@
 # bridges-ci
 
-Docker image based on our base CI image `<base-ci:latest>`.
+Docker image based on our base CI image `<base-ci-linux>`.
 
 Used to build and test parity-bridges-common.
 
 ## Dependencies and Tools
 
-**Inherited from `<base-ci:latest>`**
+**Inherited from `<base-ci-linux>`**
 
 - `libssl-dev`
 - `clang-10`
