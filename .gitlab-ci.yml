@@ -798,7 +798,9 @@ ci-linux-test-substrate:
     CI_IMAGE:                      "paritytech/ci-linux:staging"
     # this is to rewrite "-Dwarnings" we use in Substrate CI since new warnings
     # are often introduced and we do not want to fail on them in this case
-    RUSTFLAGS:                     "-Cdebug-assertions=y"
+    RUSTFLAGS:                     "-C debug-assertions"
+    # disable rusty-cachier completely for this kind of pipelines
+    RUSTY_CACHIER_SNEAKY_BYPASS:   "true"
   rules:
     - if: $IMAGE_NAME == "ci-linux"
   trigger:
@@ -812,7 +814,9 @@ ci-linux-test-polkadot:
     CI_IMAGE:                      "paritytech/ci-linux:staging"
     # this is to rewrite "-Dwarnings" we use in Polkadot CI since new warnings
     # are often introduced and we do not want to fail on them in this case
-    RUSTFLAGS:                     "-Cdebug-assertions=y"
+    RUSTFLAGS:                     "-C debug-assertions"
+    # disable rusty-cachier completely for this kind of pipelines
+    RUSTY_CACHIER_SNEAKY_BYPASS:   "true"
   rules:
     - if: $IMAGE_NAME == "ci-linux"
   trigger:
