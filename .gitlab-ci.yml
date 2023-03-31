@@ -138,11 +138,6 @@ awscli-pr:
   variables:
     IMAGE_NAME:                    "awscli"
 
-base-ci-pr:
-  <<: *docker_build_pr
-  variables:
-    IMAGE_NAME:                    "base-ci"
-
 base-ci-linux-pr:
   <<: *docker_build_pr
   variables:
@@ -330,11 +325,6 @@ ansible:
     - *push_to_docker_hub
 
 base-ci-linux:
-  <<:                              *docker_build
-  script:
-    - *push_to_docker_hub
-
-base-ci:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
@@ -910,12 +900,6 @@ publish-awscli-docker-image-description:
   variables:
     IMAGE_NAME:           awscli
     SHORT_DESCRIPTION:    "awscli utility Docker image."
-
-publish-base-ci-docker-image-description:
-  extends:                .publish-docker-image-description
-  variables:
-    IMAGE_NAME:           base-ci
-    SHORT_DESCRIPTION:    "base-ci utility Docker image."
 
 publish-base-ci-linux-docker-image-description:
   extends:                .publish-docker-image-description
