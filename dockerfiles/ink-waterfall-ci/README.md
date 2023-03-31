@@ -6,7 +6,7 @@ Used to build and run end-to-end tests for ink!, `cargo-contract`, `substrate-co
 
 ## Dependencies and Tools
 
-**Inherited from `<base-ci:latest>`**
+**Inherited from `<base-ci-linux:latest>`**
 
 - `libssl-dev`
 - `lld`
