@@ -163,11 +163,6 @@ polkadotjs-cli-pr:
   variables:
     IMAGE_NAME:                    "polkadotjs-cli"
 
-cachepot-ci-pr:
-  <<: *docker_build_pr
-  variables:
-    IMAGE_NAME:                    "cachepot-ci"
-
 ci-linux-pr:
   <<: *docker_build_pr
   variables:
@@ -256,11 +251,6 @@ rusty-cachier-env-pr:
   <<: *docker_build_pr
   variables:
     IMAGE_NAME:                    "rusty-cachier-env"
-
-smart-bench-ci-pr:
-  <<: *docker_build_pr
-  variables:
-    IMAGE_NAME:                    "ink-waterfall-ci"
 
 sops-pr:
   <<: *docker_build_pr
@@ -369,11 +359,6 @@ ink-waterfall-ci:
   script:
     - *push_to_docker_hub
 
-smart-bench-ci:
-  <<:                              *docker_build
-  script:
-    - *push_to_docker_hub
-
 contracts-ci-linux:
   <<:                              *docker_build
   script:
@@ -394,11 +379,6 @@ polkadotjs-cli:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
-
-cachepot-ci:
-  <<:                              *docker_build
-  script:
-    - *push_to_staging
 
 awscli:
   <<:                              *docker_build
@@ -846,17 +826,6 @@ contracts-ci-linux-test:
     branch:                        master
     strategy:                      depend
 
-cachepot-ci-test:
-  stage:                           test
-  variables:
-    CI_IMAGE:                      "paritytech/cachepot-ci:staging"
-  rules:
-    - if: $IMAGE_NAME == "cachepot-ci"
-  trigger:
-    project:                       parity/mirrors/cachepot
-    branch:                        master
-    strategy:                      depend
-
 bridges-ci-test:
   stage:                           test
   variables:
@@ -912,15 +881,6 @@ contracts-ci-linux-production:
   rules:
     - if: $IMAGE_NAME == "contracts-ci-linux"
 
-
-cachepot-ci-production:
-  <<:                              *push-after-triggered-pipeline
-  needs:
-    - job:                         cachepot-ci-test
-      artifacts:                   false
-  rules:
-    - if: $IMAGE_NAME == "cachepot-ci"
-
 bridges-ci-production:
   <<:                              *push-after-triggered-pipeline
   needs:
@@ -974,12 +934,6 @@ publish-bridges-ci-docker-image-description:
   variables:
     IMAGE_NAME:           bridges-ci
     SHORT_DESCRIPTION:    "bridges-ci utility Docker image."
-
-publish-cachepot-ci-docker-image-description:
-  extends:                .publish-docker-image-description
-  variables:
-    IMAGE_NAME:           cachepot-ci
-    SHORT_DESCRIPTION:    "cachepot-ci utility Docker image."
 
 publish-ci-linux-docker-image-description:
   extends:                .publish-docker-image-description
@@ -1112,12 +1066,6 @@ publish-rusty-cachier-env-docker-image-description:
   variables:
     IMAGE_NAME:           rusty-cachier-env
     SHORT_DESCRIPTION:    "rusty-cachier-env utility Docker image."
-
-publish-smart-bench-ci-docker-image-description:
-  extends:                .publish-docker-image-description
-  variables:
-    IMAGE_NAME:           smart-bench-ci
-    SHORT_DESCRIPTION:    "smart-bench-ci utility Docker image."
 
 publish-sops-docker-image-description:
   extends:                .publish-docker-image-description
