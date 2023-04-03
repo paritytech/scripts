@@ -352,8 +352,7 @@ ink-waterfall-ci:
 contracts-ci-linux:
   <<:                              *docker_build
   script:
-    - *push_to_staging
-    - *publish_as_latest_too
+    - *push_to_docker_hub
 
 debian10:
   <<:                              *docker_build
@@ -805,17 +804,6 @@ ink-ci-linux-test:
     branch:                        master
     strategy:                      depend
 
-contracts-ci-linux-test:
-  stage:                           test
-  variables:
-    CI_IMAGE:                      "paritytech/contracts-ci-linux:staging"
-  rules:
-    - if: $IMAGE_NAME == "contracts-ci-linux"
-  trigger:
-    project:                       parity/mirrors/cargo-contract
-    branch:                        master
-    strategy:                      depend
-
 bridges-ci-test:
   stage:                           test
   variables:
@@ -862,14 +850,6 @@ ink-ci-linux-production:           &push-after-triggered-pipeline
     - *push_to_production
   tags:
     - kubernetes-parity-build
-
-contracts-ci-linux-production:
-  <<:                              *push-after-triggered-pipeline
-  needs:
-    - job:                         contracts-ci-linux-test
-      artifacts:                   false
-  rules:
-    - if: $IMAGE_NAME == "contracts-ci-linux"
 
 bridges-ci-production:
   <<:                              *push-after-triggered-pipeline
