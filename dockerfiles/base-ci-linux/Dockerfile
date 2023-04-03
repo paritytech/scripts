@@ -23,6 +23,9 @@ dockerfiles/base-ci-linux/README.md" \
 
 WORKDIR /builds
 
+ENV SHELL /bin/bash
+ENV DEBIAN_FRONTEND=noninteractive
+
 # config for wasm32-unknown-unknown & clang
 COPY utility/base-ci-linux-config /root/.cargo/config
 COPY utility/debian-llvm-clang.key /etc/apt/trusted.gpg.d/debian-llvm-clang.gpg

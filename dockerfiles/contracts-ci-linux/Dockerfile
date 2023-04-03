@@ -2,7 +2,9 @@ ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
 
-FROM ${REGISTRY_PATH}/base-ci:latest
+FROM ${REGISTRY_PATH}/base-ci-linux:latest
+
+ARG RUST_NIGHTLY="2022-10-10"
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
@@ -20,26 +22,16 @@ dockerfiles/contracts-ci-linux/README.md" \
 
 WORKDIR /builds
 
-ENV SHELL /bin/bash
-ENV DEBIAN_FRONTEND=noninteractive
-
 RUN set -eux; \
 	apt-get -y update && \
-	apt-get install -y --no-install-recommends \
-		zlib1g-dev npm wabt llvm-dev && \
+	apt-get install -y --no-install-recommends zlib1g-dev npm wabt && \
 	npm install --ignore-scripts -g yarn && \
 
 	# `binaryen` is needed by `cargo-contract` for optimizing Wasm files.
 	# We fetch the latest release which contains a Linux binary.
-	curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases | \
-		egrep --only-matching 'https://github.com/WebAssembly/binaryen/releases/download/version_[0-9]+/binaryen-version_[0-9]+-x86_64-linux.tar.gz' | \
-		head -n1 | \
-		xargs curl -L -O && \
-	tar -xvzf binaryen-*-x86_64-linux.tar.gz  && \
-	rm binaryen-*-x86_64-linux.tar.gz && \
-	chmod +x binaryen-*/bin/wasm-opt && \
-	mv binaryen-*/bin/wasm-opt /usr/local/bin/ && \
-	rm -rf binaryen-*/ && \
+	curl -L $(curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases \
+		 | jq -r '.[0].assets | [.[] | .browser_download_url] | map(select(match("x86_64-linux\\.tar\\.gz$"))) | .[0]' \
+		 ) | tar -xz -C /usr/local/bin/ --wildcards --strip-components=2 'binaryen-*/bin/wasm-opt' && \
 
 	# The stable toolchain is used to build ink! contracts through the use of the
 	# `RUSTC_BOOSTRAP=1` environment variable. We also need to install the
@@ -54,12 +46,12 @@ RUN set -eux; \
 	#
 	# Note that we pin the nightly toolchain since it often creates breaking changes during
 	# the RustFmt and Clippy stages of the CI.
-	rustup toolchain install nightly-2022-10-10 --target wasm32-unknown-unknown \
+	rustup toolchain install nightly-${RUST_NIGHTLY} --target wasm32-unknown-unknown \
 		--profile minimal --component rustfmt clippy rust-src && \
 
 	# Alias pinned toolchain as nightly, otherwise it appears as though we
 	# don't have a nightly toolchain (i.e rustc +nightly --version is empty)
-	ln -s /usr/local/rustup/toolchains/nightly-2022-10-10-x86_64-unknown-linux-gnu \
+	ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY}-x86_64-unknown-linux-gnu" \
 		/usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
 
 	# `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
