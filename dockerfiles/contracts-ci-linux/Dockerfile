@@ -10,7 +10,7 @@ ARG RUST_NIGHTLY="2022-10-10"
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/contracts-ci-linux" \
-	io.parity.image.description="Inherits from base-ci:latest. \
+	io.parity.image.description="Inherits from base-ci-linux:latest. \
 llvm-dev, clang, zlib1g-dev, npm, yarn, wabt, binaryen. \
 rust nightly, rustfmt, clippy, rust-src, substrate-contracts-node" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\

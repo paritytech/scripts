@@ -1,6 +1,6 @@
 # contracts! CI for Linux Distributions
 
-Docker image based on our base CI image `<base-ci:latest>`.
+Docker image based on our base CI image `<base-ci-linux:latest>`.
 
 Used to build and test contracts!.
 
@@ -13,7 +13,7 @@ Used to build and test contracts!.
 - `wabt`
 - `binaryen`
 
-**Inherited from `<base-ci:latest>`**
+**Inherited from `<base-ci-linux:latest>`**
 
 - `libssl-dev`
 - `clang-10`
