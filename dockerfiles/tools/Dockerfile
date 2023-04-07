@@ -19,7 +19,7 @@ dockerfiles/tools/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 
-RUN apk add --no-cache curl git jq rsync make gettext gnupg bash shadow redis openssh ruby xz ripgrep zstd
+RUN apk add --no-cache curl git jq rsync make gettext gnupg bash shadow redis openssh ruby xz ripgrep zstd skopeo
 
 RUN curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc && chmod 755 /usr/local/bin/mc
 
