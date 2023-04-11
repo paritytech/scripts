@@ -52,15 +52,12 @@ RUN set -eux; \
 # add non-root user
   groupadd -g 1000 nonroot && \
   useradd -u 1000 -g 1000 -s /bin/bash -m nonroot && \
-# install minio client
-  curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc && \
-  chmod 755 /usr/local/bin/mc && \
 # set a link to clang
 	update-alternatives --install /usr/bin/cc cc /usr/bin/clang-14 100; \
 # set a link to ldd
   update-alternatives --install /usr/bin/ld ld /usr/bin/ld.lld-14 100; \
-# install rustup, use minimum components
-	curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" \
+# install rustup, platform specific
+	curl -L "https://sh.rustup.rs" \
 		-o rustup-init; \
   	chmod +x rustup-init; \
   	./rustup-init -y --no-modify-path --profile minimal --default-toolchain stable; \
