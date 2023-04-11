@@ -6,6 +6,8 @@ FROM ${REGISTRY_PATH}/base-ci-linux:latest
 
 ARG RUST_NIGHTLY="2022-11-16"
 
+ARG TARGETPLATFORM
+
 # metadata
 LABEL summary="Image for Substrate-based projects." \
 	name="${REGISTRY_PATH}/ci-linux" \
@@ -25,7 +27,13 @@ RUN set -eux && \
 	# install specific Rust nightly, default is stable, use minimum components
 	rustup toolchain install "nightly-${RUST_NIGHTLY}" --profile minimal --component rustfmt clippy && \
 	# "alias" pinned nightly toolchain as nightly
-	ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY}-x86_64-unknown-linux-gnu" /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
+	if [ "$TARGETPLATFORM" = "linux/arm64" ] ;\
+	then \
+		ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY}-aarch64-unknown-linux-gnu" /usr/local/rustup/toolchains/nightly-aarch64-unknown-linux-gnu ; \
+	else \
+	ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY}-x86_64-unknown-linux-gnu" /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu ; \
+	fi
+RUN set -eux && \
 	# install wasm toolchain
 	rustup target add wasm32-unknown-unknown && \
 	rustup target add wasm32-unknown-unknown --toolchain nightly && \
