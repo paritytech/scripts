@@ -87,8 +87,8 @@ def parse_config(config):
     # WSHE_WS_TIMEOUT
     config['ws_timeout'] = env.int("WSHE_WS_TIMEOUT", config['ws_timeout'])
     # WSHE_NODE_RPC_URLS
-    # it checks WS_NODE_URL to keep backward compatibility with old versions
-    config['node_rpc_urls'] = env.list("WSHE_NODE_RPC_URLS", env.list("WS_NODE_URL", config['node_rpc_urls']))
+    # it checks NODE_URL to keep backward compatibility with old versions
+    config['node_rpc_urls'] = env.list("WSHE_NODE_RPC_URLS", env.list("NODE_URL", config['node_rpc_urls']))
     invalid_urls = []
     # validate URLs
     for url in config['node_rpc_urls']:
