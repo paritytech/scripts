@@ -4,7 +4,7 @@ ARG REGISTRY_PATH=docker.io/paritytech
 
 FROM ${REGISTRY_PATH}/base-ci-linux:latest
 
-ARG RUST_NIGHTLY="2022-10-10"
+ARG RUST_NIGHTLY="2023-03-21"
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
