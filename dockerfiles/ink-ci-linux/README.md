@@ -1,6 +1,6 @@
 # ink! CI for Linux Distributions
 
-Docker image based on our base CI image `<base-ci:latest>`.
+Docker image based on our base CI image `<base-ci-linux:latest>`.
 
 Used to build and test ink!.
 
@@ -11,10 +11,10 @@ Used to build and test ink!.
 - `binaryen`: needed by `cargo-contract` for optimizing Wasm files
 - `cargo-dylint` and `dylint-link`: needed by `cargo-contract` for running lints
 
-**Inherited from `<base-ci:latest>`**
+**Inherited from `<base-ci-linux:latest>`**
 
 - `libssl-dev`
-- `clang-10`
+- `clang`
 - `lld`
 - `libclang-dev`
 - `make`

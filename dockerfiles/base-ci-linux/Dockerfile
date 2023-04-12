@@ -1,12 +1,10 @@
-FROM docker.io/library/debian:buster-slim
+FROM docker.io/library/debian:bullseye-slim
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
 
-# those can be removed once jq is available through the distribution
-ARG JQ_CHECKSUM=af986793a515d500ab2d35f8d2aecd656e764504b789b66d7e1a0b727a124c44
-ARG JQ_PATH=/bin/jq
+ARG DEBIAN_CODENAME=bullseye
 
 # metadata
 LABEL summary="Layer 1 image with all dependencies for Rust and WASM compilation." \
@@ -14,7 +12,7 @@ LABEL summary="Layer 1 image with all dependencies for Rust and WASM compilation
 	maintainer="devops-team@parity.io" \
 	version="1.0" \
 	description="libssl-dev, clang, libclang-dev, lld, cmake, make, git, pkg-config \
-curl, time, jq, lsof, rhash, rust stable, rust nightly, sccache" \
+curl, time, jq, lsof, rhash, rust stable, sccache" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/base-ci-linux/Dockerfile" \
@@ -25,8 +23,12 @@ dockerfiles/base-ci-linux/README.md" \
 
 WORKDIR /builds
 
+ENV SHELL /bin/bash
+ENV DEBIAN_FRONTEND=noninteractive
+
 # config for wasm32-unknown-unknown & clang
 COPY utility/base-ci-linux-config /root/.cargo/config
+COPY utility/debian-llvm-clang.key /etc/apt/trusted.gpg.d/debian-llvm-clang.gpg
 
 ENV RUSTUP_HOME=/usr/local/rustup \
 	CARGO_HOME=/usr/local/cargo \
@@ -39,24 +41,17 @@ RUN set -eux; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		libssl-dev make cmake graphviz \
-		git pkg-config curl time rhash ca-certificates \
+		git pkg-config curl time rhash ca-certificates jq \
 		python3 python3-pip lsof ruby ruby-bundler git-restore-mtime xz-utils zstd unzip gnupg protobuf-compiler && \
 # add clang 14 repo
-	curl -s https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add -; \
-	echo "deb http://apt.llvm.org/buster/ llvm-toolchain-buster-14 main" >> /etc/apt/sources.list.d/llvm-toochain-buster-14.list; \
-	echo "deb-src http://apt.llvm.org/buster/ llvm-toolchain-buster-14 main" >> /etc/apt/sources.list.d/llvm-toochain-buster-14.list; \
+	echo "deb http://apt.llvm.org/${DEBIAN_CODENAME}/ llvm-toolchain-${DEBIAN_CODENAME}-14 main" >> /etc/apt/sources.list.d/llvm-toochain-${DEBIAN_CODENAME}-14.list; \
+	echo "deb-src http://apt.llvm.org/${DEBIAN_CODENAME}/ llvm-toolchain-${DEBIAN_CODENAME}-14 main" >> /etc/apt/sources.list.d/llvm-toochain-${DEBIAN_CODENAME}-14.list; \
 	apt-get -y update; \
 	apt-get install -y --no-install-recommends \
 		clang-14 lldb-14 lld-14 libclang-14-dev && \
 # add non-root user
   groupadd -g 1000 nonroot && \
   useradd -u 1000 -g 1000 -s /bin/bash -m nonroot && \
-# install recent jq; this step can be removed once jq >= 1.6 is available
-# through the distribution
-  curl -sqL https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 -o "$JQ_PATH" && \
-  chmod +x "$JQ_PATH" && \
-  echo "$JQ_CHECKSUM $JQ_PATH" | sha256sum --check && \
-  jq --version; \
 # install minio client
   curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc && \
   chmod 755 /usr/local/bin/mc && \
@@ -73,10 +68,7 @@ RUN set -eux; \
     chown -R root:nonroot ${RUSTUP_HOME} ${CARGO_HOME}; \
   	chmod -R g+w ${RUSTUP_HOME} ${CARGO_HOME}; \
 # install sccache
-	# cargo install sccache --features redis; \
-	# FIXME: TEMPORARY OVERRIDE due to the sccache issue
-	# https://github.com/mozilla/sccache/issues/663
-	cargo install --git https://github.com/mozilla/sccache  --rev 6628e1f70db3d583cb5e79210603ad878de3d315 --features redis; \
+	cargo install sccache; \
 # versions
 	rustup show; \
 	cargo --version; \
@@ -87,7 +79,5 @@ RUN set -eux; \
 	apt-get autoremove -y; \
 	apt-get clean; \
   rm -rf /var/lib/apt/lists/*
-# cache handler
-ENV	RUSTC_WRAPPER=sccache \
 # show backtraces
-  	RUST_BACKTRACE=1
+ENV	RUST_BACKTRACE=1

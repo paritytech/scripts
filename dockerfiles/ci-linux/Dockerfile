@@ -20,20 +20,14 @@ LABEL summary="Image for Substrate-based projects." \
 
 # install tools and dependencies
 RUN set -eux && \
-	# install git from backports
-	echo deb http://deb.debian.org/debian buster-backports main | tee /etc/apt/sources.list.d/buster-backports.list  && \
-	apt-get -y update; \
-	apt install -y -t buster-backports git; \
-	git --version; \
 	# install `rust-src` component for ui test
 	rustup component add rust-src rustfmt clippy && \
 	# install specific Rust nightly, default is stable, use minimum components
-	rustup toolchain install "nightly-${RUST_NIGHTLY}" --profile minimal --component rustfmt clippy && \
+	rustup toolchain install "nightly-${RUST_NIGHTLY}" --profile minimal --component rustfmt && \
 	# "alias" pinned nightly toolchain as nightly
 	ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY}-x86_64-unknown-linux-gnu" /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
 	# install wasm toolchain
 	rustup target add wasm32-unknown-unknown && \
-	rustup target add wasm32-unknown-unknown --toolchain nightly && \
 	# install cargo tools
 	cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck cargo-hack \
 	  mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-last-changed && \
@@ -45,7 +39,11 @@ RUN set -eux && \
 	# https://github.com/paritytech/substrate/blob/master/bin/node/browser-testing/Cargo.toml#L15
 	cargo install --version 0.2.73 wasm-bindgen-cli && \
 	# install wasm-gc. It's useful for stripping slimming down wasm binaries (polkadot)
-	cargo +nightly install wasm-gc && \
+	cargo install wasm-gc && \
+	# install cargo hfuzz and honggfuzz dependencies
+	apt-get -y update && \
+	apt-get install -y binutils-dev libunwind-dev libblocksruntime-dev && \
+	cargo install honggfuzz && \
 	# versions
 	rustup show && \
 	cargo --version && \

@@ -18,3 +18,4 @@
 
 # CI
 /.gitlab-ci.yml @paritytech/ci
+/dockerfiles/ci-linux @paritytech/opstooling

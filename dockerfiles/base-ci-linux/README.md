@@ -1,6 +1,6 @@
 # base-ci-linux
 
-Docker image based on [official Debian image](https://hub.docker.com/_/debian) debian:buster.
+Docker image based on [official Debian image](https://hub.docker.com/_/debian) debian:bullseye-slim.
 
 Used as base for `Substrate`-based CI images.
 

@@ -26,14 +26,12 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN	set -eux; \
 	apt-get -y update && \
 	apt-get install -y --no-install-recommends \
-# Required because of `libp2p-core failed to invoke protoc` during Substrate installation
-	protobuf-compiler \
 # `redis-cli` is needed to interact with ci/cd's redis
 	redis-tools \
 # npm is needed to install `yarn`
 	npm \
 # `firefox` is needed to simulate interactions with the `canvas-ui`
-	firefox && \
+	firefox-esr && \
 # `geckodriver` is needed to run headless browser tests
 # we fetch the latest version number from the github api and use that release
 	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/latest | \
@@ -47,35 +45,6 @@ RUN	set -eux; \
 # `yarn` is needed to run `canvas-ui`
 	npm install --ignore-scripts -g yarn && \
 
-# The stable toolchain is used to build ink! itself through the use of the
-# `RUSTC_BOOSTRAP=1` environment variable. We also need to install the
-# `wasm32-unknown-unknown` target since that's the platform that ink! smart
-# contracts run on.
-	rustup target add wasm32-unknown-unknown --toolchain stable && \
-	rustup component add rust-src clippy rustfmt --toolchain stable && \
-	rustup default stable && \
-
-# We also use the nightly toolchain to lint ink!. We perform checks using rustfmt,
-# cargo, clippy, and miri.
-#
-# Note that we pin the nightly toolchain since it often creates breaking changes during
-# the rustfmt and clippy stages of the CI.
-	rustup toolchain install nightly-2023-03-21 --target wasm32-unknown-unknown \
-		--profile minimal --component rustfmt clippy miri rust-src rustc-dev llvm-tools-preview && \
-
-# Alias pinned toolchain as nightly, otherwise it appears as though we
-# don't have a nightly toolchain (i.e rustc +nightly --version is empty)
-	ln -s /usr/local/rustup/toolchains/nightly-2023-03-21-x86_64-unknown-linux-gnu \
-		/usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
-
-# `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
-	cargo install cargo-dylint dylint-link && \
-# `cargo-contract` is needed for building those examples. Here it's
-# force-rewritten above the stable version from the parent image.
-# `--force` rewrites the stable version installed in the parent image.
-# `--locked` ensures the project's `Cargo.lock` is used.
-	cargo install --git https://github.com/paritytech/cargo-contract \
-		--locked --branch master --force && \
 # `substrate-contracts-node` is a Substrate chain with smart contract functionality.
 # `--locked` ensures the project's `Cargo.lock` is used.
 	cargo install --git https://github.com/paritytech/substrate-contracts-node.git \

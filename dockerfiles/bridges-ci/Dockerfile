@@ -6,7 +6,7 @@ ARG VCS_REF=master
 ARG BUILD_DATE
 ARG REGISTRY_PATH=docker.io/paritytech
 
-FROM ${REGISTRY_PATH}/base-ci:latest
+FROM ${REGISTRY_PATH}/base-ci-linux:latest
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
@@ -16,7 +16,7 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/bridges-ci/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
-dockerfiles/dridges-ci/README.md" \
+dockerfiles/bridges-ci/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
@@ -28,11 +28,6 @@ RUN rustup toolchain install nightly --target wasm32-unknown-unknown \
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" && \
 # versions
 	rustc -vV && \
-    cargo -V
-
-# cache handler
-ENV	RUSTC_WRAPPER=sccache
-# show backtraces
-ENV RUST_BACKTRACE=1
+	cargo -V
 
 USER nonroot:nonroot

@@ -21,7 +21,6 @@ LABEL io.parity.image.authors="devops-team@parity.io" \
 WORKDIR /builds
 
 ENV SHELL /bin/bash
-ENV CXX=/usr/bin/clang++-13
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN	set -eux; \

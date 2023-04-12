@@ -138,11 +138,6 @@ awscli-pr:
   variables:
     IMAGE_NAME:                    "awscli"
 
-base-ci-pr:
-  <<: *docker_build_pr
-  variables:
-    IMAGE_NAME:                    "base-ci"
-
 base-ci-linux-pr:
   <<: *docker_build_pr
   variables:
@@ -162,11 +157,6 @@ polkadotjs-cli-pr:
   <<: *docker_build_pr
   variables:
     IMAGE_NAME:                    "polkadotjs-cli"
-
-cachepot-ci-pr:
-  <<: *docker_build_pr
-  variables:
-    IMAGE_NAME:                    "cachepot-ci"
 
 ci-linux-pr:
   <<: *docker_build_pr
@@ -257,11 +247,6 @@ rusty-cachier-env-pr:
   variables:
     IMAGE_NAME:                    "rusty-cachier-env"
 
-smart-bench-ci-pr:
-  <<: *docker_build_pr
-  variables:
-    IMAGE_NAME:                    "ink-waterfall-ci"
-
 sops-pr:
   <<: *docker_build_pr
   variables:
@@ -344,11 +329,6 @@ base-ci-linux:
   script:
     - *push_to_docker_hub
 
-base-ci:
-  <<:                              *docker_build
-  script:
-    - *push_to_docker_hub
-
 ci-linux:
   <<:                              *docker_build
   script:
@@ -369,16 +349,10 @@ ink-waterfall-ci:
   script:
     - *push_to_docker_hub
 
-smart-bench-ci:
-  <<:                              *docker_build
-  script:
-    - *push_to_docker_hub
-
 contracts-ci-linux:
   <<:                              *docker_build
   script:
-    - *push_to_staging
-    - *publish_as_latest_too
+    - *push_to_docker_hub
 
 debian10:
   <<:                              *docker_build
@@ -394,11 +368,6 @@ polkadotjs-cli:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
-
-cachepot-ci:
-  <<:                              *docker_build
-  script:
-    - *push_to_staging
 
 awscli:
   <<:                              *docker_build
@@ -798,7 +767,9 @@ ci-linux-test-substrate:
     CI_IMAGE:                      "paritytech/ci-linux:staging"
     # this is to rewrite "-Dwarnings" we use in Substrate CI since new warnings
     # are often introduced and we do not want to fail on them in this case
-    RUSTFLAGS:                     "-Cdebug-assertions=y"
+    RUSTFLAGS:                     "-C debug-assertions"
+    # disable rusty-cachier completely for this kind of pipelines
+    RUSTY_CACHIER_SNEAKY_BYPASS:   "true"
   rules:
     - if: $IMAGE_NAME == "ci-linux"
   trigger:
@@ -812,7 +783,9 @@ ci-linux-test-polkadot:
     CI_IMAGE:                      "paritytech/ci-linux:staging"
     # this is to rewrite "-Dwarnings" we use in Polkadot CI since new warnings
     # are often introduced and we do not want to fail on them in this case
-    RUSTFLAGS:                     "-Cdebug-assertions=y"
+    RUSTFLAGS:                     "-C debug-assertions"
+    # disable rusty-cachier completely for this kind of pipelines
+    RUSTY_CACHIER_SNEAKY_BYPASS:   "true"
   rules:
     - if: $IMAGE_NAME == "ci-linux"
   trigger:
@@ -828,28 +801,6 @@ ink-ci-linux-test:
     - if: $IMAGE_NAME == "ink-ci-linux"
   trigger:
     project:                       parity/mirrors/ink
-    branch:                        master
-    strategy:                      depend
-
-contracts-ci-linux-test:
-  stage:                           test
-  variables:
-    CI_IMAGE:                      "paritytech/contracts-ci-linux:staging"
-  rules:
-    - if: $IMAGE_NAME == "contracts-ci-linux"
-  trigger:
-    project:                       parity/mirrors/cargo-contract
-    branch:                        master
-    strategy:                      depend
-
-cachepot-ci-test:
-  stage:                           test
-  variables:
-    CI_IMAGE:                      "paritytech/cachepot-ci:staging"
-  rules:
-    - if: $IMAGE_NAME == "cachepot-ci"
-  trigger:
-    project:                       parity/mirrors/cachepot
     branch:                        master
     strategy:                      depend
 
@@ -900,23 +851,6 @@ ink-ci-linux-production:           &push-after-triggered-pipeline
   tags:
     - kubernetes-parity-build
 
-contracts-ci-linux-production:
-  <<:                              *push-after-triggered-pipeline
-  needs:
-    - job:                         contracts-ci-linux-test
-      artifacts:                   false
-  rules:
-    - if: $IMAGE_NAME == "contracts-ci-linux"
-
-
-cachepot-ci-production:
-  <<:                              *push-after-triggered-pipeline
-  needs:
-    - job:                         cachepot-ci-test
-      artifacts:                   false
-  rules:
-    - if: $IMAGE_NAME == "cachepot-ci"
-
 bridges-ci-production:
   <<:                              *push-after-triggered-pipeline
   needs:
@@ -947,12 +881,6 @@ publish-awscli-docker-image-description:
     IMAGE_NAME:           awscli
     SHORT_DESCRIPTION:    "awscli utility Docker image."
 
-publish-base-ci-docker-image-description:
-  extends:                .publish-docker-image-description
-  variables:
-    IMAGE_NAME:           base-ci
-    SHORT_DESCRIPTION:    "base-ci utility Docker image."
-
 publish-base-ci-linux-docker-image-description:
   extends:                .publish-docker-image-description
   variables:
@@ -970,12 +898,6 @@ publish-bridges-ci-docker-image-description:
   variables:
     IMAGE_NAME:           bridges-ci
     SHORT_DESCRIPTION:    "bridges-ci utility Docker image."
-
-publish-cachepot-ci-docker-image-description:
-  extends:                .publish-docker-image-description
-  variables:
-    IMAGE_NAME:           cachepot-ci
-    SHORT_DESCRIPTION:    "cachepot-ci utility Docker image."
 
 publish-ci-linux-docker-image-description:
   extends:                .publish-docker-image-description
@@ -1108,12 +1030,6 @@ publish-rusty-cachier-env-docker-image-description:
   variables:
     IMAGE_NAME:           rusty-cachier-env
     SHORT_DESCRIPTION:    "rusty-cachier-env utility Docker image."
-
-publish-smart-bench-ci-docker-image-description:
-  extends:                .publish-docker-image-description
-  variables:
-    IMAGE_NAME:           smart-bench-ci
-    SHORT_DESCRIPTION:    "smart-bench-ci utility Docker image."
 
 publish-sops-docker-image-description:
   extends:                .publish-docker-image-description

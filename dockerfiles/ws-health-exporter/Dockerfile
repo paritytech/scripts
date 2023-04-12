@@ -1,4 +1,4 @@
-FROM docker.io/library/python:3.10.5-slim-bullseye
+FROM docker.io/library/python:3.10.10-slim-bullseye
 
 ARG VCS_REF=master
 ARG BUILD_DATE=""
@@ -16,7 +16,7 @@ dockerfiles/ws-health-exporter/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-RUN pip install --no-cache-dir prometheus-client websocket-client apscheduler flask
+RUN pip install --no-cache-dir prometheus-client websocket-client apscheduler flask environs waitress
 COPY ws-health-exporter/exporter.py .
 
 USER nobody:nogroup
