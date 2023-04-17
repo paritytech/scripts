@@ -22,6 +22,7 @@ dockerfiles/bridges-ci/README.md" \
 
 RUN rustup toolchain install nightly --target wasm32-unknown-unknown \
 		--profile minimal --component clippy rustfmt && \
+	rustup target add wasm32-unknown-unknown && \
 	cargo install cargo-deny cargo-spellcheck && \
 # cargo clean up
 # removes compilation artifacts cargo install creates (>250M)
