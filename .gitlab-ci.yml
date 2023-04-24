@@ -11,7 +11,8 @@ stages:
 variables:                         &default-vars
   REGISTRY_PATH:                   docker.io/paritytech
   REGISTRY_NAME:                   docker.io
-  CI_IMAGE:                        quay.io/buildah/stable:v1.27
+  CI_IMAGE:                        quay.io/buildah/stable:v1.29
+  BUILDAH_COMMAND:                 "buildah --storage-driver overlay2"
 
 default:
   cache:                           {}
@@ -34,8 +35,8 @@ default:
 # Push to Dockerhub using buildah
 .push_to_docker_hub:               &push_to_docker_hub
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-  - buildah version
-  - buildah bud
+  - $BUILDAH_COMMAND version
+  - $BUILDAH_COMMAND build
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
@@ -43,15 +44,15 @@ default:
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
-  - buildah info
+  - $BUILDAH_COMMAND info
   - echo "$Docker_Hub_Pass_Parity" |
       buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
-  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
-  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+  - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+  - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
   - buildah logout "$REGISTRY_NAME"
 
 .push_to_staging:                  &push_to_staging
-  - buildah bud
+  - $BUILDAH_COMMAND build
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
@@ -60,32 +61,24 @@ default:
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   - echo "$Docker_Hub_Pass_Parity" |
       buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
-  - buildah info
-  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:staging"
-  - buildah logout "$REGISTRY_NAME"
-
-.publish_as_latest_too:            &publish_as_latest_too
-  - echo "$Docker_Hub_Pass_Parity" |
-      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
-  - buildah info
-  - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:latest"
-  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+  - $BUILDAH_COMMAND info
+  - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:staging"
   - buildah logout "$REGISTRY_NAME"
 
 .push_to_production:               &push_to_production
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
   - env REGISTRY_AUTH_FILE= buildah pull "$REGISTRY_PATH/$IMAGE_NAME:staging"
-  - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:production"
-  - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+  - $BUILDAH_COMMAND tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:production"
+  - $BUILDAH_COMMAND tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - echo "$Docker_Hub_Pass_Parity" |
       buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
-  - buildah info
-  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:production"
-  - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+  - $BUILDAH_COMMAND info
+  - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:production"
+  - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - buildah logout "$REGISTRY_NAME"
 
 .docker_build_only:                &docker_build_only
-  - buildah bud
+  - $BUILDAH_COMMAND build
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
@@ -332,28 +325,26 @@ base-ci-linux:
 ci-linux:
   <<:                              *docker_build
   script:
-    - buildah bud
+    - $BUILDAH_COMMAND build
         --format=docker
         --build-arg VCS_REF="$CI_COMMIT_SHA"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --build-arg REGISTRY_PATH="$REGISTRY_PATH"
         --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
         --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
-
     # spin up a temporary ci-linux container to extract the tag info
     - CONTAINER_ID="$(REGISTRY_AUTH_FILE= buildah from --pull=false "$REGISTRY_PATH/$IMAGE_NAME:staging")"
     # VERSION_TAG=<rustc version>-<distro release codename>
     - VERSION_TAG="$(buildah run "$CONTAINER_ID" --
       bash -c 'printf "%s-%s" "$(rustc --version | cut -d\  -f2)" "$(sed -ne "s/^VERSION_CODENAME=//p" /etc/os-release)"'
       )"
-    - buildah rm "$CONTAINER_ID"
-    - buildah tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$VERSION_TAG"
-
+    - $BUILDAH_COMMAND rm "$CONTAINER_ID"
+    - $BUILDAH_COMMAND tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$VERSION_TAG"
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
-    - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:staging"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$VERSION_TAG"
+    - $BUILDAH_COMMAND info
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:staging"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$VERSION_TAG"
     - buildah logout "$REGISTRY_NAME"
 
 
@@ -510,7 +501,7 @@ kubetools:
       EOT
     # beware that latest is helm2, not helm3
     # TODO: helm3 should be latest
-    - buildah bud
+    - $BUILDAH_COMMAND build
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -524,10 +515,10 @@ kubetools:
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
-    - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:helm2"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
+    - $BUILDAH_COMMAND info
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:helm2"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$BUILD_HELM_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 # waits until kubetools job above is deprecated, "latest" tag remains after the old image
@@ -568,7 +559,7 @@ kubetools-helm:
       | KUSTOMIZE_VERSION = $KUSTOMIZE_VERSION
       |
       EOT
-    - buildah bud
+    - $BUILDAH_COMMAND build
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -589,11 +580,11 @@ kubetools-helm:
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
-    - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:helm3"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/kubetools:$HELM_VERSION"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$HELM_VERSION"
+    - $BUILDAH_COMMAND info
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/kubetools:helm3"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/kubetools:$HELM_VERSION"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$HELM_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 kubetools-kubectl:
@@ -602,7 +593,7 @@ kubetools-kubectl:
     <<:                            *default-vars
     KUBE_VERSION:                  "1.24.7"
   script:
-    - buildah bud
+    - $BUILDAH_COMMAND build
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -614,9 +605,9 @@ kubetools-kubectl:
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
-    - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$KUBE_VERSION"
+    - $BUILDAH_COMMAND info
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$KUBE_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 terraform:
@@ -637,7 +628,7 @@ terraform:
       | VAULT_VERSION     = $VAULT_VERSION
       |
       EOT
-    - buildah bud
+    - $BUILDAH_COMMAND build
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -650,9 +641,9 @@ terraform:
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
-    - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
+    - $BUILDAH_COMMAND info
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 sops:
@@ -673,7 +664,7 @@ sops:
       | VAULT_VERSION     = $VAULT_VERSION
       |
       EOT
-    - buildah bud
+    - $BUILDAH_COMMAND build
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
@@ -686,9 +677,9 @@ sops:
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
-    - buildah info
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
+    - $BUILDAH_COMMAND info
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 substrate-session-keys-grabber:
@@ -727,7 +718,7 @@ releng-scripts:
     - mv dockerfiles/$IMAGE_NAME/Dockerfile artifacts/releng-scripts/
     - cd artifacts/releng-scripts/
     - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-    - buildah bud
+    - $BUILDAH_COMMAND build
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
@@ -735,11 +726,11 @@ releng-scripts:
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --file "Dockerfile"
-    - buildah info
+    - $BUILDAH_COMMAND info
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
-    - buildah push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah logout "$REGISTRY_NAME"
 
 #### stage:                        test
