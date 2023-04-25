@@ -67,7 +67,7 @@ default:
 
 .push_to_production:               &push_to_production
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-  - env REGISTRY_AUTH_FILE= buildah pull "$REGISTRY_PATH/$IMAGE_NAME:staging"
+  # - env REGISTRY_AUTH_FILE="$BUILDAH_COMMAND pull "$REGISTRY_PATH/$IMAGE_NAME:staging"
   - $BUILDAH_COMMAND tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:production"
   - $BUILDAH_COMMAND tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - echo "$Docker_Hub_Pass_Parity" |
@@ -303,7 +303,7 @@ releng-scripts-pr:
   script:
     - mv dockerfiles/$IMAGE_NAME/Dockerfile artifacts/releng-scripts/
     - cd artifacts/releng-scripts/
-    - buildah bud
+    - $BUILDAH_COMMAND build
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
@@ -333,9 +333,9 @@ ci-linux:
         --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
         --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # spin up a temporary ci-linux container to extract the tag info
-    - CONTAINER_ID="$(REGISTRY_AUTH_FILE= buildah from --pull=false "$REGISTRY_PATH/$IMAGE_NAME:staging")"
+    - CONTAINER_ID="$(REGISTRY_AUTH_FILE= $BUILDAH_COMMAND from --pull=false "$REGISTRY_PATH/$IMAGE_NAME:staging")"
     # VERSION_TAG=<rustc version>-<distro release codename>
-    - VERSION_TAG="$(buildah run "$CONTAINER_ID" --
+    - VERSION_TAG="$($BUILDAH_COMMAND run "$CONTAINER_ID" --
       bash -c 'printf "%s-%s" "$(rustc --version | cut -d\  -f2)" "$(sed -ne "s/^VERSION_CODENAME=//p" /etc/os-release)"'
       )"
     - $BUILDAH_COMMAND rm "$CONTAINER_ID"
