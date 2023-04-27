@@ -161,6 +161,11 @@ contracts-ci-linux-pr:
   variables:
     IMAGE_NAME:                    "contracts-ci-linux"
 
+github-gh-cli-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "github-gh-cli"
+
 ink-ci-linux-pr:
   <<: *docker_build_pr
   variables:
@@ -369,6 +374,11 @@ contracts-ci-linux:
     - *push_to_docker_hub
 
 debian10:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
+github-gh-cli:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
