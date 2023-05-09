@@ -67,7 +67,9 @@ default:
 
 .push_to_production:               &push_to_production
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
-  # - env REGISTRY_AUTH_FILE="$BUILDAH_COMMAND pull "$REGISTRY_PATH/$IMAGE_NAME:staging"
+  # TODO: This is racy; we should persist the image hash built by .push_to_staging in a job artifact
+  #       and fetch that hash, rather than just the current state of the staging tag.
+  - env REGISTRY_AUTH_FILE="" $BUILDAH_COMMAND pull "$REGISTRY_PATH/$IMAGE_NAME:staging"
   - $BUILDAH_COMMAND tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:production"
   - $BUILDAH_COMMAND tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - echo "$Docker_Hub_Pass_Parity" |
