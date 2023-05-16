@@ -44,8 +44,8 @@ RUN set -eux; \
         git pkg-config curl time rhash ca-certificates jq \
         python3 python3-pip lsof ruby ruby-bundler git-restore-mtime xz-utils zstd unzip gnupg protobuf-compiler && \
 # add clang 14 repo
-    echo "deb http://apt.llvm.org/${DEBIAN_CODENAME}/ llvm-toolchain-${DEBIAN_CODENAME}-14 main" >> /etc/apt/sources.list.d/llvm-toochain-${DEBIAN_CODENAME}-14.list; \
-    echo "deb-src http://apt.llvm.org/${DEBIAN_CODENAME}/ llvm-toolchain-${DEBIAN_CODENAME}-14 main" >> /etc/apt/sources.list.d/llvm-toochain-${DEBIAN_CODENAME}-14.list; \
+    echo "deb http://apt.llvm.org/${DEBIAN_CODENAME}/ llvm-toolchain-${DEBIAN_CODENAME}-14 main" >> /etc/apt/sources.list.d/llvm-toolchain-${DEBIAN_CODENAME}-14.list; \
+    echo "deb-src http://apt.llvm.org/${DEBIAN_CODENAME}/ llvm-toolchain-${DEBIAN_CODENAME}-14 main" >> /etc/apt/sources.list.d/llvm-toolchain-${DEBIAN_CODENAME}-14.list; \
     apt-get -y update; \
     apt-get install -y --no-install-recommends \
         clang-14 lldb-14 lld-14 libclang-14-dev && \
