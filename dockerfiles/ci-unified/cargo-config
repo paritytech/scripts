@@ -1,0 +1,9 @@
+[target.wasm32-unknown-unknown]
+# use clang as linker
+linker="clang-REPLACEME"
+
+[target.x86_64-unknown-linux-gnu]
+# use clang as linker
+linker="clang-REPLACEME"
+# enable the additional instruction extensions for rustcrypto deps
+rustflags = ["-Ctarget-feature=+aes,+sse2,+ssse3"]
