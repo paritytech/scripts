@@ -14,4 +14,4 @@ Nowadays, this repo is mostly the open collection of the company's Dockerfiles t
 
 ### Legacy notes
 
-* [Reproduce CI locally](https://github.com/paritytech/scripts/blob/docs/legacy/reproduce_ci_locally.md)
+* [Reproduce CI locally](https://github.com/paritytech/scripts/blob/master/docs/legacy/reproduce_ci_locally.md)
