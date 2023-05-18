@@ -357,8 +357,8 @@ ci-linux:
 ci-unified:
   <<:                              *docker_build
   script:
-    - RUST_STABLE_VERSION=$(grep 'RUST_STABLE_VERSION' dockerfiles/$IMAGE_NAME/Dockerfile | cut -d '"' -f 2)
-    - DISTRO_CODENAME=$(grep 'DISTRO_CODENAME' dockerfiles/$IMAGE_NAME/Dockerfile | cut -d '"' -f 2)
+    - RUST_STABLE_VERSION=$(grep 'RUST_STABLE_VERSION' dockerfiles/$IMAGE_NAME/Dockerfile | head -n 1 | cut -d '"' -f 2)
+    - DISTRO_CODENAME=$(grep 'DISTRO_CODENAME' dockerfiles/$IMAGE_NAME/Dockerfile | head -n 1 | cut -d '"' -f 2)
     - TAG_TUPLE="${DISTRO_CODENAME}-${RUST_STABLE_VERSION}"
     - $BUILDAH_COMMAND build
         --format=docker
