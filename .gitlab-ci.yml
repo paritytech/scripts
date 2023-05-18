@@ -359,18 +359,20 @@ ci-unified:
   script:
     - RUST_STABLE_VERSION=$(grep 'RUST_STABLE_VERSION' dockerfiles/$IMAGE_NAME/Dockerfile | cut -d '"' -f 2)
     - DISTRO_CODENAME=$(grep 'DISTRO_CODENAME' dockerfiles/$IMAGE_NAME/Dockerfile | cut -d '"' -f 2)
-    - TAG_TUPLE="${RUST_STABLE_VERSION}-${DISTRO_CODENAME}"
+    - TAG_TUPLE="${DISTRO_CODENAME}-${RUST_STABLE_VERSION}"
     - $BUILDAH_COMMAND build
         --format=docker
         --build-arg VCS_REF="$CI_COMMIT_SHA"
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --build-arg REGISTRY_PATH="$REGISTRY_PATH"
         --tag "$REGISTRY_PATH/$IMAGE_NAME:$TAG_TUPLE"
+        --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME"
         --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   - $BUILDAH_COMMAND info
   - echo "$Docker_Hub_Pass_Parity" |
       buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
   - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$TAG_TUPLE"
+  - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME"
   - buildah logout "$REGISTRY_NAME"
   tags:
     - linux-docker-vm-c2
