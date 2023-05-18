@@ -291,7 +291,7 @@ releng-scripts-download-pr:
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
       changes:
         paths:
-          - dockerfiles/${IMAGE_NAME}/**
+          - dockerfiles/releng-scripts/**
         compare_to: 'master'
   script:
     - mkdir -p artifacts/
