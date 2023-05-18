@@ -189,10 +189,6 @@ mdbook-utils-pr:
   <<: *docker_build_pr
   variables:
     IMAGE_NAME:                    "mdbook-utils"
-  rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
-      changes:
-        - dockerfiles/mdbook-utils/**
 
 mitogen-pr:
   <<: *docker_build_pr
@@ -294,7 +290,9 @@ releng-scripts-download-pr:
   rules:
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
       changes:
-        - dockerfiles/releng-scripts/**
+        paths:
+          - dockerfiles/${IMAGE_NAME}/**
+        compare_to: 'master'
   script:
     - mkdir -p artifacts/
     - cd artifacts/
