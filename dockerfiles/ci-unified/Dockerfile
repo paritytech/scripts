@@ -73,14 +73,13 @@ RUN set -eux; \
     chmod -R g+w ${RUSTUP_HOME} ${CARGO_HOME} && \
 
 # base | install python tools
-    pip install yq
+    pip install yq && \
 
 
 ### generic ci ####
 
 
 # generic ci | install stable rust
-RUN set -eux && \
     rustup toolchain install "${RUST_STABLE_VERSION}" --profile minimal && \
     rustup default "${RUST_STABLE_VERSION}" && \
 
@@ -116,14 +115,14 @@ RUN set -eux && \
 # generic ci | install cargo hfuzz and honggfuzz dependencies
     apt-get -y update && \
     apt-get install -y binutils-dev libunwind-dev libblocksruntime-dev && \
-    cargo install honggfuzz
+    cargo install honggfuzz && \
 
 
 ### finalize ###
 
 
 # finalize | versions
-RUN rustup show && \
+    rustup show && \
     cargo --version && \
 
 # finalize | cargo clean up, removes compilation artifacts cargo install creates (>250M)
