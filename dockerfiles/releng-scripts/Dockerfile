@@ -36,4 +36,4 @@ RUN set -x \
 
 USER nonroot:nonroot
 
-ENTRYPOINT [ "./rs" ]
+ENTRYPOINT [ "./releng-scripts" ]
