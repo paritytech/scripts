@@ -405,6 +405,11 @@ debian10:
   script:
     - *push_to_docker_hub
 
+debian11:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
 github-gh-cli:
   <<:                              *docker_build
   script:
@@ -973,6 +978,12 @@ publish-debian10-docker-image-description:
   variables:
     IMAGE_NAME:           debian10
     SHORT_DESCRIPTION:    "debian10 utility Docker image."
+
+publish-debian11-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           debian11
+    SHORT_DESCRIPTION:    "debian11 utility Docker image."
 
 publish-gnupg-docker-image-description:
   extends:                .publish-docker-image-description
