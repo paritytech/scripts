@@ -22,12 +22,14 @@ LABEL summary="Image for Substrate-based projects." \
 RUN set -eux && \
 	# install `rust-src` component for ui test
 	rustup component add rust-src rustfmt clippy && \
+	# install wasm target into default (stable) toolchain
+	rustup target add wasm32-unknown-unknown && \
 	# install specific Rust nightly, default is stable, use minimum components
 	rustup toolchain install "nightly-${RUST_NIGHTLY}" --profile minimal --component rustfmt && \
+	# install wasm target into nightly toolchain
+	rustup target add wasm32-unknown-unknown --toolchain "nightly-${RUST_NIGHTLY}" && \
 	# "alias" pinned nightly toolchain as nightly
 	ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY}-x86_64-unknown-linux-gnu" /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu && \
-	# install wasm toolchain
-	rustup target add wasm32-unknown-unknown && \
 	# install cargo tools
 	cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck cargo-hack \
 	  mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-last-changed && \
