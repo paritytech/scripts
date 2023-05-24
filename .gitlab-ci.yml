@@ -724,6 +724,43 @@ sops:
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
+packer:
+  <<:                              *docker_build
+  variables:
+    <<:                            *default-vars
+    # https://releases.hashicorp.com/packer/
+    PACKER_VERSION:                "1.8.7"
+    # https://releases.hashicorp.com/vault/
+    VAULT_VERSION:                 "1.13.2"
+  script:
+    - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
+    - |
+      cat <<-EOT
+      |
+      | # build of packer image
+      |
+      | PACKER_VERSION    = $PACKER_VERSION
+      | VAULT_VERSION     = $VAULT_VERSION
+      |
+      EOT
+    - $BUILDAH_COMMAND build
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --build-arg PACKER_VERSION="$PACKER_VERSION"
+      --build-arg VAULT_VERSION="$VAULT_VERSION"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+    # Push to Dockerhub
+    - echo "$Docker_Hub_Pass_Parity" |
+        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+    - $BUILDAH_COMMAND info
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+    - buildah logout "$REGISTRY_NAME"
+
 substrate-session-keys-grabber:
   <<:                              *docker_build
   script:
@@ -1050,6 +1087,12 @@ publish-node-wrk-docker-image-description:
   variables:
     IMAGE_NAME:           node-wrk
     SHORT_DESCRIPTION:    "node-wrk utility Docker image."
+
+publish-packer-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           packer
+    SHORT_DESCRIPTION:    "packer utility Docker image."
 
 publish-parity-keyring-docker-image-description:
   extends:                .publish-docker-image-description
