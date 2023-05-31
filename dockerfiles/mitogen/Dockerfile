@@ -18,7 +18,7 @@ dockerfiles/mitogen/README.md" \
 
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    sshpass ssh rsync tini curl git ruby \
+    sshpass ssh-client rsync tini curl git ruby \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir pip --upgrade
