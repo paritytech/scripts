@@ -10,7 +10,7 @@ ENV PROM_VERSION=2.19.0
 LABEL io.parity.image.authors="devops-team@parity.io" \
 	io.parity.image.vendor="Parity Technologies" \
 	io.parity.image.title="${REGISTRY_PATH}/tools" \
-	io.parity.image.description="curl git jq rsync make gettext gnupg bash shadow redis promtool openssh ruby" \
+	io.parity.image.description="curl git jq rsync make gettext gnupg bash shadow redis promtool openssh-client ruby" \
 	io.parity.image.source="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
 dockerfiles/tools/Dockerfile" \
 	io.parity.image.documentation="https://github.com/paritytech/scripts/blob/${VCS_REF}/\
@@ -19,7 +19,7 @@ dockerfiles/tools/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 
-RUN apk add --no-cache curl git jq rsync make gettext gnupg bash shadow redis openssh ruby xz ripgrep zstd skopeo
+RUN apk add --no-cache curl git jq rsync make gettext gnupg bash shadow redis openssh-client ruby xz ripgrep zstd skopeo
 
 RUN curl -L "https://dl.min.io/client/mc/release/linux-amd64/mc" -o /usr/local/bin/mc && chmod 755 /usr/local/bin/mc
 
