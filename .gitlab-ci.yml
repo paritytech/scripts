@@ -944,6 +944,20 @@ ink-ci-linux-production:           &push-after-triggered-pipeline
   tags:
     - kubernetes-parity-build
 
+ink-ci-linux-production-manual:
+  stage:                           prod
+  image:                           $CI_IMAGE
+  needs:
+    - job:                         ink-ci-linux
+      artifacts:                   false
+  rules:
+    - if: $IMAGE_NAME == "ink-ci-linux"
+      when: manual
+  script:
+    - *push_to_production
+  tags:
+    - kubernetes-parity-build
+
 bridges-ci-production:
   <<:                              *push-after-triggered-pipeline
   needs:
