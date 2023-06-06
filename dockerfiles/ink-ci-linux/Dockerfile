@@ -50,9 +50,13 @@ RUN set -eux; \
 	# `RUSTC_BOOSTRAP=1` environment variable. We also need to install the
 	# `wasm32-unknown-unknown` target since that's the platform that ink! smart contracts
 	# run on.
-	rustup target add wasm32-unknown-unknown --toolchain stable && \
-	rustup component add rust-src clippy rustfmt --toolchain stable && \
-	rustup default stable && \
+	#
+	# The 1.69 toolchain is temporarily required to build ink! contracts because of
+	# https://github.com/paritytech/cargo-contract/issues/1139 \
+	rustup toolchain install 1.69 && \
+	rustup target add wasm32-unknown-unknown --toolchain 1.69 && \
+	rustup component add rust-src clippy rustfmt --toolchain 1.69 && \
+	rustup default 1.69 && \
 
 	# We also use the nightly toolchain to lint ink!. We perform checks using RustFmt,
 	# Cargo Clippy, and Miri.
