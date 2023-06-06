@@ -53,7 +53,7 @@ RUN set -eux; \
 	#
 	# The 1.69 toolchain is temporarily required to build ink! contracts because of
 	# https://github.com/paritytech/cargo-contract/issues/1139 \
-	rustup toolchain install 1.69.0 && \
+	rustup toolchain install 1.69 && \
 	rustup target add wasm32-unknown-unknown --toolchain 1.69 && \
 	rustup component add rust-src clippy rustfmt --toolchain 1.69 && \
 	rustup default 1.69 && \
