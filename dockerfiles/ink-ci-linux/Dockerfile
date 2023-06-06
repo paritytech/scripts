@@ -54,6 +54,11 @@ RUN set -eux; \
 	rustup component add rust-src clippy rustfmt --toolchain stable && \
 	rustup default stable && \
 
+    # The 1.69 toolchain is temporarily required to build ink! contracts because of \
+    # https://github.com/paritytech/cargo-contract/issues/1139
+    rustup target add wasm32-unknown-unknown --toolchain 1.69 && \
+    rustup component add rust-src clippy rustfmt --toolchain 1.69 && \
+
 	# We also use the nightly toolchain to lint ink!. We perform checks using RustFmt,
 	# Cargo Clippy, and Miri.
 	#
