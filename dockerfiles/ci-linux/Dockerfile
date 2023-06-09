@@ -4,7 +4,7 @@ ARG REGISTRY_PATH=docker.io/paritytech
 
 FROM ${REGISTRY_PATH}/base-ci-linux:latest
 
-ARG RUST_NIGHTLY="2023-05-23"
+ARG RUST_NIGHTLY="2023-01-01"
 
 # metadata
 LABEL summary="Image for Substrate-based projects." \
