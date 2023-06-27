@@ -160,6 +160,11 @@ ci-linux-pr:
   variables:
     IMAGE_NAME:                    "ci-linux"
 
+eng-automation-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "eng-automation-ci"
+
 contracts-ci-linux-pr:
   <<: *docker_build_pr
   variables:
@@ -406,6 +411,11 @@ debian10:
     - *push_to_docker_hub
 
 debian11:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
+eng-automation-ci:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
