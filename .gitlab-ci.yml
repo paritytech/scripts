@@ -1201,3 +1201,9 @@ publish-releng-scripts-docker-image-description:
   variables:
     IMAGE_NAME:           releng-scripts
     SHORT_DESCRIPTION:    "releng-scripts Docker image."
+
+publish-eng-automation-ci-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           eng-automation-ci
+    SHORT_DESCRIPTION:    "Fat ci image for engineering automation team"
