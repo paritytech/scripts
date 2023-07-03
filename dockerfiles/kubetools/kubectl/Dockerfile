@@ -3,7 +3,7 @@ FROM docker.io/library/alpine:latest
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
-ARG KUBE_VERSION="1.22.15"
+ARG KUBE_VERSION="1.26.6"
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \
