@@ -643,7 +643,7 @@ kubetools-kubectl:
   <<:                              *docker_build
   variables:
     <<:                            *default-vars
-    KUBE_VERSION:                  "1.24.7"
+    KUBE_VERSION:                  "1.26.6"
   script:
     - $BUILDAH_COMMAND build
       --format=docker
