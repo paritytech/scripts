@@ -34,7 +34,7 @@ COPY ci-unified/cargo-config /home/nonroot/.cargo/config
 
 # base | replace REPLACEME in the cargo configs with the real llvm version
 RUN sed -i "s/REPLACEME/${LLVM_VERSION}/g" /root/.cargo/config && \
-    sed -i "s/REPLACEME/${LLVM_VERSION}/g" /home/nonroot/.cargo/config &&
+    sed -i "s/REPLACEME/${LLVM_VERSION}/g" /home/nonroot/.cargo/config
 
 # base | install tools and dependencies
 RUN set -eux; \
