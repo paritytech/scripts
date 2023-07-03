@@ -160,6 +160,11 @@ ci-linux-pr:
   variables:
     IMAGE_NAME:                    "ci-linux"
 
+ci-unified-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "ci-unified"
+
 eng-automation-pr:
   <<: *docker_build_pr
   variables:
