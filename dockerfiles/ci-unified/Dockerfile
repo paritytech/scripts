@@ -118,12 +118,64 @@ RUN apt-get -y update && \
     cargo install honggfuzz
 
 
+### contracts ci ####
+
+
+RUN apt-get install -y --no-install-recommends \
+        zlib1g-dev npm wabt && \
+	npm install --ignore-scripts -g yarn 
+
+# contracts ci 
+# `binaryen` is needed by `cargo-contract` for optimizing Wasm files.
+# We fetch the latest release which contains a Linux binary.
+RUN	curl -L $(curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases \
+		 | jq -r '.[0].assets | [.[] | .browser_download_url] | map(select(match("x86_64-linux\\.tar\\.gz$"))) | .[0]' \
+		 ) | tar -xz -C /usr/local/bin/ --wildcards --strip-components=2 'binaryen-*/bin/wasm-opt'
+
+# contracts ci 
+# We also use the nightly toolchain for linting. We perform checks using RustFmt, and
+# Cargo Clippy.
+#
+# Note that we pin the nightly toolchain since it often creates breaking changes during
+# the RustFmt and Clippy stages of the CI.
+RUN rustup target add wasm32-unknown-unknown \
+    --toolchain "nightly-${RUST_NIGHTLY_VERSION}"
+RUN rustup component add rustfmt clippy rust-src \
+    --toolchain "nightly-${RUST_NIGHTLY_VERSION}"
+
+# contracts ci 
+# `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
+RUN	cargo install cargo-dylint dylint-link
+
+# contracts ci 
+# Install the latest `cargo-contract`
+RUN	cargo install --git https://github.com/paritytech/cargo-contract \
+        --locked --branch master --force
+
+# contracts ci 
+# Download the latest `substrate-contracts-node` binary
+RUN	curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mirrors/substrate-contracts-node/-/jobs/artifacts/main/download?job=build-linux' && \
+	unzip substrate-contracts-node.zip && \
+	mv artifacts/substrate-contracts-node-linux/substrate-contracts-node /usr/local/cargo/bin/substrate-contracts-node && \
+	rm -r artifacts substrate-contracts-node.zip && \
+	chmod +x /usr/local/cargo/bin/substrate-contracts-node
+
+# contracts ci 
+# We use `estuary` as a lightweight cargo registry in the CI to test if
+# publishing `cargo-contract` to it and installing it from there works.
+RUN	cargo install --git https://github.com/onelson/estuary.git --force
+
+
 ### finalize ###
 
 
 # finalize | versions
 RUN rustup show && \
-    cargo --version
+    cargo --version && \
+    #contracts-ci
+    yarn --version && \
+    echo $( substrate-contracts-node --version | awk 'NF' ) && \
+	estuary --version
 
 # finalize | cargo clean up, removes compilation artifacts cargo install creates (>250M)
 RUN rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache
