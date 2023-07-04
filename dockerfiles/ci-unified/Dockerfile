@@ -209,6 +209,55 @@ RUN rustup component add \
 RUN	cargo install grcov rust-covfix xargo
 
 
+### ink-waterfall-ci ###
+
+
+RUN	apt-get install -y --no-install-recommends \
+# nk-waterfall-ci 
+# `redis-cli` is needed to interact with ci/cd's redis
+	redis-tools \
+# nk-waterfall-ci    
+# `firefox` is needed to simulate interactions with the `canvas-ui`
+	firefox-esr 
+
+# nk-waterfall-ci
+# `geckodriver` is needed to run headless browser tests
+# we fetch the latest version number from the github api and use that release
+RUN	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/latest | \
+		egrep --only-matching 'https://github.com/mozilla/geckodriver/releases/download/v[0-9.]+/geckodriver-v[0-9.]+-linux64.tar.gz' | \
+		head -n1 | \
+		xargs curl -L -O && \
+	tar -xvzf geckodriver-v*-linux64.tar.gz && \
+	rm geckodriver-v*-linux64.tar.gz && \
+	chmod +x geckodriver && \
+	mv geckodriver /usr/local/bin/ 
+
+# !!! TODO: check substrate-contracts-node in contracts-ci
+# nk-waterfall-ci
+# `substrate-contracts-node` is a Substrate chain with smart contract functionality.
+# `--locked` ensures the project's `Cargo.lock` is used.
+RUN	cargo install --git https://github.com/paritytech/substrate-contracts-node.git \
+		--locked --branch main --force
+
+# nk-waterfall-ci
+# We additionally install the `substrate-contracts-node` as `substrate-contracts-rand-extension`.
+# This installation though is a modified `substrate-contracts-node`, so that ink!'s
+# `rand-extension` chain extension example is included in the runtime.
+# This enables us to test in the waterfall that the `rand-extension`
+# integration with Substrate still works.
+RUN	git clone --depth 1 https://github.com/paritytech/substrate-contracts-node.git && \
+	curl -s https://raw.githubusercontent.com/paritytech/ink/master/integration-tests/rand-extension/runtime/chain-extension-example.rs \
+		>> substrate-contracts-node/runtime/src/lib.rs && \
+	sed -i 's/type ChainExtension = ();/type ChainExtension = FetchRandomExtension;/g' substrate-contracts-node/runtime/src/lib.rs && \
+	sed -i 's/name = "substrate-contracts-node"/name = "substrate-contracts-node-rand-extension"/g' substrate-contracts-node/node/Cargo.toml && \
+	cargo install --locked --path substrate-contracts-node/node/
+
+# nk-waterfall-ci    
+# Needed for regression testing, a CSV contains the sizes of compiled contracts.
+RUN	cargo install --git https://github.com/paritytech/ink-waterfall.git csv-comparator && \
+	npm install -g csv2md
+
+
 ### finalize ###
 
 
@@ -221,7 +270,9 @@ RUN rustup show && \
 	estuary --version && \
     # inc-ci-linux
     cargo-contract --version && \
-	wasm-opt --version
+	wasm-opt --version && \
+    # ink-waterfall-ci
+    substrate-contracts-node-rand-extension --version
 
 # finalize | cargo clean up, removes compilation artifacts cargo install creates (>250M)
 RUN rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache
