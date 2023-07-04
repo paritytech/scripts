@@ -581,13 +581,13 @@ kubetools-helm:
     # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
     KUBE_VERSION:             "1.24.3"
     # https://github.com/helm/helm/releases
-    HELM_VERSION:             "3.9.2"
+    HELM_VERSION:             "3.12.1"
     # https://github.com/roboll/helmfile/releases
     HELMFILE_VERSION:         "0.144.0"
     # https://github.com/databus23/helm-diff/releases
     HELM_DIFF_PLUGIN_VERSION: "3.5.0"
     # https://github.com/jkroepke/helm-secrets
-    HELM_SECRETS_VERSION:     "3.14.0"
+    HELM_SECRETS_VERSION:     "4.4.2"
     # https://github.com/variantdev/vals/releases
     VALS_VERSION:             "0.18.0"
     # https://releases.hashicorp.com/vault/
