@@ -166,6 +166,12 @@ RUN	curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mir
 RUN	cargo install --git https://github.com/onelson/estuary.git --force
 
 
+### bridges-ci ####
+### CI image with all dependencies for parity-bridges-common compilation.
+
+### covered by generic-ci + contracts-ci
+
+
 ### finalize ###
 
 
