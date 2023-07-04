@@ -166,10 +166,47 @@ RUN	curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mir
 RUN	cargo install --git https://github.com/onelson/estuary.git --force
 
 
-### bridges-ci ####
+### bridges-ci ###
 ### CI image with all dependencies for parity-bridges-common compilation.
 
+
 ### covered by generic-ci + contracts-ci
+
+
+### ink-ci-linux ###
+
+
+# ink-ci-linux
+# Needed for running commands in parallel, without overlapping output.
+# gnupg is only needed to verify the signature of the codecov uploader.
+RUN	apt-get install -y --no-install-recommends parallel
+
+# ink-ci-linux
+# codecov uploader
+RUN	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov && \
+	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM && \
+	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
+	curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import && \
+	gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \
+	shasum --algorithm 256 --check codecov.SHA256SUM && \
+	chmod +x codecov && \
+	mv codecov /usr/local/bin/codecov && \
+	rm -f codecov.SHA256SUM codecov.SHA256SUM.sig
+
+# ink-ci-linux
+# We also use the nightly toolchain to lint ink!. We perform checks using RustFmt,
+# Cargo Clippy, and Miri.
+#
+# Note that we pin the nightly toolchain since it often creates breaking changes during
+# the RustFmt and Clippy stages of the CI.
+RUN rustup component add \
+    miri rustc-dev llvm-tools-preview \
+    --toolchain "nightly-${RUST_NIGHTLY_VERSION}"
+
+# ink-ci-linux
+# We require `grcov` for coverage reporting and `rust-covfix` to improve it.
+# We require `xargo` so that `miri` runs properly
+RUN	cargo install grcov rust-covfix xargo
 
 
 ### finalize ###
@@ -181,7 +218,10 @@ RUN rustup show && \
     #contracts-ci
     yarn --version && \
     echo $( substrate-contracts-node --version | awk 'NF' ) && \
-	estuary --version
+	estuary --version && \
+    # inc-ci-linux
+    cargo-contract --version && \
+	wasm-opt --version
 
 # finalize | cargo clean up, removes compilation artifacts cargo install creates (>250M)
 RUN rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache
