@@ -27,7 +27,6 @@ dockerfiles/kubetools/README.md" \
 RUN apk add --no-cache \
         ca-certificates git jq yq make curl gettext bash shadow python3 py3-pip && \
     pip3 install --no-cache --upgrade pip kubernetes && \
-    ln -s /usr/bin/python3 /usr/bin/python && \
     # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
     echo "Installing kubectl" && \
     curl -L "https://dl.k8s.io/release/v${KUBE_VERSION}/bin/linux/amd64/kubectl" \
@@ -74,8 +73,8 @@ RUN apk add --no-cache \
     kustomize version
 
 RUN set -x \
-    && groupadd -g 1000 nonroot \
-    && useradd -u 1000 -g 1000 -s /bin/bash -m nonroot \
+    && groupadd -g 10000 nonroot \
+    && useradd -u 10000 -g 10000 -s /bin/bash -m nonroot \
     && mkdir /config \
     && chown nonroot:nonroot /config
 
