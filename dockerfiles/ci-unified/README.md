@@ -18,7 +18,6 @@ The image is based on the latest Debian 11 (aka `bullseye`) and contains the fol
 Images tagged as
 < DISTRO_CODENAME >[ -RUST_STABLE_VERSION | -RUST_STABLE_VERSION-RUST_NIGHTLY_VERSION ][ -vDATESTAMP ] 
 ex:
-* bullseye
 * bullseye-1.70
 * bullseye-1.70-20230705
 * bullseye-1.70-2023-05-23

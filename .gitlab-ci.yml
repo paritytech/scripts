@@ -379,7 +379,6 @@ ci-unified:
         --build-arg REGISTRY_PATH="$REGISTRY_PATH"
         --build-arg RUST_STABLE_VERSION="$RUST_STABLE_VERSION"
         --build-arg RUST_NIGHTLY_VERSION="$RUST_NIGHTLY_VERSION"
-        --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME"
         --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
         --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
         # stable & nightly versions pair
@@ -389,7 +388,6 @@ ci-unified:
     - $BUILDAH_COMMAND info
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
-    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
     # stable & nightly versions pair
