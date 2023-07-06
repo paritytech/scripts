@@ -369,6 +369,8 @@ ci-unified:
     RUST_STABLE_VERSION: "1.70.0"
     RUST_NIGHTLY_VERSION: "2023-05-23"
   <<:                              *docker_build
+  before_script:
+    - dnf install -y git
   script:
     - dnf install -y git
     - DISTRO_CODENAME=$(grep 'DISTRO_CODENAME' dockerfiles/$IMAGE_NAME/Dockerfile | head -n 1 | cut -d '"' -f 2)
