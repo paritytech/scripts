@@ -370,6 +370,7 @@ ci-unified:
     RUST_NIGHTLY_VERSION: "2023-05-23"
   <<:                              *docker_build
   script:
+    - dnf install -y git
     - DISTRO_CODENAME=$(grep 'DISTRO_CODENAME' dockerfiles/$IMAGE_NAME/Dockerfile | head -n 1 | cut -d '"' -f 2)
     - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d" -- dockerfiles/$IMAGE_NAME/Dockerfile)
     - $BUILDAH_COMMAND build
