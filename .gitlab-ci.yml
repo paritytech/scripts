@@ -371,14 +371,14 @@ ci-unified:
         --build-arg BUILD_DATE="$(date +%Y%m%d)"
         --build-arg REGISTRY_PATH="$REGISTRY_PATH"
         --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME"
-        --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-RUST_STABLE_VERSION"
+        --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
         --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
         --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     - $BUILDAH_COMMAND info
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME"
-    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-RUST_STABLE_VERSION"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
     - buildah logout "$REGISTRY_NAME"
   tags:
