@@ -1,6 +1,6 @@
 # The unified Parity CI image
 
-This image is used for running CI jobs for Parity repositories. It could also work for you if you're building something with Substrate.
+This image is used for running CI jobs for Parity repositories. It could also work for you if you're building something on Substrate.
 
 ### Specification
 
