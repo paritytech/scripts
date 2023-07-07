@@ -1,6 +1,6 @@
 # Parity Scripts & Dockerfiles
 
-Nowadays, this repo is mostly the open collection of the company's Dockerfiles that are used by Parity in different ways. If you work on a Substrate-based project, you could be interested in our CI images (`ci-unified`, `ci-linux`, etc.) in the `dockerfiles` directory.
+Nowadays, this repo is mostly the open collection of the company's Dockerfiles that are used by Parity in different ways. If you work on a Substrate-based project, you could be interested in our CI image (`ci-unified`) in the `dockerfiles` directory.
 
 #### But what about scripts?
 
@@ -8,7 +8,7 @@ Nowadays, this repo is mostly the open collection of the company's Dockerfiles t
 
 ### Additional information
 
-* We use the `ci-linux` image for our "major" CI pipelines (Substrate, Polkadot, Cumulus). The image is built on top of the `base-ci-linux` image. You can find more information about them in the `dockerfiles` directory.
+* We use the `ci-unified` image for most of our CI pipelines (including the pipelines for Substrate-based/Substrate-related projects and Substrate itself). You can find more information about the image in the `dockerfiles/ci-unified` directory.
 * Most of the images are published to Docker Hub and could be found [here](https://hub.docker.com/u/paritytech).
 * If you have access to Parity's internal GitLab, please have a look at this project's pipeline schedules. You can use them to build Docker/OCI images on demand.
 
