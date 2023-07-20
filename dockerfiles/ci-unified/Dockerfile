@@ -100,8 +100,10 @@ RUN rustup target add wasm32-unknown-unknown
 
 # generic ci | install cargo tools
 RUN cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck cargo-hack \
-                  mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-last-changed && \
-    cargo install cargo-nextest --locked
+                  mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz 
+
+RUN cargo install mdbook-last-changed --locked
+RUN cargo install cargo-nextest --locked
 
 # generic ci | diener 0.4.6 | NOTE: before upgrading please test new version with companion build, example can be found here: https://github.com/paritytech/substrate/pull/12710
 RUN cargo install diener --version 0.4.6
