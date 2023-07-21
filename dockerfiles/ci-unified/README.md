@@ -31,6 +31,7 @@ So when we release a new image, the image is tagged with these 4 tags based on t
 
 * `bullseye-1.70.0-2023-05-23`
 * `bullseye-1.69.0-2023-03-21`
+* `bullseye-1.71.0-2023-05-23`
 
 Note that we keep the old pairs for a while, but eventually they will be removed. So please, try to use the actual available pair.
 
