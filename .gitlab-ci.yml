@@ -398,6 +398,10 @@ ci-unified:
         $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
       fi
     - buildah logout "$REGISTRY_NAME"
+  retry:
+    max: 2
+    when:
+      - always
   tags:
     - linux-docker-vm-c2
 
