@@ -256,11 +256,9 @@ RUN	cargo install --git https://github.com/paritytech/ink-waterfall.git csv-comp
 ### parity-scale-codec ###
 
 # codecov from ink-ci-linux
-# `binaryen` from contracts-ci
 
 # parity-scale-codec
-RUN	cargo +nightly-${RUST_NIGHTLY_VERSION} install grcov rust-covfix xargo dylint-link && \
-	cargo +nightly-${RUST_NIGHTLY_VERSION} install cargo-contract --locked
+RUN	cargo +nightly-${RUST_NIGHTLY_VERSION} install grcov rust-covfix xargo dylint-link
 
 ### finalize ###
 
