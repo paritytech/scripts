@@ -125,14 +125,7 @@ RUN apt-get -y update && \
 
 RUN apt-get install -y --no-install-recommends \
         zlib1g-dev npm wabt && \
-	npm install --ignore-scripts -g yarn 
-
-# contracts ci 
-# `binaryen` is needed by `cargo-contract` for optimizing Wasm files.
-# We fetch the latest release which contains a Linux binary.
-RUN	curl -L $(curl --silent https://api.github.com/repos/WebAssembly/binaryen/releases \
-		 | jq -r '.[0].assets | [.[] | .browser_download_url] | map(select(match("x86_64-linux\\.tar\\.gz$"))) | .[0]' \
-		 ) | tar -xz -C /usr/local/bin/ --wildcards --strip-components=2 'binaryen-*/bin/wasm-opt'
+	npm install --ignore-scripts -g yarn
 
 # contracts ci 
 # We also use the nightly toolchain for linting. We perform checks using RustFmt, and
@@ -263,11 +256,9 @@ RUN	cargo install --git https://github.com/paritytech/ink-waterfall.git csv-comp
 ### parity-scale-codec ###
 
 # codecov from ink-ci-linux
-# `binaryen` from contracts-ci
 
 # parity-scale-codec
-RUN	cargo +nightly-${RUST_NIGHTLY_VERSION} install grcov rust-covfix xargo dylint-link && \
-	cargo +nightly-${RUST_NIGHTLY_VERSION} install cargo-contract --locked
+RUN	cargo +nightly-${RUST_NIGHTLY_VERSION} install grcov rust-covfix xargo dylint-link
 
 ### finalize ###
 
@@ -281,7 +272,6 @@ RUN rustup show && \
 	estuary --version && \
     # inc-ci-linux
     cargo-contract --version && \
-	wasm-opt --version && \
     # ink-waterfall-ci
     substrate-contracts-node-rand-extension --version
 
