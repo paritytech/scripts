@@ -90,7 +90,7 @@ RUN ln -s "/usr/local/rustup/toolchains/${RUST_STABLE_VERSION}-x86_64-unknown-li
 RUN rustup component add rust-src rustfmt clippy
 
 # generic ci | install specific rust nightly, default is stable, use minimum components
-RUN rustup toolchain install "nightly-${RUST_NIGHTLY_VERSION}" --profile minimal --component rustfmt
+RUN rustup toolchain install "nightly-${RUST_NIGHTLY_VERSION}" --profile minimal --component rustfmt rust-analyzer
 
 # generic ci | "alias" pinned nightly toolchain as generic nightly
 RUN ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY_VERSION}-x86_64-unknown-linux-gnu" /usr/local/rustup/toolchains/nightly-x86_64-unknown-linux-gnu
@@ -100,7 +100,7 @@ RUN rustup target add wasm32-unknown-unknown
 
 # generic ci | install cargo tools
 RUN cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck cargo-hack \
-                  mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz 
+                  mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz
 
 RUN cargo install mdbook-last-changed --locked
 RUN cargo install cargo-nextest --locked
