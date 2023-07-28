@@ -135,6 +135,12 @@ awscli-pr:
   variables:
     IMAGE_NAME:                    "awscli"
 
+base-bin-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "base-bin"
+    REGISTRY_PATH:                   docker.io/parity
+
 base-ci-linux-pr:
   <<: *docker_build_pr
   variables:
@@ -331,6 +337,13 @@ releng-scripts-pr:
 # Build and push to docker hub
 ansible:
   <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
+base-bin:
+  <<:                              *docker_build
+  variables:
+    REGISTRY_PATH:                   docker.io/parity
   script:
     - *push_to_docker_hub
 
@@ -1017,6 +1030,13 @@ publish-awscli-docker-image-description:
   variables:
     IMAGE_NAME:           awscli
     SHORT_DESCRIPTION:    "awscli utility Docker image."
+
+publish-base-bin-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           base-bin
+    DOCKERHUB_REPOSITORY: parity/base-bin
+    SHORT_DESCRIPTION:    "binary distribution base image."
 
 publish-base-ci-linux-docker-image-description:
   extends:                .publish-docker-image-description
