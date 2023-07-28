@@ -63,6 +63,8 @@ RUN set -eu; \
   git reset --hard FETCH_HEAD && \
   rm -rf $K8S_SCHEMA_DIR/.git $K8S_CRDS_DIR/.git
 
+WORKDIR /app
+
 RUN mkdir -p /root/.datree
 COPY ./datree-policies.yaml ./
 COPY ./datree-config.yaml /root/.datree/config.yaml
