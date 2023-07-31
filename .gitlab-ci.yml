@@ -407,7 +407,7 @@ ci-unified:
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION-v$DATESTAMP"
     - >
-      if [ "$SET_LATEST_TAG" == "true" ]; then 
+      if [ "$SET_LATEST_TAG" == "true" ]; then
         $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
       fi
     - buildah logout "$REGISTRY_NAME"
@@ -853,6 +853,41 @@ releng-scripts:
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - buildah logout "$REGISTRY_NAME"
+
+kube-manifests-validation:
+  <<:                              *docker_build
+  variables:
+    <<:                            *default-vars
+    HELM_VERSION:                "3.12.2"
+    GATOR_VERSION:               "3.12.0"
+    DATREE_VERSION:              "1.9.19"
+    YQ_VERSION:                  "4.34.2"
+    K8S_SCHEMA_VERSION:          "1.25.9"
+    K8S_SCHEMA_REPO_COMMIT_SHA:  "a43aa7eceaf4c32c5f45c9fc477588e7a12f18b6"
+    CRDS_SCHEMA_REPO_COMMIT_SHA: "8f0604e873746d6b2d49794e5b37768460e7b545"
+  script:
+    - $BUILDAH_COMMAND build
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --build-arg HELM_VERSION="$HELM_VERSION"
+      --build-arg GATOR_VERSION="$GATOR_VERSION"
+      --build-arg DATREE_VERSION="$DATREE_VERSION"
+      --build-arg YQ_VERSION="$YQ_VERSION"
+      --build-arg K8S_SCHEMA_VERSION="$K8S_SCHEMA_VERSION"
+      --build-arg K8S_SCHEMA_REPO_COMMIT_SHA="$K8S_SCHEMA_REPO_COMMIT_SHA"
+      --build-arg CRDS_SCHEMA_REPO_COMMIT_SHA="$CRDS_SCHEMA_REPO_COMMIT_SHA"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:k8s-$K8S_SCHEMA_VERSION-gator-$GATOR_VERSION-datree-$DATREE_VERSION"
+      --file "dockerfiles/kube-manifests-validation/Dockerfile" dockerfiles
+    # Push to Dockerhub
+    - echo "$Docker_Hub_Pass_Parity" |
+        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+    - $BUILDAH_COMMAND info
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:k8s-$K8S_SCHEMA_VERSION-gator-$GATOR_VERSION-datree-$DATREE_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 #### stage:                        test
