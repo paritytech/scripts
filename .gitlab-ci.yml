@@ -881,7 +881,7 @@ kube-manifests-validation:
       --build-arg CRDS_SCHEMA_REPO_COMMIT_SHA="$CRDS_SCHEMA_REPO_COMMIT_SHA"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:k8s-$K8S_SCHEMA_VERSION-gator-$GATOR_VERSION-datree-$DATREE_VERSION"
-      --file "dockerfiles/kube-manifests-validation/Dockerfile" dockerfiles
+      --file "dockerfiles/kube-manifests-validation/Dockerfile" dockerfiles/kube-manifests-validation
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
         buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
