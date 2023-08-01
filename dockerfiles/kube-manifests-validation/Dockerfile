@@ -7,6 +7,7 @@ ARG HELM_VERSION=3.12.2
 ARG GATOR_VERSION=3.12.0
 ARG DATREE_VERSION=1.9.19
 ARG YQ_VERSION=4.34.2
+ARG VAULT_VERSION=1.14.1
 ARG K8S_SCHEMA_VERSION=1.25.9
 ARG K8S_SCHEMA_REPO_COMMIT_SHA=a43aa7eceaf4c32c5f45c9fc477588e7a12f18b6
 ARG CRDS_SCHEMA_REPO_COMMIT_SHA=8f0604e873746d6b2d49794e5b37768460e7b545
@@ -46,7 +47,12 @@ RUN set -eu; \
   \
   # yq
   curl -fSsL -o /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v${YQ_VERSION}/yq_linux_amd64 && \
-  chmod +x /usr/local/bin/yq
+  chmod +x /usr/local/bin/yq && \
+  \
+  # vault
+  curl -fSsL -o /tmp/vault.zip https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip && \
+  unzip /tmp/vault.zip -d /usr/local/bin vault && \
+  rm -f /tmp/vault.zip
 
 # Download K8s schemas
 RUN set -eu; \
