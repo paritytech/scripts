@@ -33,7 +33,7 @@ RUN apt-get update && \
 # apt cleanup
 	apt-get autoremove -y && apt-get clean && rm -rf /var/lib/apt/lists/* ; \
 	mkdir -p /data /${USER}/.local/share && \
-	chown -R ${USER}:${USER} /data && \
+	chown -R ${USER}:${USER} /data /${USER} && \
 	ln -s /data /${USER}/.local/share/${USER}
 
 # Set last update
