@@ -129,9 +129,14 @@ def check_ws(node_url):
         sync_data = json.loads(ws.recv())
         ws.close()
         node_state['is_syncing'] = hc_data['result']['isSyncing']
-        node_state['health_summary'] = node_state['health_summary'] and hc_data['result']['isSyncing'] is False
+        if node_state['is_syncing'] is not False:
+            logging.info(f'URL: {node_url}. The check failed because the node in syncing')
+            node_state['health_summary'] = False
         node_state['peers'] = hc_data['result']['peers']
-        node_state['health_summary'] = node_state['health_summary'] and node_state['peers'] >= app_config['node_min_peers']
+        if node_state['peers'] < app_config['node_min_peers']:
+            logging.info(f'URL: {node_url}. The check failed because peers are not enough '
+                          f'{node_state["peers"]} < {app_config["node_min_peers"]} (config)')
+            node_state['health_summary'] = False
         node_state['should_have_peers'] = hc_data['result']['shouldHavePeers']
         node_state['highest_block'] = sync_data['result']['highestBlock']
         node_state['current_block'] = sync_data['result']['currentBlock']
@@ -139,15 +144,17 @@ def check_ws(node_url):
         if len(block_number_cache[node_url]) >= 2:
             node_state['block_rate'] = (block_number_cache[node_url][-1]['number'] - block_number_cache[node_url][0]['number']) / \
                                        (block_number_cache[node_url][-1]['imestamp'] - block_number_cache[node_url][0]['imestamp'])
-            if app_config['min_block_rate'] > 0:
-                node_state['health_summary'] = node_state['health_summary'] and \
-                                               node_state['block_rate'] > app_config['min_block_rate']
-        node_state['unsynchronized_block_drift'] = node_state['highest_block'] - \
-                                                   node_state['current_block']
-        if app_config['node_max_unsynchronized_block_drift'] > 0:
-            node_state['health_summary'] = node_state['health_summary'] and \
-                                           node_state['unsynchronized_block_drift'] <= app_config['node_max_unsynchronized_block_drift']
-        logging.debug(f'WebSocket check. URL: {node_url} state: {node_state}')
+            if app_config['min_block_rate'] > 0 and node_state['block_rate'] < app_config['min_block_rate']:
+                logging.info(f'URL: {node_url}. The check failed because the node has a low rate of new blocks '
+                              f'{node_state["block_rate"]} < {app_config["min_block_rate"]} (config)')
+                node_state['health_summary'] = False
+        node_state['unsynchronized_block_drift'] = node_state['highest_block'] - node_state['current_block']
+        if (app_config['node_max_unsynchronized_block_drift'] > 0 and
+                node_state['unsynchronized_block_drift'] > app_config['node_max_unsynchronized_block_drift']):
+            logging.info(f'URL: {node_url}. The check failed because the node has unsynchronized blocks '
+                          f'{node_state["unsynchronized_block_drift"]} > {app_config["node_max_unsynchronized_block_drift"]} (config)')
+            node_state['health_summary'] = False
+        logging.debug(f'URL: {node_url}. Check state: {node_state}')
         return node_state['health_summary']
     except Exception as e:
         logging.error(f'WebSocket request error. URL: {node_url}, timeout: {app_config["ws_timeout"]}, error: "{e}"')
