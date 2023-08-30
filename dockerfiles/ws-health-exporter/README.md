@@ -17,9 +17,13 @@ It can be configured using environment variables:
 * `WSHE_NODE_RPC_URLS` - setups the list of WebSocket URLs; the format is a comma-separated string;
   default `ws://127.0.0.1:5556`
 * `WSHE_NODE_MAX_UNSYNCHRONIZED_BLOCK_DRIFT` - setups maximum of unsynchronized blocks; if a node has
-  more, the health check will be failed; default `0` (disabled)
-* `WSHE_NODE_MIN_PEERS` - setups minimum of peers; if a node has
-  less, the health check will be failed; default `10`
+  more, the health check will fail; default `0` blocks (disabled)
+* `WSHE_NODE_MIN_PEERS` - setups minimum of peers; if a node has less, the health check will fail; default `10` peers
+* `WSHE_BLOCK_RATE_MEASUREMENT_PERIOD` - average rate of new blocks is calculated for the period;
+  if this period is less than `WSHE_WS_CHECK_INTERVAL` it will be equal `WSHE_WS_CHECK_INTERVAL`; 
+  default `600` seconds
+* `WSHE_MIN_BLOCK_RATE` - setups minimum rate of new blocks; if a node has a
+  lower rate, the health check will fail; default `0.0` blocks/second (disabled)
 
 ## API endpoints
 GET:

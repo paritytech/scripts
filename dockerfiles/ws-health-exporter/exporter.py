@@ -8,6 +8,9 @@ import json
 import io
 from urllib.parse import urlparse
 from threading import Lock
+import math
+import time
+from collections import deque
 
 from flask import Flask
 from waitress import serve
@@ -22,6 +25,7 @@ ws_metrics = {
     'polkadot_ws_alive': Gauge('wss_alive', 'WebSocket alive', ['url'])
 }
 
+
 # global variable to keep current readiness status
 # we need threading.Lock() to avoid race conditions
 # some Python modules can use threads inside
@@ -31,14 +35,16 @@ readiness_status = {'status': False, 'lock': Lock()}
 app = Flask(__name__, static_folder=None)
 
 app_config = {
-    'log_level': 'INFO',
-    'host': '0.0.0.0',
-    'port': 8001,
-    'ws_check_interval': 10,
-    'ws_timeout': 60,
-    'node_rpc_urls': ['ws://127.0.0.1:5556'],
-    'node_max_unsynchronized_block_drift': 0,
-    'node_min_peers': 10,
+    'log_level': 'INFO', # WSHE_LOG_LEVEL
+    'host': '0.0.0.0', # WSHE_HOST
+    'port': 8001, # WSHE_PORT
+    'ws_check_interval': 10, # WSHE_WS_CHECK_INTERVAL
+    'ws_timeout': 60, # WSHE_WS_TIMEOUT
+    'node_rpc_urls': ['ws://127.0.0.1:5556'], # WSHE_NODE_RPC_URLS
+    'node_max_unsynchronized_block_drift': 0, # WSHE_NODE_MAX_UNSYNCHRONIZED_BLOCK_DRIFT
+    'node_min_peers': 10, # WSHE_NODE_MIN_PEERS
+    'block_rate_measurement_period': 600, # WSHE_BLOCK_RATE_MEASUREMENT_PERIOD
+    'min_block_rate': 0.0, # WSHE_MIN_BLOCK_RATE
 }
 
 
@@ -101,40 +107,60 @@ def parse_config(config):
                                                             config['node_max_unsynchronized_block_drift'])
     # WSHE_NODE_MIN_PEERS
     config['node_min_peers'] = env.int("WSHE_NODE_MIN_PEERS", config['node_min_peers'])
+    # WSHE_BLOCK_RATE_MEASUREMENT_PERIOD
+    config['block_rate_measurement_period'] = env.int("WSHE_BLOCK_RATE_MEASUREMENT_PERIOD",
+                                                      config['block_rate_measurement_period'])
+    # WSHE_MIN_BLOCK_RATE
+    config['min_block_rate'] = env.float("WSHE_MIN_BLOCK_RATE",
+                                         config['min_block_rate'])
 
     print('config:')
     for config_line in sorted(config.items()):
         print(f' {config_line[0]}: {config_line[1]}')
 
 
-def check_ws(node_url, ws_timeout, node_max_unsynchronized_block_drift, node_min_peers):
+def check_ws(node_url):
     node_state = {'health_summary': True}
     try:
-        ws = create_connection(node_url, timeout=ws_timeout)
+        ws = create_connection(node_url, timeout=app_config['ws_timeout'])
         ws.send('{"id":1, "jsonrpc":"2.0", "method": "system_health", "params":[]}')
         hc_data = json.loads(ws.recv())
         ws.send('{"id":1, "jsonrpc":"2.0", "method": "system_syncState", "params":[false]}')
         sync_data = json.loads(ws.recv())
         ws.close()
         node_state['is_syncing'] = hc_data['result']['isSyncing']
-        node_state['health_summary'] = node_state['health_summary'] and hc_data['result']['isSyncing'] is False
+        if node_state['is_syncing'] is not False:
+            logging.info(f'URL: {node_url}. The check failed because the node in syncing')
+            node_state['health_summary'] = False
         node_state['peers'] = hc_data['result']['peers']
-        node_state['health_summary'] = node_state['health_summary'] and node_state['peers'] >= node_min_peers
+        if node_state['peers'] < app_config['node_min_peers']:
+            logging.info(f'URL: {node_url}. The check failed because peers are not enough '
+                          f'{node_state["peers"]} < {app_config["node_min_peers"]} (config)')
+            node_state['health_summary'] = False
         node_state['should_have_peers'] = hc_data['result']['shouldHavePeers']
-        node_state['highestBlock'] = sync_data['result']['highestBlock']
-        node_state['currentBlock'] = sync_data['result']['currentBlock']
-        node_state['unsynchronized_block_drift'] = node_state['highestBlock']  - \
-                                                   node_state['currentBlock']
-        if node_max_unsynchronized_block_drift > 0:
-            node_state['health_summary'] = node_state['health_summary'] and \
-                                           node_state['unsynchronized_block_drift'] <= node_max_unsynchronized_block_drift
-        logging.debug(f'WebSocket check. URL: {node_url} state: {node_state}')
+        node_state['highest_block'] = sync_data['result']['highestBlock']
+        node_state['current_block'] = sync_data['result']['currentBlock']
+        block_number_cache[node_url].append({'imestamp': time.time(), 'number': node_state['current_block']})
+        if len(block_number_cache[node_url]) >= 2:
+            node_state['block_rate'] = (block_number_cache[node_url][-1]['number'] - block_number_cache[node_url][0]['number']) / \
+                                       (block_number_cache[node_url][-1]['imestamp'] - block_number_cache[node_url][0]['imestamp'])
+            if app_config['min_block_rate'] > 0 and node_state['block_rate'] < app_config['min_block_rate']:
+                logging.info(f'URL: {node_url}. The check failed because the node has a low rate of new blocks '
+                              f'{node_state["block_rate"]} < {app_config["min_block_rate"]} (config)')
+                node_state['health_summary'] = False
+        node_state['unsynchronized_block_drift'] = node_state['highest_block'] - node_state['current_block']
+        if (app_config['node_max_unsynchronized_block_drift'] > 0 and
+                node_state['unsynchronized_block_drift'] > app_config['node_max_unsynchronized_block_drift']):
+            logging.info(f'URL: {node_url}. The check failed because the node has unsynchronized blocks '
+                          f'{node_state["unsynchronized_block_drift"]} > {app_config["node_max_unsynchronized_block_drift"]} (config)')
+            node_state['health_summary'] = False
+        logging.debug(f'URL: {node_url}. Check state: {node_state}')
         return node_state['health_summary']
     except Exception as e:
-        logging.error(f'WebSocket request error. URL: {node_url}, timeout: {ws_timeout}, error: "{e}"')
+        logging.error(f'WebSocket request error. URL: {node_url}, timeout: {app_config["ws_timeout"]}, error: "{e}"')
         tb_output = io.StringIO()
         traceback.print_tb(e.__traceback__, file=tb_output)
-        logging.debug(f'WebSocket request error. URL: {node_url}, timeout: {ws_timeout}, '
+        logging.debug(f'WebSocket request error. URL: {node_url}, timeout: {app_config["ws_timeout"]}, '
                       f'traceback:\n{tb_output.getvalue()}')
         tb_output.close()
         return False
@@ -146,10 +172,7 @@ def update_metrics():
     # the common status will be negative if at least one check for a URL fails
     status = True
     for url in app_config['node_rpc_urls']:
-        url_probe = check_ws(node_url=url,
-                             ws_timeout=app_config['ws_timeout'],
-                             node_max_unsynchronized_block_drift=app_config['node_max_unsynchronized_block_drift'],
-                             node_min_peers=app_config['node_min_peers'])
+        url_probe = check_ws(node_url=url)
         ws_metrics['polkadot_ws_alive'].labels(url=url).set(int(url_probe))
         status = status and url_probe
     write_readiness_status(status)
@@ -177,6 +200,8 @@ def health_readiness():
 
 
 if __name__ == '__main__':
+    global block_number_cache
+
     parse_config(app_config)
 
     # set up console log handler
@@ -186,6 +211,11 @@ if __name__ == '__main__':
     console.setFormatter(formatter)
     # set up basic logging config
     logging.basicConfig(format=LOGGING_FORMAT, level=getattr(logging, app_config['log_level']), handlers=[console])
+
+    number_block_metrics = max(2, math.ceil(app_config['block_rate_measurement_period'] / app_config['ws_check_interval']))
+    block_number_cache = {}
+    for url in app_config['node_rpc_urls']:
+        block_number_cache[url] = deque([], number_block_metrics)
 
     update_metrics()
     scheduler = BackgroundScheduler()
