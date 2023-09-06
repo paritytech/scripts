@@ -1,4 +1,4 @@
-# `base-bin``
+# `base-bin`
 
 A frequently built and updated image to be used as base for our binary distribution.
 The image is not named after a specific distribution such as `ubuntu` to leave us the option
