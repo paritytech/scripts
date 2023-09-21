@@ -99,6 +99,7 @@ RUN ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY_VERSION}-x86_64-u
 RUN rustup target add wasm32-unknown-unknown
 
 # generic ci | install x86_64 musl toolchain for the default stable toolchain
+RUN apt-get install -y --no-install-recommends g++
 RUN rustup target add x86_64-unknown-linux-musl
 
 # generic ci | install cargo tools
