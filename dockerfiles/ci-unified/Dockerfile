@@ -98,6 +98,9 @@ RUN ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY_VERSION}-x86_64-u
 # generic ci | install wasm toolchain for the default stable toolchain
 RUN rustup target add wasm32-unknown-unknown
 
+# generic ci | install x86_64 musl toolchain for the default stable toolchain
+RUN rustup target add x86_64-unknown-linux-musl
+
 # generic ci | install cargo tools
 RUN cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck cargo-hack \
                   mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz
