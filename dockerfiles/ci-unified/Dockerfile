@@ -162,7 +162,7 @@ RUN	curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mir
 # contracts ci 
 # We use `estuary` as a lightweight cargo registry in the CI to test if
 # publishing `cargo-contract` to it and installing it from there works.
-RUN	cargo install --git https://github.com/onelson/estuary.git --force
+RUN	cargo install --git https://github.com/onelson/estuary.git --force --locked
 
 
 ### bridges-ci ###
