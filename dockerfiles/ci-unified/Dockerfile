@@ -104,9 +104,8 @@ RUN rustup target add x86_64-unknown-linux-musl
 
 # generic ci | install cargo tools
 RUN cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck cargo-hack \
-                  mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz
+                  mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-admonish mdbook-last-changed
 
-RUN cargo install mdbook-last-changed --locked
 RUN cargo install cargo-nextest --locked
 
 # generic ci | diener 0.4.6 | NOTE: before upgrading please test new version with companion build, example can be found here: https://github.com/paritytech/substrate/pull/12710
@@ -162,7 +161,7 @@ RUN	curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mir
 # contracts ci 
 # We use `estuary` as a lightweight cargo registry in the CI to test if
 # publishing `cargo-contract` to it and installing it from there works.
-RUN	cargo install --git https://github.com/onelson/estuary.git --force
+RUN	cargo install --git https://github.com/onelson/estuary.git --force --locked
 
 
 ### bridges-ci ###
