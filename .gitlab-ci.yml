@@ -287,7 +287,7 @@ ws-health-exporter-pr:
   variables:
     IMAGE_NAME:                    "ws-health-exporter"
 
-xbuilder-aarch64-unknown-linux-gnu:
+xbuilder-aarch64-unknown-linux-gnu-pr:
   <<: *docker_build_pr
   variables:
     IMAGE_NAME:                    "xbuilder-aarch64-unknown-linux-gnu"
@@ -334,6 +334,11 @@ releng-scripts-pr:
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
       --file "Dockerfile"
+
+db-dumper-pr:
+  <<: *docker_build_pr
+  variables:
+    IMAGE_NAME:                    "db-dumper"
 
 # Build and push to docker hub
 ansible:
@@ -560,6 +565,11 @@ ws-health-exporter:
     - *push_to_docker_hub
 
 xbuilder-aarch64-unknown-linux-gnu:
+  <<:                              *docker_build
+  script:
+    - *push_to_docker_hub
+
+db-dumper:
   <<:                              *docker_build
   script:
     - *push_to_docker_hub
@@ -1283,3 +1293,9 @@ publish-eng-automation-ci-docker-image-description:
   variables:
     IMAGE_NAME:           eng-automation-ci
     SHORT_DESCRIPTION:    "Universal ci image for engineering automation team"
+
+publish-db-dumper-docker-image-description:
+  extends:                .publish-docker-image-description
+  variables:
+    IMAGE_NAME:           db-dumper
+    SHORT_DESCRIPTION:    "db-dumper script that makes dumps of GCP Cloud SQL Postgres databases"
