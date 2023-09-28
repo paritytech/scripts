@@ -1,6 +1,0 @@
-prometheus-client
-websocket-client
-apscheduler
-flask
-environs
-waitress
