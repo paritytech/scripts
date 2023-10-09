@@ -243,12 +243,13 @@ RUN	cargo install --git https://github.com/paritytech/substrate-contracts-node.g
 # `rand-extension` chain extension example is included in the runtime.
 # This enables us to test in the waterfall that the `rand-extension`
 # integration with Substrate still works.
-RUN	git clone --depth 1 https://github.com/paritytech/substrate-contracts-node.git && \
-	curl -s https://raw.githubusercontent.com/paritytech/ink/master/integration-tests/rand-extension/runtime/chain-extension-example.rs \
-		>> substrate-contracts-node/runtime/src/lib.rs && \
-	sed -i 's/type ChainExtension = ();/type ChainExtension = FetchRandomExtension;/g' substrate-contracts-node/runtime/src/lib.rs && \
-	sed -i 's/name = "substrate-contracts-node"/name = "substrate-contracts-node-rand-extension"/g' substrate-contracts-node/node/Cargo.toml && \
-	cargo install --locked --path substrate-contracts-node/node/
+# TODO: address https://github.com/paritytech/scripts/issues/604 and re-enable
+# RUN	git clone --depth 1 https://github.com/paritytech/substrate-contracts-node.git && \
+# 	curl -s https://raw.githubusercontent.com/paritytech/ink/master/integration-tests/rand-extension/runtime/chain-extension-example.rs \
+# 		>> substrate-contracts-node/runtime/src/lib.rs && \
+# 	sed -i 's/type ChainExtension = ();/type ChainExtension = FetchRandomExtension;/g' substrate-contracts-node/runtime/src/lib.rs && \
+# 	sed -i 's/name = "substrate-contracts-node"/name = "substrate-contracts-node-rand-extension"/g' substrate-contracts-node/node/Cargo.toml && \
+# 	cargo install --locked --path substrate-contracts-node/node/
 
 # nk-waterfall-ci    
 # Needed for regression testing, a CSV contains the sizes of compiled contracts.
@@ -276,7 +277,7 @@ RUN rustup show && \
     # inc-ci-linux
     cargo-contract --version && \
     # ink-waterfall-ci
-    substrate-contracts-node-rand-extension --version
+    # substrate-contracts-node-rand-extension --version
 
 # finalize | cargo clean up, removes compilation artifacts cargo install creates (>250M)
 RUN rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache
