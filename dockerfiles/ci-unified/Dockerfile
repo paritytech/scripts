@@ -275,7 +275,7 @@ RUN rustup show && \
     echo $( substrate-contracts-node --version | awk 'NF' ) && \
 	estuary --version && \
     # inc-ci-linux
-    cargo-contract --version && \
+    cargo-contract --version
     # ink-waterfall-ci
     # substrate-contracts-node-rand-extension --version
 
