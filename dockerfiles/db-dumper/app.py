@@ -1,5 +1,6 @@
 import csv
 import posixpath
+import logging
 from datetime import datetime
 from datetime import timezone
 
@@ -11,13 +12,14 @@ import sqlalchemy
 
 from google.cloud import storage
 
+LOGGING_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 def connect_with_connector() -> sqlalchemy.engine.base.Engine:
     env = Env()
-    instance_connection_name = env.str("DBDUMPER_DB_INSTANCE_NAME")
-    db_user = env.str("DBDUMPER_DB_USER")
+    instance_connection_name = config['DBDUMPER_DB_INSTANCE_NAME']
+    db_user = config['DBDUMPER_DB_USER']
     db_pass = env.str("DBDUMPER_DB_PASS")
-    db_name = env.str("DBDUMPER_DB_NAME")
+    db_name = config['DBDUMPER_DB_NAME']
 
     connector = Connector()
 
@@ -44,14 +46,37 @@ def connect_with_connector() -> sqlalchemy.engine.base.Engine:
 
 if __name__ == '__main__':
     env = Env()
+
+    config = {}
+    config['DBDUMPER_LOG_LEVEL'] = env.str("DBDUMPER_LOG_LEVEL", "INFO")
+    config['DBDUMPER_QUERY'] = env.str("DBDUMPER_QUERY")
+    config['DBDUMPER_BUCKET_PATH'] = env.str("DBDUMPER_BUCKET_PATH", "")
+    config['DBDUMPER_BUCKET_FILE_BASE_NAME'] = env.str("DBDUMPER_BUCKET_FILE_BASE_NAME", "dump")
+    config['DBDUMPER_BUCKET_NAME'] = env.str("DBDUMPER_BUCKET_NAME")
+    config['DBDUMPER_DB_INSTANCE_NAME'] = env.str("DBDUMPER_DB_INSTANCE_NAME")
+    config['DBDUMPER_DB_USER'] = env.str("DBDUMPER_DB_USER")
+    config['DBDUMPER_DB_NAME'] = env.str("DBDUMPER_DB_NAME")
+
+
+    # set up console log handler
+    console = logging.StreamHandler()
+    console.setLevel(getattr(logging, config['DBDUMPER_LOG_LEVEL']))
+    formatter = logging.Formatter(LOGGING_FORMAT)
+    console.setFormatter(formatter)
+    # set up basic logging config
+    logging.basicConfig(format=LOGGING_FORMAT, level=getattr(logging, config['DBDUMPER_LOG_LEVEL']), handlers=[console])
+
+    logging.info(f'Config:\n{config}')
+    logging.info(f'Backup started!')
+
     db = connect_with_connector()
-    query = sqlalchemy.text(env.str("DBDUMPER_QUERY"))
+    query = sqlalchemy.text(config['DBDUMPER_QUERY'])
 
     now = datetime.now(timezone.utc)
-    bucket_blob_path = posixpath.join(env.str("DBDUMPER_BUCKET_PATH", ""),
-                                    f'{env.str("DBDUMPER_BUCKET_FILE_BASE_NAME", "dump")}-{now.strftime("%m%d%Y-%H%M%S")}.csv')
+    bucket_blob_path = posixpath.join(config['DBDUMPER_BUCKET_PATH'],
+                                    f'{config["DBDUMPER_BUCKET_FILE_BASE_NAME"]}-{now.strftime("%Y%m%d-%H%M%S")}.csv')
     storage_client = storage.Client()
-    bucket = storage_client.bucket(env.str("DBDUMPER_BUCKET_NAME"))
+    bucket = storage_client.bucket(config['DBDUMPER_BUCKET_NAME'])
     bucket_blob = bucket.blob(bucket_blob_path)
 
     with db.connect() as conn:
@@ -63,3 +88,5 @@ if __name__ == '__main__':
                 csv_file.writerow(header)
                 for record in q.all():
                     csv_file.writerow([getattr(record, c) for c in header])
+
+    logging.info(f'Backup finished successfully!')

@@ -29,6 +29,7 @@ Required:
 Optional:
 * `DBDUMPER_BUCKET_PATH` - base path in the bucket, the default value is the empty string (the root of the bucket)
 * `DBDUMPER_BUCKET_FILE_BASE_NAME` - first part of the dump file name, the default value is `dump`
+* `DBDUMPER_LOG_LEVEL`- log levels of the `logging` Python module, the default value is `INFO`
 
 ## Dump path
 
