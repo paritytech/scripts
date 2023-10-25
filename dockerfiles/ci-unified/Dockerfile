@@ -44,7 +44,7 @@ RUN set -eux; \
         libssl-dev make cmake graphviz \
         git pkg-config curl wget time rhash ca-certificates jq \
         python3 python3-pip lsof ruby ruby-bundler git-restore-mtime \
-        bzcat xz-utils zstd unzip gnupg protobuf-compiler
+        bzip2 xz-utils zstd unzip gnupg protobuf-compiler
 
 # base | add llvm repo, clang and dependencies
 RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc && \
