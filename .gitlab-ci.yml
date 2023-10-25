@@ -385,7 +385,7 @@ ci-linux:
 
 ci-unified:
   variables:
-    RUST_STABLE_VERSION: "1.70.0"
+    RUST_STABLE_VERSION: "1.73.0"
     RUST_NIGHTLY_VERSION: "2023-05-23"
   <<:                              *docker_build
   before_script:

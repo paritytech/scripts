@@ -4,7 +4,8 @@ FROM docker.io/library/debian:bullseye-20230522-slim
 ### meta ###
 
 ARG DISTRO_CODENAME="bullseye"
-ARG RUST_STABLE_VERSION="1.70.0"
+ARG RESTIC_VERSION="0.16.1"
+ARG RUST_STABLE_VERSION="1.73.0"
 ARG RUST_NIGHTLY_VERSION="2023-05-23"
 ARG LLVM_VERSION="15"
 ARG MINIO_VERSION="2023-04-06T16-51-10Z"
@@ -43,7 +44,7 @@ RUN set -eux; \
         libssl-dev make cmake graphviz \
         git pkg-config curl wget time rhash ca-certificates jq \
         python3 python3-pip lsof ruby ruby-bundler git-restore-mtime \
-        xz-utils zstd unzip gnupg protobuf-compiler
+        bzip2 xz-utils zstd unzip gnupg protobuf-compiler
 
 # base | add llvm repo, clang and dependencies
 RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc && \
@@ -53,9 +54,13 @@ RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.
     apt-get install -y --no-install-recommends \
         clang-${LLVM_VERSION} lldb-${LLVM_VERSION} lld-${LLVM_VERSION} libclang-${LLVM_VERSION}-dev
 
-# base | install specific minio client version (2023-04-06)
+# base | install specific minio client version
 RUN curl -L "https://dl.min.io/client/mc/release/linux-amd64/archive/mc.${MINIO_VERSION}" -o /usr/local/bin/mc && \
     chmod 755 /usr/local/bin/mc
+
+# base | install restic
+RUN wget https://github.com/restic/restic/releases/download/v${RESTIC_VERSION}/restic_${RESTIC_VERSION}_linux_amd64.bz2 -O- | bzcat > /usr/local/bin/restic \
+ && chmod 755 /usr/local/bin/restic
 
 # base | set a link to clang
 RUN update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${LLVM_VERSION} 100
@@ -72,7 +77,7 @@ RUN curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/r
     chown -R root:nonroot ${RUSTUP_HOME} ${CARGO_HOME} && \
     chmod -R g+w ${RUSTUP_HOME} ${CARGO_HOME}
 
-# base | install python tools
+# base | install yq via pip
 RUN pip install yq
 
 
@@ -211,14 +216,14 @@ RUN	cargo install grcov rust-covfix xargo
 
 
 RUN	apt-get install -y --no-install-recommends \
-# nk-waterfall-ci 
+# ink-waterfall-ci 
 # `redis-cli` is needed to interact with ci/cd's redis
 	redis-tools \
-# nk-waterfall-ci    
+# ink-waterfall-ci    
 # `firefox` is needed to simulate interactions with the `canvas-ui`
 	firefox-esr 
 
-# nk-waterfall-ci
+# ink-waterfall-ci
 # `geckodriver` is needed to run headless browser tests
 # we fetch the latest version number from the github api and use that release
 RUN	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/latest | \
@@ -231,13 +236,13 @@ RUN	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/late
 	mv geckodriver /usr/local/bin/ 
 
 # !!! TODO: check substrate-contracts-node in contracts-ci
-# nk-waterfall-ci
+# ink-waterfall-ci
 # `substrate-contracts-node` is a Substrate chain with smart contract functionality.
 # `--locked` ensures the project's `Cargo.lock` is used.
 RUN	cargo install --git https://github.com/paritytech/substrate-contracts-node.git \
 		--locked --branch main --force
 
-# nk-waterfall-ci
+# ink-waterfall-ci
 # We additionally install the `substrate-contracts-node` as `substrate-contracts-rand-extension`.
 # This installation though is a modified `substrate-contracts-node`, so that ink!'s
 # `rand-extension` chain extension example is included in the runtime.
@@ -251,7 +256,7 @@ RUN	cargo install --git https://github.com/paritytech/substrate-contracts-node.g
 # 	sed -i 's/name = "substrate-contracts-node"/name = "substrate-contracts-node-rand-extension"/g' substrate-contracts-node/node/Cargo.toml && \
 # 	cargo install --locked --path substrate-contracts-node/node/
 
-# nk-waterfall-ci    
+# ink-waterfall-ci    
 # Needed for regression testing, a CSV contains the sizes of compiled contracts.
 RUN	cargo install --git https://github.com/paritytech/ink-waterfall.git csv-comparator && \
 	npm install -g csv2md
