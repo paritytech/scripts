@@ -16,8 +16,8 @@ def parse_session_key(dir):
   # variants of key prefixes in the right order
   key_formats = (
     ['6772616e', '62616265', '696d6f6e', '70617261', '61756469'], # validator keys (gran,babe,imon,para,audi)
-    ['6772616e', '62616265', '696d6f6e', '70617261', '6173676e', '61756469'], # validator keys (gran,babe,imon,para,asgn,audi)
     ['6772616e', '62616265', '696d6f6e', '70617261', '6173676e', '61756469', '62656566'], # validator keys (gran,babe,imon,para,asgn,audi,beef)
+    ['6772616e', '62616265', '696d6f6e', '70617261', '6173676e', '61756469'], # validator keys (gran,babe,imon,para,asgn,audi)
     ['61757261'] # collator keys (aura)
     )
   possible_prefixes = list(set([j for i in key_formats for j in i]))
