@@ -16,15 +16,15 @@ def parse_session_key(dir):
   # variants of key prefixes in the right order
   key_formats = (
     ['6772616e', '62616265', '696d6f6e', '70617261', '61756469'], # validator keys (gran,babe,imon,para,audi)
-    ['6772616e', '62616265', '696d6f6e', '70617261', '6173676e', '61756469', '62656566'], # validator keys (gran,babe,imon,para,asgn,audi,beef)
     ['6772616e', '62616265', '696d6f6e', '70617261', '6173676e', '61756469'], # validator keys (gran,babe,imon,para,asgn,audi)
+    ['6772616e', '62616265', '696d6f6e', '70617261', '6173676e', '61756469', '62656566'], # validator keys (gran,babe,imon,para,asgn,audi,beef)
     ['61757261'] # collator keys (aura)
     )
   possible_prefixes = list(set([j for i in key_formats for j in i]))
   if os.path.isdir(dir):
     os.chdir(dir)
     files = os.listdir('.')
-    files = [i for i in files if len(i) == 72 and i[0:8] in possible_prefixes]
+    files = [i for i in files if len(i) in [72, 74] and i[0:8] in possible_prefixes]
     if not files:
       return None
     # find creation time of the newest key
