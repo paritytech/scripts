@@ -107,7 +107,7 @@ RUN rustup target add wasm32-unknown-unknown
 RUN apt-get install -y --no-install-recommends g++
 RUN rustup target add x86_64-unknown-linux-musl
 
-# generic ci | install cargo tools
+# generic ci | install common cargo tools
 RUN cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck cargo-hack \
                   mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-admonish mdbook-last-changed
 
@@ -117,7 +117,13 @@ RUN cargo install cargo-nextest --locked
 RUN cargo install diener --version 0.4.6
 
 # generic ci | wasm-bindgen-cli version should match the one pinned in substrate
-RUN cargo install --version 0.2.73 wasm-bindgen-cli
+RUN cargo install wasm-bindgen-cli --version 0.2.73
+
+# generic ci | install taplo
+RUN cargo install taplo-cli --locked --version 0.8.1
+
+# generic ci | install zepter
+RUN cargo install taplo-cli --locked --version 0.15.0
 
 # generic ci | install wasm-gc. useful for stripping slimming down wasm binaries
 RUN cargo install wasm-gc
