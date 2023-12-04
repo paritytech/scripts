@@ -6,7 +6,7 @@ FROM docker.io/library/debian:bullseye-20230522-slim
 ARG DISTRO_CODENAME="bullseye"
 ARG RESTIC_VERSION="0.16.1"
 ARG RUST_STABLE_VERSION="1.73.0"
-ARG RUST_NIGHTLY_VERSION="2023-05-23"
+ARG RUST_NIGHTLY_VERSION="2023-11-01"
 ARG LLVM_VERSION="15"
 ARG MINIO_VERSION="2023-04-06T16-51-10Z"
 
@@ -103,6 +103,11 @@ RUN ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY_VERSION}-x86_64-u
 # generic ci | install wasm toolchain for the default stable toolchain
 RUN rustup target add wasm32-unknown-unknown
 
+# Install rv32e-nightly-2023-04-05
+RUN wget https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu/rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz
+RUN tar xfz rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz -C /usr/local/rustup/toolchains
+RUN rm -f rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz
+
 # generic ci | install x86_64 musl toolchain for the default stable toolchain
 RUN apt-get install -y --no-install-recommends g++
 RUN rustup target add x86_64-unknown-linux-musl
@@ -141,7 +146,7 @@ RUN apt-get install -y --no-install-recommends \
         zlib1g-dev npm wabt && \
 	npm install --ignore-scripts -g yarn
 
-# contracts ci 
+# contracts ci
 # We also use the nightly toolchain for linting. We perform checks using RustFmt, and
 # Cargo Clippy.
 #
@@ -152,16 +157,16 @@ RUN rustup target add wasm32-unknown-unknown \
 RUN rustup component add rustfmt clippy rust-src \
     --toolchain "nightly-${RUST_NIGHTLY_VERSION}"
 
-# contracts ci 
+# contracts ci
 # `cargo-dylint` and `dylint-link` are dependencies needed to run `cargo-contract`.
 RUN	cargo install cargo-dylint dylint-link
 
-# contracts ci 
+# contracts ci
 # Install the latest `cargo-contract`
 RUN	cargo install --git https://github.com/paritytech/cargo-contract \
         --locked --branch master --force
 
-# contracts ci 
+# contracts ci
 # Download the latest `substrate-contracts-node` binary
 RUN	curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mirrors/substrate-contracts-node/-/jobs/artifacts/main/download?job=build-linux' && \
 	unzip substrate-contracts-node.zip && \
@@ -169,7 +174,7 @@ RUN	curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mir
 	rm -r artifacts substrate-contracts-node.zip && \
 	chmod +x /usr/local/cargo/bin/substrate-contracts-node
 
-# contracts ci 
+# contracts ci
 # We use `estuary` as a lightweight cargo registry in the CI to test if
 # publishing `cargo-contract` to it and installing it from there works.
 RUN	cargo install --git https://github.com/onelson/estuary.git --force --locked
@@ -222,12 +227,12 @@ RUN	cargo install grcov rust-covfix xargo
 
 
 RUN	apt-get install -y --no-install-recommends \
-# ink-waterfall-ci 
+# ink-waterfall-ci
 # `redis-cli` is needed to interact with ci/cd's redis
 	redis-tools \
-# ink-waterfall-ci    
+# ink-waterfall-ci
 # `firefox` is needed to simulate interactions with the `canvas-ui`
-	firefox-esr 
+	firefox-esr
 
 # ink-waterfall-ci
 # `geckodriver` is needed to run headless browser tests
@@ -239,7 +244,7 @@ RUN	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/late
 	tar -xvzf geckodriver-v*-linux64.tar.gz && \
 	rm geckodriver-v*-linux64.tar.gz && \
 	chmod +x geckodriver && \
-	mv geckodriver /usr/local/bin/ 
+	mv geckodriver /usr/local/bin/
 
 # !!! TODO: check substrate-contracts-node in contracts-ci
 # ink-waterfall-ci
@@ -262,7 +267,7 @@ RUN	cargo install --git https://github.com/paritytech/substrate-contracts-node.g
 # 	sed -i 's/name = "substrate-contracts-node"/name = "substrate-contracts-node-rand-extension"/g' substrate-contracts-node/node/Cargo.toml && \
 # 	cargo install --locked --path substrate-contracts-node/node/
 
-# ink-waterfall-ci    
+# ink-waterfall-ci
 # Needed for regression testing, a CSV contains the sizes of compiled contracts.
 RUN	cargo install --git https://github.com/paritytech/ink-waterfall.git csv-comparator && \
 	npm install -g csv2md
