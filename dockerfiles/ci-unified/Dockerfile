@@ -105,7 +105,8 @@ RUN rustup target add wasm32-unknown-unknown
 
 # Install rv32e-nightly-2023-04-05
 RUN wget https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu/rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz
-RUN tar xfz rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz -C /usr/local/rustup/toolchains
+RUN tar xfz rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz
+RUN mv rust-riscv32em-x86_64-unknown-linux-gnu/riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu/ /usr/local/rustup/toolchains
 RUN rm -f rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz
 
 # generic ci | install x86_64 musl toolchain for the default stable toolchain
