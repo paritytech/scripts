@@ -1,5 +1,8 @@
 # The unified Parity CI image
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/paritytech/ci-unified)](https://hub.docker.com/r/paritytech/ci-unified/tags)
+
+
 This image is used for running CI jobs for Parity repositories. It could also work for you if you're building something on Polkadot SDK.
 
 ### Specification
