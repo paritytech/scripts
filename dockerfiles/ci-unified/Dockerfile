@@ -120,10 +120,10 @@ RUN apt-get install -y --no-install-recommends g++
 RUN rustup target add x86_64-unknown-linux-musl
 
 # generic ci | install common cargo tools
-RUN cargo install cargo-web wasm-pack cargo-deny cargo-spellcheck cargo-hack \
+RUN cargo install cargo-web wasm-pack cargo-deny cargo-hack \
                   mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-admonish mdbook-last-changed
 
-RUN cargo install cargo-nextest --locked
+RUN cargo install cargo-spellcheck cargo-nextest --locked
 
 # generic ci | diener 0.4.6 | NOTE: before upgrading please test new version with companion build, example can be found here: https://github.com/paritytech/substrate/pull/12710
 RUN cargo install diener --version 0.4.6
