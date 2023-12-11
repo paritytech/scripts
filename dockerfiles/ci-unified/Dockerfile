@@ -280,7 +280,7 @@ RUN	cargo +nightly-${RUST_NIGHTLY_VERSION} install grcov rust-covfix xargo dylin
 RUN wget https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu/rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst && \
     tar --zstd -xf rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst && \
     mv tmp/rve-nightly /usr/local/rustup/toolchains && \
-    rm -f rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.zst && \
+    rm -f rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst && \
     rmdir tmp
 
 # rve-nightly-2023-04-05 requires a newer version of openssl
