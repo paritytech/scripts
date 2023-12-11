@@ -103,11 +103,18 @@ RUN ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY_VERSION}-x86_64-u
 # generic ci | install wasm toolchain for the default stable toolchain
 RUN rustup target add wasm32-unknown-unknown
 
-# Install rv32e-nightly-2023-04-05
-RUN wget https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu/rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz
-RUN tar xfz rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz
-RUN mv rust-riscv32em-x86_64-unknown-linux-gnu/riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu/ /usr/local/rustup/toolchains
-RUN rm -f rust-riscv32em-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz
+# Install rve-nightly-2023-04-05
+RUN wget https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu/rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz && \
+    tar xfz rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz && \
+    cd rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu && \
+    ./install.sh -f && \
+    cd .. && \
+    rm -f rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz && \
+    rm -rf rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu
+
+# rve-nightly-2023-04-05 requires a newer version of openssl
+RUN echo "deb http://deb.debian.org/debian unstable main non-free contrib" >> /etc/apt/sources.list && \
+    apt update && apt-get install -y openssl
 
 # generic ci | install x86_64 musl toolchain for the default stable toolchain
 RUN apt-get install -y --no-install-recommends g++
