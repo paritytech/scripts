@@ -104,13 +104,12 @@ RUN ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY_VERSION}-x86_64-u
 RUN rustup target add wasm32-unknown-unknown
 
 # Install rve-nightly-2023-04-05
-RUN wget https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu/rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz && \
-    tar xfz rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz && \
+RUN wget https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu/rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.zst && \
+    tar --zstd -xf rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.zst && \
     cd rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu && \
-    ./install.sh -f && \
-    cd .. && \
-    rm -f rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.xz && \
-    rm -rf rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu
+    mv tmp/rve-nightly ~/.rustup/toolchains && \
+    rm -f rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.zst && \
+    rmdir tmp
 
 # rve-nightly-2023-04-05 requires a newer version of openssl
 RUN echo "deb http://deb.debian.org/debian unstable main non-free contrib" >> /etc/apt/sources.list && \
