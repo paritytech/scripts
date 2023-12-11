@@ -103,18 +103,6 @@ RUN ln -s "/usr/local/rustup/toolchains/nightly-${RUST_NIGHTLY_VERSION}-x86_64-u
 # generic ci | install wasm toolchain for the default stable toolchain
 RUN rustup target add wasm32-unknown-unknown
 
-# Install rve-nightly-2023-04-05
-
-RUN wget https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu/rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst && \
-    tar --zstd -xf rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst && \
-    mv tmp/rve-nightly /usr/local/rustup/toolchains && \
-    rm -f rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.zst && \
-    rmdir tmp
-
-# rve-nightly-2023-04-05 requires a newer version of openssl
-RUN echo "deb http://deb.debian.org/debian unstable main non-free contrib" >> /etc/apt/sources.list && \
-    apt update && apt-get install -y openssl
-
 # generic ci | install x86_64 musl toolchain for the default stable toolchain
 RUN apt-get install -y --no-install-recommends g++
 RUN rustup target add x86_64-unknown-linux-musl
@@ -286,6 +274,18 @@ RUN	cargo install --git https://github.com/paritytech/ink-waterfall.git csv-comp
 
 # parity-scale-codec
 RUN	cargo +nightly-${RUST_NIGHTLY_VERSION} install grcov rust-covfix xargo dylint-link
+
+# Install rve-nightly-2023-04-05
+
+RUN wget https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu/rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst && \
+    tar --zstd -xf rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst && \
+    mv tmp/rve-nightly /usr/local/rustup/toolchains && \
+    rm -f rust-rve-nightly-2023-04-05-r0-x86_64-unknown-linux-gnu.tar.zst && \
+    rmdir tmp
+
+# rve-nightly-2023-04-05 requires a newer version of openssl
+RUN echo "deb http://deb.debian.org/debian unstable main non-free contrib" >> /etc/apt/sources.list && \
+    apt update && apt-get install -y openssl
 
 ### finalize ###
 
