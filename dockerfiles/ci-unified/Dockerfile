@@ -80,9 +80,7 @@ RUN curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/r
 # base | install yq via pip
 RUN apt install -y yq
 
-
 ### generic ci ####
-
 
 # generic ci | install stable rust
 RUN rustup toolchain install "${RUST_STABLE_VERSION}" --profile minimal && \
