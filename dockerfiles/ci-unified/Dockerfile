@@ -41,10 +41,10 @@ RUN sed -i "s/REPLACEME/${LLVM_VERSION}/g" /root/.cargo/config && \
 RUN set -eux; \
     apt-get -y update; \
     apt-get install -y --no-install-recommends \
-        libssl-dev make cmake graphviz \
-        git pkg-config curl wget time rhash ca-certificates jq \
-        python3 python3-pip lsof ruby ruby-bundler git-restore-mtime \
-        bzip2 xz-utils zstd unzip gnupg protobuf-compiler
+    libssl-dev make cmake graphviz \
+    git pkg-config curl wget time rhash ca-certificates jq \
+    python3 python3-pip lsof ruby ruby-bundler git-restore-mtime \
+    bzip2 xz-utils zstd unzip gnupg protobuf-compiler
 
 # base | add llvm repo, clang and dependencies
 RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc && \
@@ -52,7 +52,7 @@ RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.
     echo "deb-src http://apt.llvm.org/${DISTRO_CODENAME}/ llvm-toolchain-${DISTRO_CODENAME}-${LLVM_VERSION} main" >> /etc/apt/sources.list.d/llvm-toochain-${DISTRO_CODENAME}-${LLVM_VERSION}.list; \
     apt-get -y update; \
     apt-get install -y --no-install-recommends \
-        clang-${LLVM_VERSION} lldb-${LLVM_VERSION} lld-${LLVM_VERSION} libclang-${LLVM_VERSION}-dev
+    clang-${LLVM_VERSION} lldb-${LLVM_VERSION} lld-${LLVM_VERSION} libclang-${LLVM_VERSION}-dev
 
 # base | install specific minio client version
 RUN curl -L "https://dl.min.io/client/mc/release/linux-amd64/archive/mc.${MINIO_VERSION}" -o /usr/local/bin/mc && \
@@ -60,7 +60,7 @@ RUN curl -L "https://dl.min.io/client/mc/release/linux-amd64/archive/mc.${MINIO_
 
 # base | install restic
 RUN wget https://github.com/restic/restic/releases/download/v${RESTIC_VERSION}/restic_${RESTIC_VERSION}_linux_amd64.bz2 -O- | bzcat > /usr/local/bin/restic \
- && chmod 755 /usr/local/bin/restic
+    && chmod 755 /usr/local/bin/restic
 
 # base | set a link to clang
 RUN update-alternatives --install /usr/bin/cc cc /usr/bin/clang-${LLVM_VERSION} 100
@@ -70,7 +70,7 @@ RUN update-alternatives --install /usr/bin/ld ld /usr/bin/ld.lld-${LLVM_VERSION}
 
 # base | install rustup, use minimum components
 RUN curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" \
-         -o rustup-init && \
+    -o rustup-init && \
     chmod u+x rustup-init && \
     ./rustup-init -y --no-modify-path --default-toolchain none && \
     rm -f rustup-init && \
@@ -78,7 +78,7 @@ RUN curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/r
     chmod -R g+w ${RUSTUP_HOME} ${CARGO_HOME}
 
 # base | install yq via pip
-RUN pip install yq
+RUN apt install -y yq
 
 
 ### generic ci ####
@@ -109,7 +109,7 @@ RUN rustup target add x86_64-unknown-linux-musl
 
 # generic ci | install common cargo tools
 RUN cargo install cargo-web wasm-pack cargo-deny cargo-hack \
-                  mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-admonish mdbook-last-changed
+    mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-admonish mdbook-last-changed
 
 RUN cargo install cargo-spellcheck cargo-nextest --locked
 
@@ -138,8 +138,8 @@ RUN apt-get -y update && \
 
 
 RUN apt-get install -y --no-install-recommends \
-        zlib1g-dev npm wabt && \
-	npm install --ignore-scripts -g yarn
+    zlib1g-dev npm wabt && \
+    npm install --ignore-scripts -g yarn
 
 # contracts ci
 # We also use the nightly toolchain for linting. We perform checks using RustFmt, and
@@ -159,15 +159,15 @@ RUN	cargo install cargo-dylint dylint-link
 # contracts ci
 # Install the latest `cargo-contract`
 RUN	cargo install --git https://github.com/paritytech/cargo-contract \
-        --locked --branch master --force
+    --locked --branch master --force
 
 # contracts ci
 # Download the latest `substrate-contracts-node` binary
 RUN	curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mirrors/substrate-contracts-node/-/jobs/artifacts/main/download?job=build-linux' && \
-	unzip substrate-contracts-node.zip && \
-	mv artifacts/substrate-contracts-node-linux/substrate-contracts-node /usr/local/cargo/bin/substrate-contracts-node && \
-	rm -r artifacts substrate-contracts-node.zip && \
-	chmod +x /usr/local/cargo/bin/substrate-contracts-node
+    unzip substrate-contracts-node.zip && \
+    mv artifacts/substrate-contracts-node-linux/substrate-contracts-node /usr/local/cargo/bin/substrate-contracts-node && \
+    rm -r artifacts substrate-contracts-node.zip && \
+    chmod +x /usr/local/cargo/bin/substrate-contracts-node
 
 # contracts ci
 # We use `estuary` as a lightweight cargo registry in the CI to test if
@@ -193,14 +193,14 @@ RUN	apt-get install -y --no-install-recommends parallel
 # ink-ci-linux
 # codecov uploader
 RUN	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov && \
-	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM && \
-	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
-	curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import && \
-	gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \
-	shasum --algorithm 256 --check codecov.SHA256SUM && \
-	chmod +x codecov && \
-	mv codecov /usr/local/bin/codecov && \
-	rm -f codecov.SHA256SUM codecov.SHA256SUM.sig
+    curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM && \
+    curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
+    curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import && \
+    gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \
+    shasum --algorithm 256 --check codecov.SHA256SUM && \
+    chmod +x codecov && \
+    mv codecov /usr/local/bin/codecov && \
+    rm -f codecov.SHA256SUM codecov.SHA256SUM.sig
 
 # ink-ci-linux
 # We also use the nightly toolchain to lint ink!. We perform checks using RustFmt,
@@ -222,31 +222,31 @@ RUN	cargo install grcov rust-covfix xargo
 
 
 RUN	apt-get install -y --no-install-recommends \
-# ink-waterfall-ci
-# `redis-cli` is needed to interact with ci/cd's redis
-	redis-tools \
-# ink-waterfall-ci
-# `firefox` is needed to simulate interactions with the `canvas-ui`
-	firefox-esr
+    # ink-waterfall-ci
+    # `redis-cli` is needed to interact with ci/cd's redis
+    redis-tools \
+    # ink-waterfall-ci
+    # `firefox` is needed to simulate interactions with the `canvas-ui`
+    firefox-esr
 
 # ink-waterfall-ci
 # `geckodriver` is needed to run headless browser tests
 # we fetch the latest version number from the github api and use that release
 RUN	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/latest | \
-		egrep --only-matching 'https://github.com/mozilla/geckodriver/releases/download/v[0-9.]+/geckodriver-v[0-9.]+-linux64.tar.gz' | \
-		head -n1 | \
-		xargs curl -L -O && \
-	tar -xvzf geckodriver-v*-linux64.tar.gz && \
-	rm geckodriver-v*-linux64.tar.gz && \
-	chmod +x geckodriver && \
-	mv geckodriver /usr/local/bin/
+    egrep --only-matching 'https://github.com/mozilla/geckodriver/releases/download/v[0-9.]+/geckodriver-v[0-9.]+-linux64.tar.gz' | \
+    head -n1 | \
+    xargs curl -L -O && \
+    tar -xvzf geckodriver-v*-linux64.tar.gz && \
+    rm geckodriver-v*-linux64.tar.gz && \
+    chmod +x geckodriver && \
+    mv geckodriver /usr/local/bin/
 
 # !!! TODO: check substrate-contracts-node in contracts-ci
 # ink-waterfall-ci
 # `substrate-contracts-node` is a Substrate chain with smart contract functionality.
 # `--locked` ensures the project's `Cargo.lock` is used.
 RUN	cargo install --git https://github.com/paritytech/substrate-contracts-node.git \
-		--locked --branch main --force
+    --locked --branch main --force
 
 # ink-waterfall-ci
 # We additionally install the `substrate-contracts-node` as `substrate-contracts-rand-extension`.
@@ -265,7 +265,7 @@ RUN	cargo install --git https://github.com/paritytech/substrate-contracts-node.g
 # ink-waterfall-ci
 # Needed for regression testing, a CSV contains the sizes of compiled contracts.
 RUN	cargo install --git https://github.com/paritytech/ink-waterfall.git csv-comparator && \
-	npm install -g csv2md
+    npm install -g csv2md
 
 
 ### parity-scale-codec ###
@@ -296,11 +296,11 @@ RUN rustup show && \
     #contracts-ci
     yarn --version && \
     echo $( substrate-contracts-node --version | awk 'NF' ) && \
-	estuary --version && \
+    estuary --version && \
     # inc-ci-linux
     cargo-contract --version
-    # ink-waterfall-ci
-    # substrate-contracts-node-rand-extension --version
+# ink-waterfall-ci
+# substrate-contracts-node-rand-extension --version
 
 # finalize | cargo clean up, removes compilation artifacts cargo install creates (>250M)
 RUN rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache
