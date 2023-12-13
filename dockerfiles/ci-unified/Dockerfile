@@ -77,8 +77,8 @@ RUN curl -L "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/r
     chown -R root:nonroot ${RUSTUP_HOME} ${CARGO_HOME} && \
     chmod -R g+w ${RUSTUP_HOME} ${CARGO_HOME}
 
-# base | install yq via pip
-RUN apt install -y yq xq
+# base | install yq and xq via pip
+RUN pip install yq --break-system-packages
 
 ### generic ci ####
 
