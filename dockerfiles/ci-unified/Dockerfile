@@ -173,7 +173,7 @@ RUN apt update && apt-get install -y openssl libssl-dev
 # contracts ci
 # We use `estuary` as a lightweight cargo registry in the CI to test if
 # publishing `cargo-contract` to it and installing it from there works.
-RUN	cargo install --git https://github.com/onelson/estuary.git --force --locked
+RUN cargo install estuary
 
 
 ### bridges-ci ###
