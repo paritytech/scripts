@@ -1,9 +1,9 @@
-FROM docker.io/library/debian:bullseye-20230522-slim
+FROM docker.io/library/debian:bookworm-20231120-slim
 
 
 ### meta ###
 
-ARG DISTRO_CODENAME="bullseye"
+ARG DISTRO_CODENAME="bookworm"
 ARG RESTIC_VERSION="0.16.1"
 ARG RUST_STABLE_VERSION="1.73.0"
 ARG RUST_NIGHTLY_VERSION="2023-11-01"
