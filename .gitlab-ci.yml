@@ -8,16 +8,16 @@ stages:
   - prod
   - publish-docker-description
 
-variables:                         &default-vars
-  REGISTRY_PATH:                   docker.io/paritytech
-  REGISTRY_NAME:                   docker.io
+variables: &default-vars
+  REGISTRY_PATH: docker.io/paritytech
+  REGISTRY_NAME: docker.io
   # BUILDAH_IMAGE is defined in group variables
-  CI_IMAGE:                        $BUILDAH_IMAGE
-  BUILDAH_COMMAND:                 "buildah --storage-driver overlay2"
+  CI_IMAGE: $BUILDAH_IMAGE
+  BUILDAH_COMMAND: "buildah --storage-driver overlay2"
 
 default:
-  cache:                           {}
-  interruptible:                   true
+  cache: {}
+  interruptible: true
   retry:
     max: 2
     when:
@@ -25,48 +25,48 @@ default:
       - unknown_failure
       - api_failure
 
-.build:                            &docker_build
-  stage:                           build
-  image:                           $CI_IMAGE
+.build: &docker_build
+  stage: build
+  image: $CI_IMAGE
   rules:
     - if: $IMAGE_NAME == $CI_JOB_NAME
   tags:
     - kubernetes-parity-build
 
 # Push to Dockerhub using buildah
-.push_to_docker_hub:               &push_to_docker_hub
+.push_to_docker_hub: &push_to_docker_hub
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
   - $BUILDAH_COMMAND version
   - $BUILDAH_COMMAND build
-      --format=docker
-      --build-arg VCS_REF="$CI_COMMIT_SHA"
-      --build-arg BUILD_DATE="$(date +%Y%m%d)"
-      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
-      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+    --format=docker
+    --build-arg VCS_REF="$CI_COMMIT_SHA"
+    --build-arg BUILD_DATE="$(date +%Y%m%d)"
+    --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+    --tag "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
+    --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   - $BUILDAH_COMMAND info
   - echo "$Docker_Hub_Pass_Parity" |
-      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+    buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
   - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
   - buildah logout "$REGISTRY_NAME"
 
-.push_to_staging:                  &push_to_staging
+.push_to_staging: &push_to_staging
   - $BUILDAH_COMMAND build
-      --format=docker
-      --build-arg VCS_REF="$CI_COMMIT_SHA"
-      --build-arg BUILD_DATE="$(date +%Y%m%d)"
-      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
-      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+    --format=docker
+    --build-arg VCS_REF="$CI_COMMIT_SHA"
+    --build-arg BUILD_DATE="$(date +%Y%m%d)"
+    --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+    --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
+    --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   - echo "$Docker_Hub_Pass_Parity" |
-      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+    buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
   - $BUILDAH_COMMAND info
   - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:staging"
   - buildah logout "$REGISTRY_NAME"
 
-.push_to_production:               &push_to_production
+.push_to_production: &push_to_production
   - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
   # TODO: This is racy; we should persist the image hash built by .push_to_staging in a job artifact
   #       and fetch that hash, rather than just the current state of the staging tag.
@@ -74,35 +74,35 @@ default:
   - $BUILDAH_COMMAND tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:production"
   - $BUILDAH_COMMAND tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - echo "$Docker_Hub_Pass_Parity" |
-      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+    buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
   - $BUILDAH_COMMAND info
   - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:production"
   - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
   - buildah logout "$REGISTRY_NAME"
 
-.docker_build_only:                &docker_build_only
+.docker_build_only: &docker_build_only
   - $BUILDAH_COMMAND build
-      --format=docker
-      --build-arg VCS_REF="$CI_COMMIT_SHA"
-      --build-arg BUILD_DATE="$(date +%Y%m%d)"
-      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
-      --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
-      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+    --format=docker
+    --build-arg VCS_REF="$CI_COMMIT_SHA"
+    --build-arg BUILD_DATE="$(date +%Y%m%d)"
+    --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+    --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
+    --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
 
 .publish-docker-image-description:
-  stage:                  publish-docker-description
-  image:                  paritytech/dockerhub-description
+  stage: publish-docker-description
+  image: paritytech/dockerhub-description
   variables:
     DOCKERHUB_REPOSITORY: paritytech/$IMAGE_NAME
-    DOCKER_USERNAME:      $Docker_Hub_User_Parity
-    DOCKER_PASSWORD:      $Docker_Hub_Pass_Parity
-    README_FILEPATH:      $CI_PROJECT_DIR/dockerfiles/$IMAGE_NAME/README.md
+    DOCKER_USERNAME: $Docker_Hub_User_Parity
+    DOCKER_PASSWORD: $Docker_Hub_Pass_Parity
+    README_FILEPATH: $CI_PROJECT_DIR/dockerfiles/$IMAGE_NAME/README.md
   rules:
-  - if: $CI_PIPELINE_SOURCE == "schedule"
-    when: never
-  - if: $CI_COMMIT_REF_NAME == "master"
-    changes:
-    - dockerfiles/$IMAGE_NAME/README.md
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_REF_NAME == "master"
+      changes:
+        - dockerfiles/$IMAGE_NAME/README.md
   script:
     - cd / && sh entrypoint.sh
   tags:
@@ -112,15 +112,15 @@ default:
 
 # Only build in PR
 
-.docker_build_pr:                  &docker_build_pr
-  stage:                           build
-  image:                           $CI_IMAGE
+.docker_build_pr: &docker_build_pr
+  stage: build
+  image: $CI_IMAGE
   rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/ # PRs
       changes:
         paths:
           - dockerfiles/${IMAGE_NAME}/**
-        compare_to: 'master'
+        compare_to: "master"
   script:
     - *docker_build_only
   tags:
@@ -129,173 +129,175 @@ default:
 ansible-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "ansible"
+    IMAGE_NAME: "ansible"
 
 awscli-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "awscli"
+    IMAGE_NAME: "awscli"
 
 base-bin-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "base-bin"
-    REGISTRY_PATH:                   docker.io/parity
+    IMAGE_NAME: "base-bin"
+    REGISTRY_PATH: docker.io/parity
 
 base-ci-linux-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "base-ci-linux"
+    IMAGE_NAME: "base-ci-linux"
 
 benchmarks-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "benchmarks"
+    IMAGE_NAME: "benchmarks"
 
 bridges-ci-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "bridges-ci"
+    IMAGE_NAME: "bridges-ci"
 
 polkadotjs-cli-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "polkadotjs-cli"
+    IMAGE_NAME: "polkadotjs-cli"
 
 ci-linux-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "ci-linux"
+    IMAGE_NAME: "ci-linux"
 
 ci-unified-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "ci-unified"
+    IMAGE_NAME: "ci-unified"
+  tags:
+    - linux-docker
 
 eng-automation-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "eng-automation-ci"
+    IMAGE_NAME: "eng-automation-ci"
 
 contracts-ci-linux-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "contracts-ci-linux"
+    IMAGE_NAME: "contracts-ci-linux"
 
 github-gh-cli-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "github-gh-cli"
+    IMAGE_NAME: "github-gh-cli"
 
 ink-ci-linux-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "ink-ci-linux"
+    IMAGE_NAME: "ink-ci-linux"
 
 ink-waterfall-ci-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "ink-waterfall-ci"
+    IMAGE_NAME: "ink-waterfall-ci"
 
 lz4-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "lz4"
+    IMAGE_NAME: "lz4"
 
 mdbook-utils-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "mdbook-utils"
+    IMAGE_NAME: "mdbook-utils"
 
 mitogen-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "mitogen"
+    IMAGE_NAME: "mitogen"
 
 molecule-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "molecule"
+    IMAGE_NAME: "molecule"
 
 multisig-ci-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "multisig-ci"
+    IMAGE_NAME: "multisig-ci"
 
 node-bench-regression-guard-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "node-bench-regression-guard"
+    IMAGE_NAME: "node-bench-regression-guard"
 
 node-wrk-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "node-wrk"
+    IMAGE_NAME: "node-wrk"
 
 parity-keyring-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "parity-keyring"
+    IMAGE_NAME: "parity-keyring"
 
 parity-scale-codec-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "parity-scale-codec"
+    IMAGE_NAME: "parity-scale-codec"
 
 query-exporter-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "query-exporter"
+    IMAGE_NAME: "query-exporter"
 
 redis-exporter-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "redis-exporter"
+    IMAGE_NAME: "redis-exporter"
 
 rpm-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "rpm"
+    IMAGE_NAME: "rpm"
 
 rusty-cachier-env-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "rusty-cachier-env"
+    IMAGE_NAME: "rusty-cachier-env"
 
 sops-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "sops"
+    IMAGE_NAME: "sops"
 
 substrate-session-keys-grabber-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "substrate-session-keys-grabber"
+    IMAGE_NAME: "substrate-session-keys-grabber"
 
 terraform-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "terraform"
+    IMAGE_NAME: "terraform"
 
 tools-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "tools"
+    IMAGE_NAME: "tools"
 
 ws-health-exporter-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "ws-health-exporter"
+    IMAGE_NAME: "ws-health-exporter"
 
 xbuilder-aarch64-unknown-linux-gnu-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "xbuilder-aarch64-unknown-linux-gnu"
+    IMAGE_NAME: "xbuilder-aarch64-unknown-linux-gnu"
 
 # releng-scripts needs custom config because files are in a separate repo
 releng-scripts-download-pr:
-  stage:                           build
-  image:                           "paritytech/ci-linux:production"
+  stage: build
+  image: "paritytech/ci-linux:production"
   artifacts:
     name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
     when: on_success
@@ -305,11 +307,11 @@ releng-scripts-download-pr:
   variables:
     GIT_FETCH: 0
   rules:
-    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/                         # PRs
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/ # PRs
       changes:
         paths:
           - dockerfiles/releng-scripts/**
-        compare_to: 'master'
+        compare_to: "master"
   script:
     - mkdir -p artifacts/
     - cd artifacts/
@@ -323,7 +325,7 @@ releng-scripts-pr:
     - job: releng-scripts-download-pr
       artifacts: true
   variables:
-    IMAGE_NAME:                    "releng-scripts"
+    IMAGE_NAME: "releng-scripts"
   script:
     - mv dockerfiles/$IMAGE_NAME/Dockerfile artifacts/releng-scripts/
     - cd artifacts/releng-scripts/
@@ -338,36 +340,36 @@ releng-scripts-pr:
 db-dumper-pr:
   <<: *docker_build_pr
   variables:
-    IMAGE_NAME:                    "db-dumper"
+    IMAGE_NAME: "db-dumper"
 
 # Build and push to docker hub
 ansible:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 base-bin:
-  <<:                              *docker_build
+  <<: *docker_build
   variables:
-    REGISTRY_PATH:                   docker.io/parity
+    REGISTRY_PATH: docker.io/parity
   script:
     - *push_to_docker_hub
 
 base-ci-linux:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 ci-linux:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - $BUILDAH_COMMAND build
-        --format=docker
-        --build-arg VCS_REF="$CI_COMMIT_SHA"
-        --build-arg BUILD_DATE="$(date +%Y%m%d)"
-        --build-arg REGISTRY_PATH="$REGISTRY_PATH"
-        --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
-        --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date +%Y%m%d)"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # spin up a temporary ci-linux container to extract the tag info
     - CONTAINER_ID="$(REGISTRY_AUTH_FILE= $BUILDAH_COMMAND from --pull=false "$REGISTRY_PATH/$IMAGE_NAME:staging")"
     # VERSION_TAG=<rustc version>-<distro release codename>
@@ -377,7 +379,7 @@ ci-linux:
     - $BUILDAH_COMMAND rm "$CONTAINER_ID"
     - $BUILDAH_COMMAND tag "$REGISTRY_PATH/$IMAGE_NAME:staging" "$REGISTRY_PATH/$IMAGE_NAME:$VERSION_TAG"
     - echo "$Docker_Hub_Pass_Parity" |
-        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND info
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:staging"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$VERSION_TAG"
@@ -387,28 +389,28 @@ ci-unified:
   variables:
     RUST_STABLE_VERSION: "1.73.0"
     RUST_NIGHTLY_VERSION: "2023-05-23"
-  <<:                              *docker_build
+  <<: *docker_build
   before_script:
     - dnf install -y git
   script:
     - DISTRO_CODENAME=$(grep 'DISTRO_CODENAME' dockerfiles/$IMAGE_NAME/Dockerfile | head -n 1 | cut -d '"' -f 2)
     - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d" -- dockerfiles/$IMAGE_NAME/Dockerfile)
     - $BUILDAH_COMMAND build
-        --format=docker
-        --build-arg VCS_REF="$CI_COMMIT_SHA"
-        --build-arg BUILD_DATE="$(date +%Y%m%d)"
-        --build-arg REGISTRY_PATH="$REGISTRY_PATH"
-        --build-arg RUST_STABLE_VERSION="$RUST_STABLE_VERSION"
-        --build-arg RUST_NIGHTLY_VERSION="$RUST_NIGHTLY_VERSION"
-        --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
-        --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
-        --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
-        --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION-v$DATESTAMP"
-        --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
-        --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date +%Y%m%d)"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --build-arg RUST_STABLE_VERSION="$RUST_STABLE_VERSION"
+      --build-arg RUST_NIGHTLY_VERSION="$RUST_NIGHTLY_VERSION"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION-v$DATESTAMP"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     - $BUILDAH_COMMAND info
     - echo "$Docker_Hub_Pass_Parity" |
-        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
@@ -426,166 +428,166 @@ ci-unified:
     - linux-docker-vm-c2
 
 ink-ci-linux:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_staging
 
 parity-scale-codec:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_staging
 
 ink-waterfall-ci:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 contracts-ci-linux:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 debian10:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 debian11:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 eng-automation-ci:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 github-gh-cli:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 bridges-ci:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_staging
 
 polkadotjs-cli:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 awscli:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 tools:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 benchmarks:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 query-exporter:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 redis-exporter:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 rusty-cachier-env:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 mdbook-utils:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 mitogen:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 molecule:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 multisig-ci:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 node-bench-regression-guard:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 node-wrk:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 gnupg:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 parity-keyring:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 rpm:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 deb:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 lz4:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 ws-health-exporter:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 xbuilder-aarch64-unknown-linux-gnu:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 db-dumper:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 # special case as version tags are introduced
 kubetools:
-  <<:                              *docker_build
+  <<: *docker_build
   variables:
-    <<:                            *default-vars
+    <<: *default-vars
     # https://github.com/kubernetes/kubernetes/releases
-    BUILD_KUBE_VERSION:            "1.18.2"
+    BUILD_KUBE_VERSION: "1.18.2"
     # https://github.com/kubernetes/helm/releases
     # will be overwritten by the global variable at
     # https://gitlab.parity.io/groups/parity/-/settings/ci_cd
-    BUILD_HELM_VERSION:            "2.16.11"
+    BUILD_HELM_VERSION: "2.16.11"
   script:
     - |
       cat <<-EOT
@@ -611,7 +613,7 @@ kubetools:
       --file "dockerfiles/$IMAGE_NAME/helm/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
-        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND info
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:helm2"
@@ -620,25 +622,25 @@ kubetools:
 
 # waits until kubetools job above is deprecated, "latest" tag remains after the old image
 kubetools-helm:
-  <<:                              *docker_build
+  <<: *docker_build
   variables:
-    <<:                            *default-vars
+    <<: *default-vars
     # https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/
-    KUBE_VERSION:             "1.24.3"
+    KUBE_VERSION: "1.24.3"
     # https://github.com/helm/helm/releases
-    HELM_VERSION:             "3.12.1"
+    HELM_VERSION: "3.12.1"
     # https://github.com/roboll/helmfile/releases
-    HELMFILE_VERSION:         "0.144.0"
+    HELMFILE_VERSION: "0.144.0"
     # https://github.com/databus23/helm-diff/releases
     HELM_DIFF_PLUGIN_VERSION: "3.5.0"
     # https://github.com/jkroepke/helm-secrets
-    HELM_SECRETS_VERSION:     "4.4.2"
+    HELM_SECRETS_VERSION: "4.4.2"
     # https://github.com/variantdev/vals/releases
-    VALS_VERSION:             "0.18.0"
+    VALS_VERSION: "0.18.0"
     # https://releases.hashicorp.com/vault/
-    VAULT_VERSION:            "1.11.2"
+    VAULT_VERSION: "1.11.2"
     # https://github.com/kubernetes-sigs/kustomize/releases
-    KUSTOMIZE_VERSION:        "4.5.7"
+    KUSTOMIZE_VERSION: "4.5.7"
   script:
     - |
       cat <<-EOT
@@ -676,7 +678,7 @@ kubetools-helm:
       --file "dockerfiles/kubetools/helm/helm3.Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
-        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND info
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/kubetools:helm3"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/kubetools:$HELM_VERSION"
@@ -685,10 +687,10 @@ kubetools-helm:
     - buildah logout "$REGISTRY_NAME"
 
 kubetools-kubectl:
-  <<:                              *docker_build
+  <<: *docker_build
   variables:
-    <<:                            *default-vars
-    KUBE_VERSION:                  "1.26.6"
+    <<: *default-vars
+    KUBE_VERSION: "1.26.6"
   script:
     - $BUILDAH_COMMAND build
       --format=docker
@@ -701,20 +703,20 @@ kubetools-kubectl:
       --file "dockerfiles/kubetools/kubectl/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
-        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND info
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$KUBE_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 terraform:
-  <<:                              *docker_build
+  <<: *docker_build
   variables:
-    <<:                            *default-vars
+    <<: *default-vars
     # https://releases.hashicorp.com/terraform/
-    TERRAFORM_VERSION:             "1.5.6"
+    TERRAFORM_VERSION: "1.5.6"
     # https://releases.hashicorp.com/vault/
-    VAULT_VERSION:                 "1.8.12"
+    VAULT_VERSION: "1.8.12"
   script:
     - |
       cat <<-EOT
@@ -737,20 +739,20 @@ terraform:
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
-        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND info
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$TERRAFORM_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 sops:
-  <<:                              *docker_build
+  <<: *docker_build
   variables:
-    <<:                            *default-vars
+    <<: *default-vars
     # https://github.com/mozilla/sops/releases/
-    SOPS_VERSION:                  "3.7.3"
+    SOPS_VERSION: "3.7.3"
     # https://releases.hashicorp.com/vault/
-    VAULT_VERSION:                 "1.11.2"
+    VAULT_VERSION: "1.11.2"
   script:
     - |
       cat <<-EOT
@@ -773,20 +775,20 @@ sops:
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
-        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND info
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$SOPS_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
 packer:
-  <<:                              *docker_build
+  <<: *docker_build
   variables:
-    <<:                            *default-vars
+    <<: *default-vars
     # https://releases.hashicorp.com/packer/
-    PACKER_VERSION:                "1.8.7"
+    PACKER_VERSION: "1.8.7"
     # https://releases.hashicorp.com/vault/
-    VAULT_VERSION:                 "1.13.2"
+    VAULT_VERSION: "1.13.2"
   script:
     - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
     - |
@@ -810,21 +812,21 @@ packer:
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
-        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND info
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
     - buildah logout "$REGISTRY_NAME"
 
 substrate-session-keys-grabber:
-  <<:                              *docker_build
+  <<: *docker_build
   script:
     - *push_to_docker_hub
 
 # releng-scripts needs custom ci config because files are in a separate repo
 releng-scripts-download:
-  stage:                           build
-  image:                           "paritytech/ci-linux:production"
+  stage: build
+  image: "paritytech/ci-linux:production"
   artifacts:
     name: "${CI_JOB_NAME}_${CI_COMMIT_REF_NAME}"
     when: on_success
@@ -862,21 +864,21 @@ releng-scripts:
       --file "Dockerfile"
     - $BUILDAH_COMMAND info
     - echo "$Docker_Hub_Pass_Parity" |
-        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$IMAGE_DATE_TAG"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - buildah logout "$REGISTRY_NAME"
 
 kube-manifests-validation:
-  <<:                              *docker_build
+  <<: *docker_build
   variables:
-    <<:                            *default-vars
-    HELM_VERSION:                "3.12.2"
-    GATOR_VERSION:               "3.12.0"
-    DATREE_VERSION:              "1.9.19"
-    YQ_VERSION:                  "4.34.2"
-    K8S_SCHEMA_VERSION:          "1.25.9"
-    K8S_SCHEMA_REPO_COMMIT_SHA:  "a43aa7eceaf4c32c5f45c9fc477588e7a12f18b6"
+    <<: *default-vars
+    HELM_VERSION: "3.12.2"
+    GATOR_VERSION: "3.12.0"
+    DATREE_VERSION: "1.9.19"
+    YQ_VERSION: "4.34.2"
+    K8S_SCHEMA_VERSION: "1.25.9"
+    K8S_SCHEMA_REPO_COMMIT_SHA: "a43aa7eceaf4c32c5f45c9fc477588e7a12f18b6"
     CRDS_SCHEMA_REPO_COMMIT_SHA: "8f0604e873746d6b2d49794e5b37768460e7b545"
   script:
     - $BUILDAH_COMMAND build
@@ -896,7 +898,7 @@ kube-manifests-validation:
       --file "dockerfiles/kube-manifests-validation/Dockerfile" dockerfiles/kube-manifests-validation
     # Push to Dockerhub
     - echo "$Docker_Hub_Pass_Parity" |
-        buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND info
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:k8s-$K8S_SCHEMA_VERSION-gator-$GATOR_VERSION-datree-$DATREE_VERSION"
@@ -907,13 +909,13 @@ kube-manifests-validation:
 container_scanning:
   # https://aquasecurity.github.io/trivy/v0.28.0/docs/integrations/gitlab-ci/
   image:
-    name:                          docker.io/aquasec/trivy:latest
-    entrypoint:                    [""]
+    name: docker.io/aquasec/trivy:latest
+    entrypoint: [""]
   variables:
-    GIT_STRATEGY:                  none
-    TRIVY_NO_PROGRESS:             "true"
-    TRIVY_CACHE_DIR:               ".trivycache/"
-    FULL_IMAGE_NAME:               $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
+    GIT_STRATEGY: none
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
+    FULL_IMAGE_NAME: $REGISTRY_PATH/$IMAGE_NAME:$IMAGE_TAG
   script:
     - trivy --version
     # cache cleanup is needed when scanning images with the same tags, it does not remove the database
@@ -922,7 +924,7 @@ container_scanning:
     - time trivy image --download-db-only
     # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
     - time trivy image --exit-code 0 --format template --template "@/contrib/gitlab.tpl"
-        --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$FULL_IMAGE_NAME"
+      --output "$CI_PROJECT_DIR/gl-container-scanning-report.json" "$FULL_IMAGE_NAME"
     # Prints full report
     - time trivy image --exit-code 0 "$FULL_IMAGE_NAME"
     # Fail on critical vulnerabilities
@@ -933,87 +935,87 @@ container_scanning:
       - .trivycache/
   # Enables https://docs.gitlab.com/ee/user/application_security/container_scanning/
   artifacts:
-    when:                          always
+    when: always
     reports:
-      container_scanning:          gl-container-scanning-report.json
+      container_scanning: gl-container-scanning-report.json
   rules:
     # $IMAGE_TAG is needed for trivy. Should me mentioned in schedule's variables. I.e. latest, staging, v2.0.0.
     - if: $IMAGE_NAME || $IMAGE_TAG
   # TODO: remove when all criticals are solved
-  allow_failure:                   true
+  allow_failure: true
   tags:
     - kubernetes-parity-build
 
 ci-linux-test-substrate:
-  stage:                           test
+  stage: test
   variables:
-    CI_IMAGE:                      "paritytech/ci-linux:staging"
+    CI_IMAGE: "paritytech/ci-linux:staging"
     # this is to rewrite "-Dwarnings" we use in Substrate CI since new warnings
     # are often introduced and we do not want to fail on them in this case
-    RUSTFLAGS:                     "-C debug-assertions"
+    RUSTFLAGS: "-C debug-assertions"
     # disable rusty-cachier completely for this kind of pipelines
-    RUSTY_CACHIER_SNEAKY_BYPASS:   "true"
+    RUSTY_CACHIER_SNEAKY_BYPASS: "true"
   rules:
     - if: $IMAGE_NAME == "ci-linux"
   trigger:
-    project:                       parity/mirrors/substrate
-    branch:                        master
-    strategy:                      depend
+    project: parity/mirrors/substrate
+    branch: master
+    strategy: depend
 
 ci-linux-test-polkadot:
-  stage:                           test
+  stage: test
   variables:
-    CI_IMAGE:                      "paritytech/ci-linux:staging"
+    CI_IMAGE: "paritytech/ci-linux:staging"
     # this is to rewrite "-Dwarnings" we use in Polkadot CI since new warnings
     # are often introduced and we do not want to fail on them in this case
-    RUSTFLAGS:                     "-C debug-assertions"
+    RUSTFLAGS: "-C debug-assertions"
     # disable rusty-cachier completely for this kind of pipelines
-    RUSTY_CACHIER_SNEAKY_BYPASS:   "true"
+    RUSTY_CACHIER_SNEAKY_BYPASS: "true"
   rules:
     - if: $IMAGE_NAME == "ci-linux"
   trigger:
-    project:                       parity/mirrors/polkadot
-    branch:                        master
-    strategy:                      depend
+    project: parity/mirrors/polkadot
+    branch: master
+    strategy: depend
 
 ink-ci-linux-test:
-  stage:                           test
+  stage: test
   variables:
-    CI_IMAGE:                      "paritytech/ink-ci-linux:staging"
+    CI_IMAGE: "paritytech/ink-ci-linux:staging"
   rules:
     - if: $IMAGE_NAME == "ink-ci-linux"
   trigger:
-    project:                       parity/mirrors/ink
-    branch:                        master
-    strategy:                      depend
+    project: parity/mirrors/ink
+    branch: master
+    strategy: depend
 
 bridges-ci-test:
-  stage:                           test
+  stage: test
   variables:
-    CI_IMAGE:                      "paritytech/bridges-ci:staging"
+    CI_IMAGE: "paritytech/bridges-ci:staging"
   rules:
     - if: $IMAGE_NAME == "bridges-ci"
   trigger:
-    project:                       parity/mirrors/parity-bridges-common
-    branch:                        master
-    strategy:                      depend
+    project: parity/mirrors/parity-bridges-common
+    branch: master
+    strategy: depend
 
 parity-scale-codec-test:
-  stage:                           test
+  stage: test
   variables:
-    CI_IMAGE:                      "paritytech/parity-scale-codec:staging"
+    CI_IMAGE: "paritytech/parity-scale-codec:staging"
   rules:
     - if: $IMAGE_NAME == "parity-scale-codec"
   trigger:
-    project:                       parity/mirrors/parity-scale-codec
-    branch:                        master
-    strategy:                      depend
+    project: parity/mirrors/parity-scale-codec
+    branch: master
+    strategy: depend
 
 #### stage:                        prod
 
 ci-linux-production:
-  stage:                           prod
-  image:                           $CI_IMAGE
+  stage: prod
+  image: $CI_IMAGE
   rules:
     - if: $IMAGE_NAME == "ci-linux"
   script:
@@ -1021,12 +1023,12 @@ ci-linux-production:
   tags:
     - kubernetes-parity-build
 
-ink-ci-linux-production:           &push-after-triggered-pipeline
-  stage:                           prod
-  image:                           $CI_IMAGE
+ink-ci-linux-production: &push-after-triggered-pipeline
+  stage: prod
+  image: $CI_IMAGE
   needs:
-    - job:                         ink-ci-linux-test
-      artifacts:                   false
+    - job: ink-ci-linux-test
+      artifacts: false
   rules:
     - if: $IMAGE_NAME == "ink-ci-linux"
   script:
@@ -1035,11 +1037,11 @@ ink-ci-linux-production:           &push-after-triggered-pipeline
     - kubernetes-parity-build
 
 ink-ci-linux-production-manual:
-  stage:                           prod
-  image:                           $CI_IMAGE
+  stage: prod
+  image: $CI_IMAGE
   needs:
-    - job:                         ink-ci-linux
-      artifacts:                   false
+    - job: ink-ci-linux
+      artifacts: false
   rules:
     - if: $IMAGE_NAME == "ink-ci-linux"
       when: manual
@@ -1049,254 +1051,254 @@ ink-ci-linux-production-manual:
     - kubernetes-parity-build
 
 bridges-ci-production:
-  <<:                              *push-after-triggered-pipeline
+  <<: *push-after-triggered-pipeline
   needs:
-    - job:                         bridges-ci-test
-      artifacts:                   false
+    - job: bridges-ci-test
+      artifacts: false
   rules:
     - if: $IMAGE_NAME == "bridges-ci"
 
 parity-scale-codec-production:
-  <<:                              *push-after-triggered-pipeline
+  <<: *push-after-triggered-pipeline
   needs:
-    - job:                         parity-scale-codec-test
-      artifacts:                   false
+    - job: parity-scale-codec-test
+      artifacts: false
   rules:
     - if: $IMAGE_NAME == "parity-scale-codec"
 
 # Publish images descriptions to hub.docker.com
 
 publish-ansible-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           ansible
-    SHORT_DESCRIPTION:    "ansible utility Docker image."
+    IMAGE_NAME: ansible
+    SHORT_DESCRIPTION: "ansible utility Docker image."
 
 publish-awscli-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           awscli
-    SHORT_DESCRIPTION:    "awscli utility Docker image."
+    IMAGE_NAME: awscli
+    SHORT_DESCRIPTION: "awscli utility Docker image."
 
 publish-base-bin-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           base-bin
+    IMAGE_NAME: base-bin
     DOCKERHUB_REPOSITORY: parity/base-bin
-    SHORT_DESCRIPTION:    "binary distribution base image."
+    SHORT_DESCRIPTION: "binary distribution base image."
 
 publish-base-ci-linux-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           base-ci-linux
-    SHORT_DESCRIPTION:    "base-ci-linux utility Docker image."
+    IMAGE_NAME: base-ci-linux
+    SHORT_DESCRIPTION: "base-ci-linux utility Docker image."
 
 publish-benchmarks-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           benchmarks
-    SHORT_DESCRIPTION:    "benchmarks utility Docker image."
+    IMAGE_NAME: benchmarks
+    SHORT_DESCRIPTION: "benchmarks utility Docker image."
 
 publish-bridges-ci-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           bridges-ci
-    SHORT_DESCRIPTION:    "bridges-ci utility Docker image."
+    IMAGE_NAME: bridges-ci
+    SHORT_DESCRIPTION: "bridges-ci utility Docker image."
 
 publish-ci-linux-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           ci-linux
-    SHORT_DESCRIPTION:    "ci-linux utility Docker image."
+    IMAGE_NAME: ci-linux
+    SHORT_DESCRIPTION: "ci-linux utility Docker image."
 
 publish-contracts-ci-linux-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           contracts-ci-linux
-    SHORT_DESCRIPTION:    "contracts-ci-linux utility Docker image."
+    IMAGE_NAME: contracts-ci-linux
+    SHORT_DESCRIPTION: "contracts-ci-linux utility Docker image."
 
 publish-deb-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           deb
-    SHORT_DESCRIPTION:    "deb utility Docker image."
+    IMAGE_NAME: deb
+    SHORT_DESCRIPTION: "deb utility Docker image."
 
 publish-debian10-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           debian10
-    SHORT_DESCRIPTION:    "debian10 utility Docker image."
+    IMAGE_NAME: debian10
+    SHORT_DESCRIPTION: "debian10 utility Docker image."
 
 publish-debian11-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           debian11
-    SHORT_DESCRIPTION:    "debian11 utility Docker image."
+    IMAGE_NAME: debian11
+    SHORT_DESCRIPTION: "debian11 utility Docker image."
 
 publish-gnupg-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           gnupg
-    SHORT_DESCRIPTION:    "gnupg utility Docker image."
+    IMAGE_NAME: gnupg
+    SHORT_DESCRIPTION: "gnupg utility Docker image."
 
 publish-ink-ci-linux-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           ink-ci-linux
-    SHORT_DESCRIPTION:    "ink-ci-linux utility Docker image."
+    IMAGE_NAME: ink-ci-linux
+    SHORT_DESCRIPTION: "ink-ci-linux utility Docker image."
 
 publish-ink-waterfall-ci-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           ink-waterfall-ci
-    SHORT_DESCRIPTION:    "ink-waterfall-ci utility Docker image."
+    IMAGE_NAME: ink-waterfall-ci
+    SHORT_DESCRIPTION: "ink-waterfall-ci utility Docker image."
 
 publish-kubetools-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           kubetools
-    SHORT_DESCRIPTION:    "kubetools utility Docker image."
+    IMAGE_NAME: kubetools
+    SHORT_DESCRIPTION: "kubetools utility Docker image."
 
 publish-lz4-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           lz4
-    SHORT_DESCRIPTION:    "lz4 utility Docker image."
+    IMAGE_NAME: lz4
+    SHORT_DESCRIPTION: "lz4 utility Docker image."
 
 publish-mdbook-utils-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           mdbook-utils
-    SHORT_DESCRIPTION:    "mdbook-utils utility Docker image."
+    IMAGE_NAME: mdbook-utils
+    SHORT_DESCRIPTION: "mdbook-utils utility Docker image."
 
 publish-mitogen-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           mitogen
-    SHORT_DESCRIPTION:    "mitogen utility Docker image."
+    IMAGE_NAME: mitogen
+    SHORT_DESCRIPTION: "mitogen utility Docker image."
 
 publish-molecule-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           molecule
-    SHORT_DESCRIPTION:    "molecule utility Docker image."
+    IMAGE_NAME: molecule
+    SHORT_DESCRIPTION: "molecule utility Docker image."
 
 publish-multisig-ci-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           multisig-ci
-    SHORT_DESCRIPTION:    "multisig-ci utility Docker image."
+    IMAGE_NAME: multisig-ci
+    SHORT_DESCRIPTION: "multisig-ci utility Docker image."
 
 publish-node-bench-regression-guard-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           node-bench-regression-guard
-    SHORT_DESCRIPTION:    "node-bench-regression-guard utility Docker image."
+    IMAGE_NAME: node-bench-regression-guard
+    SHORT_DESCRIPTION: "node-bench-regression-guard utility Docker image."
 
 publish-node-wrk-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           node-wrk
-    SHORT_DESCRIPTION:    "node-wrk utility Docker image."
+    IMAGE_NAME: node-wrk
+    SHORT_DESCRIPTION: "node-wrk utility Docker image."
 
 publish-packer-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           packer
-    SHORT_DESCRIPTION:    "packer utility Docker image."
+    IMAGE_NAME: packer
+    SHORT_DESCRIPTION: "packer utility Docker image."
 
 publish-parity-keyring-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           parity-keyring
-    SHORT_DESCRIPTION:    "parity-keyring utility Docker image."
+    IMAGE_NAME: parity-keyring
+    SHORT_DESCRIPTION: "parity-keyring utility Docker image."
 
 publish-parity-scale-codec-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           parity-scale-codec
-    SHORT_DESCRIPTION:    "parity-scale-codec utility Docker image."
+    IMAGE_NAME: parity-scale-codec
+    SHORT_DESCRIPTION: "parity-scale-codec utility Docker image."
 
 publish-polkadotjs-cli-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           polkadotjs-cli
-    SHORT_DESCRIPTION:    "polkadotjs-cli utility Docker image."
+    IMAGE_NAME: polkadotjs-cli
+    SHORT_DESCRIPTION: "polkadotjs-cli utility Docker image."
 
 publish-query-exporter-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           query-exporter
-    SHORT_DESCRIPTION:    "query-exporter utility Docker image."
+    IMAGE_NAME: query-exporter
+    SHORT_DESCRIPTION: "query-exporter utility Docker image."
 
 publish-redis-exporter-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           redis-exporter
-    SHORT_DESCRIPTION:    "redis-exporter utility Docker image."
+    IMAGE_NAME: redis-exporter
+    SHORT_DESCRIPTION: "redis-exporter utility Docker image."
 
 publish-rpm-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           rpm
-    SHORT_DESCRIPTION:    "rpm utility Docker image."
+    IMAGE_NAME: rpm
+    SHORT_DESCRIPTION: "rpm utility Docker image."
 
 publish-rusty-cachier-env-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           rusty-cachier-env
-    SHORT_DESCRIPTION:    "rusty-cachier-env utility Docker image."
+    IMAGE_NAME: rusty-cachier-env
+    SHORT_DESCRIPTION: "rusty-cachier-env utility Docker image."
 
 publish-sops-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           sops
-    SHORT_DESCRIPTION:    "sops utility Docker image."
+    IMAGE_NAME: sops
+    SHORT_DESCRIPTION: "sops utility Docker image."
 
 publish-substrate-session-keys-grabber-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           substrate-session-keys-grabber
-    SHORT_DESCRIPTION:    "substrate-session-keys-grabber utility Docker image."
+    IMAGE_NAME: substrate-session-keys-grabber
+    SHORT_DESCRIPTION: "substrate-session-keys-grabber utility Docker image."
 
 publish-terraform-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           terraform
-    SHORT_DESCRIPTION:    "terraform utility Docker image."
+    IMAGE_NAME: terraform
+    SHORT_DESCRIPTION: "terraform utility Docker image."
 
 publish-tools-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           tools
-    SHORT_DESCRIPTION:    " utility Docker image."
+    IMAGE_NAME: tools
+    SHORT_DESCRIPTION: " utility Docker image."
 
 publish-ws-health-exporter-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           ws-health-exporter
-    SHORT_DESCRIPTION:    "ws-health-exporter utility Docker image."
+    IMAGE_NAME: ws-health-exporter
+    SHORT_DESCRIPTION: "ws-health-exporter utility Docker image."
 
 publish-xbuilder-aarch64-unknown-linux-gnu-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           xbuilder-aarch64-unknown-linux-gnu
-    SHORT_DESCRIPTION:    "xbuilder-aarch64-unknown-linux-gnu utility Docker image."
+    IMAGE_NAME: xbuilder-aarch64-unknown-linux-gnu
+    SHORT_DESCRIPTION: "xbuilder-aarch64-unknown-linux-gnu utility Docker image."
 
 publish-releng-scripts-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           releng-scripts
-    SHORT_DESCRIPTION:    "releng-scripts Docker image."
+    IMAGE_NAME: releng-scripts
+    SHORT_DESCRIPTION: "releng-scripts Docker image."
 
 publish-eng-automation-ci-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           eng-automation-ci
-    SHORT_DESCRIPTION:    "Universal ci image for engineering automation team"
+    IMAGE_NAME: eng-automation-ci
+    SHORT_DESCRIPTION: "Universal ci image for engineering automation team"
 
 publish-db-dumper-docker-image-description:
-  extends:                .publish-docker-image-description
+  extends: .publish-docker-image-description
   variables:
-    IMAGE_NAME:           db-dumper
-    SHORT_DESCRIPTION:    "db-dumper script that makes dumps of GCP Cloud SQL Postgres databases"
+    IMAGE_NAME: db-dumper
+    SHORT_DESCRIPTION: "db-dumper script that makes dumps of GCP Cloud SQL Postgres databases"
