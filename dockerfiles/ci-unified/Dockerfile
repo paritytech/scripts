@@ -167,6 +167,9 @@ RUN	curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mir
     rm -r artifacts substrate-contracts-node.zip && \
     chmod +x /usr/local/cargo/bin/substrate-contracts-node
 
+# Needed for estuary
+RUN apt update && apt-get install -y openssl libssl-dev
+
 # contracts ci
 # We use `estuary` as a lightweight cargo registry in the CI to test if
 # publishing `cargo-contract` to it and installing it from there works.
@@ -282,8 +285,8 @@ RUN wget https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/r
     rmdir tmp
 
 # rve-nightly-2023-04-05 requires a newer version of openssl
-RUN echo "deb http://deb.debian.org/debian unstable main non-free contrib" >> /etc/apt/sources.list && \
-    apt update && apt-get install -y openssl
+# RUN echo "deb http://deb.debian.org/debian unstable main non-free contrib" >> /etc/apt/sources.list && \
+#     apt update && apt-get install -y openssl
 
 ### finalize ###
 
