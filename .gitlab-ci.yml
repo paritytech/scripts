@@ -435,8 +435,8 @@ ci-unified-pr-push:
 
 ci-unified:
   variables:
-    RUST_STABLE_VERSION: "1.73.0"
-    RUST_NIGHTLY_VERSION: "2023-05-23"
+    RUST_STABLE_VERSION: "1.74.0"
+    RUST_NIGHTLY_VERSION: "2023-11-01"
   <<: *docker_build
   before_script:
     - dnf install -y git
