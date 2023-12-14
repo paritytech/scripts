@@ -172,7 +172,7 @@ ci-unified-pr:
   variables:
     IMAGE_NAME: "ci-unified"
   tags:
-    - linux-docker-vm
+    - linux-docker
 
 eng-automation-pr:
   <<: *docker_build_pr
@@ -431,7 +431,7 @@ ci-unified-pr-push:
     when:
       - always
   tags:
-    - linux-docker-vm
+    - linux-docker
 
 ci-unified:
   variables:
@@ -473,7 +473,7 @@ ci-unified:
     when:
       - always
   tags:
-    - linux-docker-vm
+    - linux-docker
 
 ink-ci-linux:
   <<: *docker_build
