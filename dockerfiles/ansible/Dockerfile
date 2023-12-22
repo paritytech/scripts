@@ -1,4 +1,4 @@
-FROM docker.io/library/python:3.11-slim-buster
+FROM docker.io/library/python:3.11-slim-bullseye
 
 # metadata
 ARG VCS_REF=master
