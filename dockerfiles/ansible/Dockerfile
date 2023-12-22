@@ -1,4 +1,4 @@
-FROM docker.io/library/python:3.9-slim-buster
+FROM docker.io/library/python:3.11-slim-buster
 
 # metadata
 ARG VCS_REF=master
@@ -20,9 +20,9 @@ RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     sshpass ssh-client rsync tini curl git ruby
 
-RUN pip install pip --upgrade
-RUN pip install ansible
-RUN ansible-galaxy collection install ansible.posix
+RUN pip install --no-cache-dir pip --upgrade
+RUN pip install --no-cache-dir ansible==9.1.0 requests jmespath
+RUN ansible-galaxy collection install ansible.posix community.general ansible.utils ansible.netcommon
 
 ARG WORKDIR=/work
 
