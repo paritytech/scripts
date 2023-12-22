@@ -17,4 +17,4 @@ dockerfiles/polkadotjs-cli/README.md" \
 	io.parity.image.created="${BUILD_DATE}"
 
 RUN apk add --no-cache bash yarn npm jq wget && \
-    yarn global add @polkadot/api-cli
+    yarn global add @polkadot/api-cli@0.56.2
