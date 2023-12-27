@@ -21,7 +21,7 @@ RUN apt-get update -y && \
     sshpass ssh-client rsync tini curl git ruby
 
 RUN pip install --no-cache-dir pip --upgrade
-RUN pip install --no-cache-dir ansible==9.1.0 requests jmespath
+RUN pip install --no-cache-dir ansible==9.1.0 requests jmespath google-auth
 RUN ansible-galaxy collection install ansible.posix community.general ansible.utils ansible.netcommon
 
 ARG WORKDIR=/work
