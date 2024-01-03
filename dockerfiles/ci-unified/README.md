@@ -34,6 +34,8 @@ So when we release a new image, the image is tagged with these 4 tags based on t
 
 #### Currently available tag combination flavors (i.e. pairs)
 
+* `bullseye-1.74.0-2023-11-01`
+* `bullseye-1.73.0-2023-11-01`
 * `bullseye-1.73.0-2023-05-23`
 * `bullseye-1.71.0-2023-05-23`
 * `bullseye-1.70.0-2023-05-23`
