@@ -274,14 +274,10 @@ RUN	cargo install --git https://github.com/paritytech/ink-waterfall.git csv-comp
 # parity-scale-codec
 RUN	cargo +nightly-${RUST_NIGHTLY_VERSION} install grcov rust-covfix xargo dylint-link
 
-# Disabled, requires updated openssl whcih requires updated glibc
-# Install rve-nightly-2023-04-05
-
-# RUN wget https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu/rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst && \
-#     tar --zstd -xf rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst && \
-#     mv tmp/rve-nightly /usr/local/rustup/toolchains && \
-#     rm -f rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst && \
-#     rmdir tmp
+RUN wget https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/v1.0.0/rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst && \
+    tar --zstd -xf rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst && \
+    mv rve-nightly /usr/local/rustup/toolchains && \
+    rm -f rust-rve-nightly-2023-04-05-x86_64-unknown-linux-gnu.tar.zst
 
 ### finalize ###
 
