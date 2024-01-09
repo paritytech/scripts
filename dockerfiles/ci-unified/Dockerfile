@@ -277,6 +277,8 @@ RUN	cargo install --git https://github.com/paritytech/ink-waterfall.git csv-comp
 # parity-scale-codec
 RUN	cargo +nightly-${RUST_NIGHTLY_VERSION} install grcov rust-covfix xargo dylint-link
 
+
+# install rustc-rv32e-toolchain
 RUN wget -q https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/${RUSTC_RV32E_TOOLCHAIN_TAG}/rust-rve-${RUSTC_RV32E_TOOLCHAIN_VERSION}-x86_64-unknown-linux-gnu.tar.zst && \
     tar --zstd -xf rust-rve-${RUSTC_RV32E_TOOLCHAIN_VERSION}-x86_64-unknown-linux-gnu.tar.zst && \
     mv rve-nightly /usr/local/rustup/toolchains && \
