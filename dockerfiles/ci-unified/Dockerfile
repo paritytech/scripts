@@ -9,6 +9,9 @@ ARG RUST_STABLE_VERSION="1.74.0"
 ARG RUST_NIGHTLY_VERSION="2023-11-01"
 ARG LLVM_VERSION="15"
 ARG MINIO_VERSION="2023-04-06T16-51-10Z"
+ARG RUSTC_RV32E_TOOLCHAIN_TAG="v1.1.0"
+ARG RUSTC_RV32E_TOOLCHAIN_VERSION="nightly-2024-01-05"
+
 
 WORKDIR /builds
 
@@ -274,10 +277,12 @@ RUN	cargo install --git https://github.com/paritytech/ink-waterfall.git csv-comp
 # parity-scale-codec
 RUN	cargo +nightly-${RUST_NIGHTLY_VERSION} install grcov rust-covfix xargo dylint-link
 
-RUN wget -q https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/v1.1.0/rust-rve-nightly-2024-01-05-x86_64-unknown-linux-gnu.tar.zst && \
-    tar --zstd -xf rust-rve-nightly-2024-01-05-x86_64-unknown-linux-gnu.tar.zst && \
+
+# install rustc-rv32e-toolchain
+RUN wget -q https://github.com/paritytech/rustc-rv32e-toolchain/releases/download/${RUSTC_RV32E_TOOLCHAIN_TAG}/rust-rve-${RUSTC_RV32E_TOOLCHAIN_VERSION}-x86_64-unknown-linux-gnu.tar.zst && \
+    tar --zstd -xf rust-rve-${RUSTC_RV32E_TOOLCHAIN_VERSION}-x86_64-unknown-linux-gnu.tar.zst && \
     mv rve-nightly /usr/local/rustup/toolchains && \
-    rm -f rust-rve-nightly-2024-01-05-x86_64-unknown-linux-gnu.tar.zst
+    rm -f rust-rve-${RUSTC_RV32E_TOOLCHAIN_VERSION}-x86_64-unknown-linux-gnu.tar.zst
 
 ### finalize ###
 
