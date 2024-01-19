@@ -11,6 +11,8 @@ stages:
 variables: &default-vars
   REGISTRY_PATH: docker.io/paritytech
   REGISTRY_NAME: docker.io
+  GCP_REGISTRY_PATH: europe-docker.pkg.dev/parity-build/ci-images
+  GCP_REGISTRY_NAME: europe-docker.pkg.dev
   # BUILDAH_IMAGE is defined in group variables
   CI_IMAGE: $BUILDAH_IMAGE
   BUILDAH_COMMAND: "buildah --storage-driver overlay2"
@@ -455,8 +457,14 @@ ci-unified:
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION-v$DATESTAMP"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --tag "$GCP_REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
+      --tag "$GCP_REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
+      --tag "$GCP_REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
+      --tag "$GCP_REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION-v$DATESTAMP"
+      --tag "$GCP_REGISTRY_PATH/$IMAGE_NAME:latest"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     - $BUILDAH_COMMAND info
+    - echo "Pushing to $REGISTRY_NAME"
     - echo "$Docker_Hub_Pass_Parity" |
       buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
@@ -468,6 +476,18 @@ ci-unified:
         $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
       fi
     - buildah logout "$REGISTRY_NAME"
+    - echo "Pushing to $GCP_REGISTRY_NAME"
+    - echo "$GCP_REGISTRY_KEY" |
+      buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH}
+    - $BUILDAH_COMMAND push --format=v2s2 "$GCP_REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
+    - $BUILDAH_COMMAND push --format=v2s2 "$GCP_REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
+    - $BUILDAH_COMMAND push --format=v2s2 "$GCP_REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
+    - $BUILDAH_COMMAND push --format=v2s2 "$GCP_REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION-v$DATESTAMP"
+    - >
+      if [ "$SET_LATEST_TAG" == "true" ]; then
+        $BUILDAH_COMMAND push --format=v2s2 "$GCP_REGISTRY_PATH/$IMAGE_NAME:latest"
+      fi
+    - buildah logout "${GCP_REGISTRY_PATH}"
   retry:
     max: 2
     when:
