@@ -777,6 +777,39 @@ kubetools-kubectl:
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$KUBE_VERSION"
     - buildah logout "$REGISTRY_NAME"
 
+python:
+  <<: *docker_build
+  variables:
+    <<: *default-vars
+    PYTHON_VERSION: "3.12"
+    # https://releases.hashicorp.com/vault/
+    VAULT_VERSION: "1.15.4"
+  script:
+    - |
+      cat <<-EOT
+      |
+      | # build of python image
+      |
+      | VAULT_VERSION     = $VAULT_VERSION
+      |
+      EOT
+    - $BUILDAH_COMMAND build
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --build-arg VAULT_VERSION="$VAULT_VERSION"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:latest"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:$PYTHON_VERSION"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+    # Push to Dockerhub
+    - echo "$Docker_Hub_Pass_Parity" |
+      buildah login --username "$Docker_Hub_User_Parity" --password-stdin "$REGISTRY_NAME"
+    - $BUILDAH_COMMAND info
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:latest"
+    - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$PYTHON_VERSION"
+    - buildah logout "$REGISTRY_NAME"
+
 terraform:
   <<: *docker_build
   variables:
@@ -784,7 +817,7 @@ terraform:
     # https://releases.hashicorp.com/terraform/
     TERRAFORM_VERSION: "1.5.6"
     # https://releases.hashicorp.com/vault/
-    VAULT_VERSION: "1.8.12"
+    VAULT_VERSION: "1.15.4"
   script:
     - |
       cat <<-EOT
