@@ -164,6 +164,9 @@ RUN	cargo install --git https://github.com/paritytech/cargo-contract \
     --locked --branch master --force
 
 # contracts ci
+RUN cargo install subkey
+
+# contracts ci
 # Download the latest `substrate-contracts-node` binary
 RUN	curl -L -o substrate-contracts-node.zip 'https://gitlab.parity.io/parity/mirrors/substrate-contracts-node/-/jobs/artifacts/main/download?job=build-linux' && \
     unzip substrate-contracts-node.zip && \
