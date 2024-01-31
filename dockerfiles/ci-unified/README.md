@@ -9,8 +9,8 @@ This image is used for running CI jobs for Parity repositories. It could also wo
 
 The actual image's revision is based on Debian 11 (aka `bullseye`) and contains the following:
 
-* Rust stable 1.74.0
-* Rust nightly 2023-11-01
+* Rust stable 1.75.0
+* Rust nightly 2024-01-22
 * LLVM 15
 * Python 3.9.2
 * Ruby 2.7.4
@@ -34,6 +34,7 @@ So when we release a new image, the image is tagged with these 4 tags based on t
 
 #### Currently available tag combination flavors (i.e. pairs)
 
+* `bullseye-1.75.0-2024-01-22`
 * `bullseye-1.74.0-2023-11-01`
 * `bullseye-1.73.0-2023-11-01`
 * `bullseye-1.73.0-2023-05-23`
