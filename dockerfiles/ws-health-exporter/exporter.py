@@ -22,7 +22,7 @@ from environs import Env
 LOGGING_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
 ws_metrics = {
-    'polkadot_ws_alive': Gauge('wss_alive', 'WebSocket alive', ['url'])
+    'polkadot_ws_alive': Gauge('wss_alive', 'WebSocket alive', ['ws_alive_url'])
 }
 
 
@@ -173,7 +173,7 @@ def update_metrics():
     status = True
     for url in app_config['node_rpc_urls']:
         url_probe = check_ws(node_url=url)
-        ws_metrics['polkadot_ws_alive'].labels(url=url).set(int(url_probe))
+        ws_metrics['polkadot_ws_alive'].labels(ws_alive_url=url).set(int(url_probe))
         status = status and url_probe
     write_readiness_status(status)
 
