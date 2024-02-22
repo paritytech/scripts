@@ -111,7 +111,9 @@ RUN rustup target add x86_64-unknown-linux-musl
 
 # generic ci | install common cargo tools
 RUN cargo install cargo-web wasm-pack cargo-deny cargo-hack \
-    mdbook mdbook-mermaid mdbook-linkcheck mdbook-graphviz mdbook-admonish mdbook-last-changed --locked
+    mdbook mdbook-mermaid mdbook-linkcheck mdbook-admonish mdbook-last-changed
+
+RUN cargo install mdbook-graphviz --locked
 
 RUN cargo install cargo-spellcheck cargo-nextest --locked
 
