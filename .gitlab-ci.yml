@@ -438,8 +438,8 @@ ci-unified-pr-push:
 
 ci-unified:
   variables:
-    RUST_STABLE_VERSION: "1.74.0"
-    RUST_NIGHTLY_VERSION: "2023-11-01"
+    RUST_STABLE_VERSION: "1.75.0"
+    RUST_NIGHTLY_VERSION: "2024-01-22"
   <<: *docker_build
   before_script:
     - dnf install -y git
@@ -463,6 +463,11 @@ ci-unified:
       --tag "$GCP_REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
       --tag "$GCP_REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION-v$DATESTAMP"
       --tag "$GCP_REGISTRY_PATH/$IMAGE_NAME:latest"
+      --tag "$GCP_REGISTRY_PATH_CI/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
+      --tag "$GCP_REGISTRY_PATH_CI/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
+      --tag "$GCP_REGISTRY_PATH_CI/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
+      --tag "$GCP_REGISTRY_PATH_CI/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION-v$DATESTAMP"
+      --tag "$GCP_REGISTRY_PATH_CI/$IMAGE_NAME:latest"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
     - $BUILDAH_COMMAND info
     - echo "Pushing to $REGISTRY_NAME"
@@ -488,7 +493,7 @@ ci-unified:
       if [ "$SET_LATEST_TAG" == "true" ]; then
         $BUILDAH_COMMAND push --format=v2s2 "$GCP_REGISTRY_PATH/$IMAGE_NAME:latest"
       fi
-    - buildah logout "${GCP_REGISTRY_PATH}"
+    - buildah logout "${GCP_REGISTRY_NAME}"
     - echo "Pushing to $GCP_REGISTRY_NAME for CI"
     - echo "$GCP_REGISTRY_KEY_CI" |
       buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH_CI}
@@ -500,7 +505,7 @@ ci-unified:
       if [ "$SET_LATEST_TAG" == "true" ]; then
         $BUILDAH_COMMAND push --format=v2s2 "$GCP_REGISTRY_PATH_CI/$IMAGE_NAME:latest"
       fi
-    - buildah logout "${GCP_REGISTRY_PATH_CI}"
+    - buildah logout "${GCP_REGISTRY_NAME}"
   retry:
     max: 2
     when:
