@@ -441,6 +441,8 @@ ci-unified:
     RUST_STABLE_VERSION: "1.74.0"
     RUST_NIGHTLY_VERSION: "2023-11-01"
   <<: *docker_build
+  rules:
+    - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/ # PRs
   before_script:
     - dnf install -y git
   script:
