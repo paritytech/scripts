@@ -438,9 +438,13 @@ ci-unified-pr-push:
 
 ci-unified:
   variables:
-    RUST_STABLE_VERSION: "1.74.0"
-    RUST_NIGHTLY_VERSION: "2023-11-01"
+    RUST_STABLE_VERSION: "1.75.0"
+    RUST_NIGHTLY_VERSION: "2024-01-22"
+    # remove me before merging
+    IMAGE_NAME: "ci-unified"
+    SET_LATEST_TAG: "false"
   <<: *docker_build
+  # remove rules before merging
   rules:
     - if: $CI_COMMIT_REF_NAME =~ /^[0-9]+$/ # PRs
   before_script:
