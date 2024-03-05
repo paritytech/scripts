@@ -20,7 +20,8 @@ dockerfiles/bridges-ci/README.md" \
 	io.parity.image.revision="${VCS_REF}" \
 	io.parity.image.created="${BUILD_DATE}"
 
-RUN rustup toolchain install nightly --target wasm32-unknown-unknown \
+RUN rustup component add clippy && \
+    rustup toolchain install nightly --target wasm32-unknown-unknown \
 		--profile minimal --component clippy rustfmt && \
 	rustup target add wasm32-unknown-unknown && \
 	cargo install cargo-deny cargo-spellcheck && \
@@ -29,6 +30,7 @@ RUN rustup toolchain install nightly --target wasm32-unknown-unknown \
 	rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" && \
 # versions
 	rustc -vV && \
-	cargo -V
+	cargo -V && \
+	cargo clippy -V
 
 USER nonroot:nonroot
