@@ -18,6 +18,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from prometheus_client import generate_latest, Gauge
 from websocket import create_connection
 from environs import Env
+import signal
 
 LOGGING_FORMAT = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
 
@@ -42,10 +43,16 @@ app_config = {
     'ws_timeout': 60, # WSHE_WS_TIMEOUT
     'node_rpc_urls': ['ws://127.0.0.1:5556'], # WSHE_NODE_RPC_URLS
     'node_max_unsynchronized_block_drift': 0, # WSHE_NODE_MAX_UNSYNCHRONIZED_BLOCK_DRIFT
-    'node_min_peers': 10, # WSHE_NODE_MIN_PEERS
+    'node_min_peers': 2, # WSHE_NODE_MIN_PEERS
     'block_rate_measurement_period': 600, # WSHE_BLOCK_RATE_MEASUREMENT_PERIOD
     'min_block_rate': 0.0, # WSHE_MIN_BLOCK_RATE
 }
+
+
+def handle_sigterm(signum, frame):
+    logging.info("Received SIGTERM. Shutting down...")
+    scheduler.shutdown()
+    sys.exit(0)
 
 
 def read_readiness_status():
@@ -201,6 +208,7 @@ def health_readiness():
 
 if __name__ == '__main__':
     global block_number_cache
+    signal.signal(signal.SIGTERM, handle_sigterm)
 
     parse_config(app_config)
 
