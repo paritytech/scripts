@@ -8,6 +8,7 @@ ARG RESTIC_VERSION="0.16.1"
 ARG RUST_STABLE_VERSION="1.75.0"
 ARG RUST_NIGHTLY_VERSION="2024-01-22"
 ARG LLVM_VERSION="15"
+ARG FORKLIFT_VERSION="latest"
 ARG MINIO_VERSION="2023-04-06T16-51-10Z"
 ARG RUSTC_RV32E_TOOLCHAIN_TAG="v1.1.0"
 ARG RUSTC_RV32E_TOOLCHAIN_VERSION="nightly-2024-01-05"
@@ -289,6 +290,16 @@ RUN wget -q https://github.com/paritytech/rustc-rv32e-toolchain/releases/downloa
     mv rve-nightly /usr/local/rustup/toolchains && \
     rm -f rust-rve-${RUSTC_RV32E_TOOLCHAIN_VERSION}-x86_64-unknown-linux-gnu.tar.zst
 
+
+### forklift
+
+
+# forklift | install forklift
+COPY ci-unified/download-forklift.sh download-forklift.sh
+RUN chmod +x download-forklift.sh
+RUN bash download-forklift.sh -v ${FORKLIFT_VERSION} -p ./forklift/
+
+
 ### finalize ###
 
 
@@ -303,6 +314,7 @@ RUN rustup show && \
     cargo-contract --version
 # ink-waterfall-ci
 # substrate-contracts-node-rand-extension --version
+RUN forklift version
 
 # finalize | cargo clean up, removes compilation artifacts cargo install creates (>250M)
 RUN rm -rf "${CARGO_HOME}/registry" "${CARGO_HOME}/git" /root/.cache/sccache
