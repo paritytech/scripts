@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 DL_PATH="$HOME/.forklift4"
 VERSION="latest"
@@ -38,7 +38,6 @@ ASSET_URL=`jq -r '.browser_download_url' <<< "$ASSET"`
 
 mkdir -p $DL_PATH
 curl -s -o $DL_PATH/$ASSET_NAME -L $ASSET_URL
-cp -r $DL_PATH/$ASSET_NAME $DL_PATH/forklift
+cp -r $DL_PATH/$ASSET_NAME /usr/bin/forklift
 
-chmod +x $DL_PATH/$ASSET_NAME
-chmod +x $DL_PATH/forklift
+chmod 755 +x /usr/bin/forklift
