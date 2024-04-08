@@ -289,6 +289,13 @@ RUN wget -q https://github.com/paritytech/rustc-rv32e-toolchain/releases/downloa
     mv rve-nightly /usr/local/rustup/toolchains && \
     rm -f rust-rve-${RUSTC_RV32E_TOOLCHAIN_VERSION}-x86_64-unknown-linux-gnu.tar.zst
 
+### forklift
+
+COPY ci-unified/download-forklift.sh $HOME/download-forklift.sh
+RUN chmod +x $HOME/download-forklift.sh
+RUN $HOME/download-forklift.sh -v latest -p $HOME/.forklift
+RUN export PATH=$PATH:$HOME/.forklift
+
 ### finalize ###
 
 
