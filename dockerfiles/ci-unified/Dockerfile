@@ -297,7 +297,7 @@ RUN wget -q https://github.com/paritytech/rustc-rv32e-toolchain/releases/downloa
 # forklift | install forklift
 COPY ci-unified/download-forklift.sh download-forklift.sh
 RUN chmod +x download-forklift.sh
-RUN bash download-forklift.sh -v ${FORKLIFT_VERSION}} -p ./forklift/
+RUN bash download-forklift.sh -v ${FORKLIFT_VERSION} -p ./forklift/
 
 
 ### finalize ###
