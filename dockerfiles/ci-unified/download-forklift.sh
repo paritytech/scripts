@@ -38,6 +38,6 @@ ASSET_URL=`jq -r '.browser_download_url' <<< "$ASSET"`
 
 mkdir -p $DL_PATH
 curl -s -o $DL_PATH/$ASSET_NAME -L $ASSET_URL
-cp -r $DL_PATH/$ASSET_NAME /usr/bin/forklift
+cp -r $DL_PATH/$ASSET_NAME /usr/local/bin/forklift
 
-chmod 755 /usr/bin/forklift
+chmod 755 /usr/local/bin/forklift
