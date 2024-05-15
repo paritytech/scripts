@@ -116,7 +116,7 @@ RUN cargo install cargo-web wasm-pack cargo-deny cargo-hack \
 
 RUN cargo install mdbook-graphviz --locked
 
-RUN cargo install cargo-spellcheck cargo-nextest --locked
+RUN cargo install cargo-spellcheck cargo-nextest
 
 # generic ci | diener 0.4.6 | NOTE: before upgrading please test new version with companion build, example can be found here: https://github.com/paritytech/substrate/pull/12710
 RUN cargo install diener --version 0.4.6
