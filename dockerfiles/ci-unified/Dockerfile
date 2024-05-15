@@ -304,7 +304,7 @@ RUN	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov
     rm -f codecov.SHA256SUM codecov.SHA256SUM.sig
 
 #codecov-cli
-RUN curl -Os -o codecovcli https://cli.codecov.io/latest/linux/codecov && \
+RUN curl -s -o codecovcli https://cli.codecov.io/latest/linux/codecov && \
     curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM && \
     curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
     gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \ 
