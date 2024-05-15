@@ -5,8 +5,8 @@ FROM docker.io/library/debian:bullseye-20230522-slim
 
 ARG DISTRO_CODENAME="bullseye"
 ARG RESTIC_VERSION="0.16.1"
-ARG RUST_STABLE_VERSION="1.75.0"
-ARG RUST_NIGHTLY_VERSION="2024-01-22"
+ARG RUST_STABLE_VERSION="1.77.0"
+ARG RUST_NIGHTLY_VERSION="2024-04-10"
 ARG LLVM_VERSION="15"
 ARG FORKLIFT_VERSION="latest"
 ARG MINIO_VERSION="2023-04-06T16-51-10Z"
@@ -116,7 +116,7 @@ RUN cargo install cargo-web wasm-pack cargo-deny cargo-hack \
 
 RUN cargo install mdbook-graphviz --locked
 
-RUN cargo install cargo-spellcheck cargo-nextest
+RUN cargo install cargo-spellcheck cargo-nextest --locked
 
 # generic ci | diener 0.4.6 | NOTE: before upgrading please test new version with companion build, example can be found here: https://github.com/paritytech/substrate/pull/12710
 RUN cargo install diener --version 0.4.6
