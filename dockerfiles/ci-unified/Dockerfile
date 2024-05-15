@@ -5,8 +5,8 @@ FROM docker.io/library/debian:bullseye-20230522-slim
 
 ARG DISTRO_CODENAME="bullseye"
 ARG RESTIC_VERSION="0.16.1"
-ARG RUST_STABLE_VERSION="1.75.0"
-ARG RUST_NIGHTLY_VERSION="2024-01-22"
+ARG RUST_STABLE_VERSION="1.77.0"
+ARG RUST_NIGHTLY_VERSION="2024-04-10"
 ARG LLVM_VERSION="15"
 ARG FORKLIFT_VERSION="latest"
 ARG MINIO_VERSION="2023-04-06T16-51-10Z"
@@ -199,18 +199,6 @@ RUN	cargo install --git https://github.com/onelson/estuary.git --force --locked
 RUN	apt-get install -y --no-install-recommends parallel
 
 # ink-ci-linux
-# codecov uploader
-RUN	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov && \
-    curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM && \
-    curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
-    curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import && \
-    gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \
-    shasum --algorithm 256 --check codecov.SHA256SUM && \
-    chmod +x codecov && \
-    mv codecov /usr/local/bin/codecov && \
-    rm -f codecov.SHA256SUM codecov.SHA256SUM.sig
-
-# ink-ci-linux
 # We also use the nightly toolchain to lint ink!. We perform checks using RustFmt,
 # Cargo Clippy, and Miri.
 #
@@ -299,6 +287,31 @@ COPY ci-unified/download-forklift.sh download-forklift.sh
 RUN chmod +x download-forklift.sh
 RUN bash download-forklift.sh -v ${FORKLIFT_VERSION} -p ./forklift/
 
+
+### codecov
+
+
+RUN curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
+
+# codecov uploader
+RUN	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov && \
+    curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM && \
+    curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
+    gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \
+    shasum --algorithm 256 --check codecov.SHA256SUM && \
+    chmod +x codecov && \
+    mv codecov /usr/local/bin/codecov && \
+    rm -f codecov.SHA256SUM codecov.SHA256SUM.sig
+
+#codecov-cli
+RUN curl -Os https://cli.codecov.io/latest/linux/codecov && \
+    curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM && \
+    curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
+    gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \ 
+    shasum -a 256 -c codecov.SHA256SUM && \
+    chmod +x codecov && \
+    mv codecov /usr/local/bin/codecovcli && \
+    rm -f codecov.SHA256SUM codecov.SHA256SUM.sig
 
 ### finalize ###
 
