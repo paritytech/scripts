@@ -22,7 +22,7 @@ RUN apt-get update -y && \
     && rm -rf /var/lib/apt/lists/*
 
 RUN pip install --no-cache-dir pip --upgrade
-RUN pip install --no-cache-dir ansible==5.10 google-auth requests jmespath
+RUN pip install --no-cache-dir ansible==5.10 google-auth requests jmespath dnspython
 
 RUN  curl -fSL -o /usr/local/bin/subkey 'https://releases.parity.io/substrate/x86_64-debian%3Astretch/v3.0.0/subkey/subkey' \
      && chmod +x /usr/local/bin/subkey
