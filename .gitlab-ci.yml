@@ -176,7 +176,7 @@ ci-unified-pr:
   variables:
     IMAGE_NAME: "ci-unified"
   script:
-    - echo "$GCP_REGISTRY_KEY_CI" |
+    - echo "$GCP_REGISTRY_KEY_CI_CACHE" |
       buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH_CI_CACHE}     
     - $BUILDAH_COMMAND build
       --cache-to $GCP_REGISTRY_PATH_CI_CACHE
@@ -424,7 +424,7 @@ ci-unified-pr-push:
     - DISTRO_CODENAME=$(grep 'DISTRO_CODENAME' dockerfiles/$IMAGE_NAME/Dockerfile | head -n 1 | cut -d '"' -f 2)
     - PR_INFO="${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d" -- dockerfiles/$IMAGE_NAME/Dockerfile)
-    - echo "$GCP_REGISTRY_KEY_CI" |
+    - echo "$GCP_REGISTRY_KEY_CI_CACHE" |
       buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH_CI_CACHE}     
     - $BUILDAH_COMMAND build
       --cache-to $GCP_REGISTRY_PATH_CI_CACHE
@@ -467,7 +467,7 @@ ci-unified:
   script:
     - DISTRO_CODENAME=$(grep 'DISTRO_CODENAME' dockerfiles/$IMAGE_NAME/Dockerfile | head -n 1 | cut -d '"' -f 2)
     - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d" -- dockerfiles/$IMAGE_NAME/Dockerfile)
-    - echo "$GCP_REGISTRY_KEY_CI" |
+    - echo "$GCP_REGISTRY_KEY_CI_CACHE" |
       buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH_CI_CACHE}    
     - $BUILDAH_COMMAND build
       --cache-to $GCP_REGISTRY_PATH_CI_CACHE
