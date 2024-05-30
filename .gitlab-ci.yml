@@ -179,8 +179,8 @@ ci-unified-pr:
     - echo "$GCP_REGISTRY_KEY_CI_CACHE" |
       buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH_CI_CACHE}     
     - $BUILDAH_COMMAND build
-      --cache-to $GCP_REGISTRY_PATH_CI_CACHE
-      --cache-from $GCP_REGISTRY_PATH_CI_CACHE
+      --cache-to $GCP_REGISTRY_PATH_CI_CACHE/cache
+      --cache-from $GCP_REGISTRY_PATH_CI_CACHE/cache
       --layers=true
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
@@ -427,8 +427,8 @@ ci-unified-pr-push:
     - echo "$GCP_REGISTRY_KEY_CI_CACHE" |
       buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH_CI_CACHE}     
     - $BUILDAH_COMMAND build
-      --cache-to $GCP_REGISTRY_PATH_CI_CACHE
-      --cache-from $GCP_REGISTRY_PATH_CI_CACHE
+      --cache-to $GCP_REGISTRY_PATH_CI_CACHE/cache
+      --cache-from $GCP_REGISTRY_PATH_CI_CACHE/cache
       --layers=true
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
@@ -470,8 +470,8 @@ ci-unified:
     - echo "$GCP_REGISTRY_KEY_CI_CACHE" |
       buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH_CI_CACHE}    
     - $BUILDAH_COMMAND build
-      --cache-to $GCP_REGISTRY_PATH_CI_CACHE
-      --cache-from $GCP_REGISTRY_PATH_CI_CACHE
+      --cache-to $GCP_REGISTRY_PATH_CI_CACHE/cache
+      --cache-from $GCP_REGISTRY_PATH_CI_CACHE/cache
       --layers=true
       --format=docker
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
