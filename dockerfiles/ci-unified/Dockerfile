@@ -5,7 +5,9 @@ FROM docker.io/library/debian:bullseye-20230522-slim
 
 ENV RUST_STABLE_VERSION="1.77.0" \
     RUST_NIGHTLY_VERSION="2024-04-10" \
-    FORKLIFT_VERSION="0.12.6"
+    FORKLIFT_VERSION="0.12.6" \
+    CODECOV_UPLOADER_VERSION="v0.7.3" \
+    CODECOV_CLI_VERSION="v0.6.0"
 
 ENV DISTRO_CODENAME="bullseye" \
     RESTIC_VERSION="0.16.1" \
@@ -294,9 +296,9 @@ RUN bash download-forklift.sh -v ${FORKLIFT_VERSION} -p ./forklift/
 RUN curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
 
 # codecov uploader
-RUN	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov && \
-    curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM && \
-    curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
+RUN	curl --remote-name --silent https://uploader.codecov.io/${CODECOV_UPLOADER_VERSION}/linux/codecov && \
+    curl --remote-name --silent https://uploader.codecov.io/${CODECOV_UPLOADER_VERSION}/linux/codecov.SHA256SUM && \
+    curl --remote-name --silent https://uploader.codecov.io/${CODECOV_UPLOADER_VERSION}/linux/codecov.SHA256SUM.sig && \
     gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \
     shasum --algorithm 256 --check codecov.SHA256SUM && \
     chmod +x codecov && \
@@ -304,9 +306,9 @@ RUN	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov
     rm -f codecov.SHA256SUM codecov.SHA256SUM.sig
 
 #codecov-cli
-RUN curl -Os https://cli.codecov.io/latest/linux/codecov && \
-    curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM && \
-    curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
+RUN curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov && \
+    curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov.SHA256SUM && \
+    curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov.SHA256SUM.sig && \
     gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \ 
     shasum -a 256 -c codecov.SHA256SUM && \
     chmod +x codecov && \
