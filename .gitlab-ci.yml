@@ -179,7 +179,7 @@ ci-unified-pr:
     - $BUILDAH_COMMAND build
       --cache-to $GCP_REGISTRY_PATH_CI_CACHE
       --cache-from $GCP_REGISTRY_PATH_CI_CACHE
-      --layers true
+      --layers=true
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
@@ -424,7 +424,7 @@ ci-unified-pr-push:
     - $BUILDAH_COMMAND build
       --cache-to $GCP_REGISTRY_PATH_CI_CACHE
       --cache-from $GCP_REGISTRY_PATH_CI_CACHE
-      --layers true
+      --layers=true
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
@@ -464,7 +464,7 @@ ci-unified:
     - $BUILDAH_COMMAND build
       --cache-to $GCP_REGISTRY_PATH_CI_CACHE
       --cache-from $GCP_REGISTRY_PATH_CI_CACHE
-      --layers true
+      --layers=true
       --format=docker
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
