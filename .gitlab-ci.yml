@@ -13,6 +13,7 @@ variables: &default-vars
   REGISTRY_NAME: docker.io
   GCP_REGISTRY_PATH: europe-docker.pkg.dev/parity-build/ci-images
   GCP_REGISTRY_PATH_CI: europe-docker.pkg.dev/parity-ci-2024/ci-images
+  GCP_REGISTRY_PATH_CI_CACHE: europe-docker.pkg.dev/parity-ci-2024/layers-cache
   GCP_REGISTRY_NAME: europe-docker.pkg.dev
   # BUILDAH_IMAGE is defined in group variables
   CI_IMAGE: $BUILDAH_IMAGE
@@ -174,6 +175,16 @@ ci-unified-pr:
   <<: *docker_build_pr
   variables:
     IMAGE_NAME: "ci-unified"
+  script:
+    - $BUILDAH_COMMAND build
+      --cache-to $GCP_REGISTRY_PATH_CI_CACHE
+      --cache-from $GCP_REGISTRY_PATH_CI_CACHE
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date +%Y%m%d)"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
   tags:
     - linux-docker
 
@@ -410,6 +421,8 @@ ci-unified-pr-push:
     - PR_INFO="${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
     - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d" -- dockerfiles/$IMAGE_NAME/Dockerfile)
     - $BUILDAH_COMMAND build
+      --cache-to $GCP_REGISTRY_PATH_CI_CACHE
+      --cache-from $GCP_REGISTRY_PATH_CI_CACHE    
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
@@ -447,12 +460,9 @@ ci-unified:
     - DISTRO_CODENAME=$(grep 'DISTRO_CODENAME' dockerfiles/$IMAGE_NAME/Dockerfile | head -n 1 | cut -d '"' -f 2)
     - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d" -- dockerfiles/$IMAGE_NAME/Dockerfile)
     - $BUILDAH_COMMAND build
+      --cache-to $GCP_REGISTRY_PATH_CI_CACHE
+      --cache-from $GCP_REGISTRY_PATH_CI_CACHE    
       --format=docker
-      --build-arg VCS_REF="$CI_COMMIT_SHA"
-      --build-arg BUILD_DATE="$(date +%Y%m%d)"
-      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
-      --build-arg RUST_STABLE_VERSION="$RUST_STABLE_VERSION"
-      --build-arg RUST_NIGHTLY_VERSION="$RUST_NIGHTLY_VERSION"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
