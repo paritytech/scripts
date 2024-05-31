@@ -2,7 +2,7 @@ FROM docker.io/library/debian:bullseye-20230522-slim
 
 
 ### meta ###
-
+# Static vars, dynamic vars can be found in the build-args file. Variables were moved for caching.
 ENV RESTIC_VERSION="0.16.1" \
     LLVM_VERSION="15" \
     MINIO_VERSION="2023-04-06T16-51-10Z" \
