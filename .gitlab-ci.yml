@@ -428,7 +428,7 @@ ci-unified-pr-push:
     - export $(cut -d= -f1 -s dockerfiles/$IMAGE_NAME/build-args)  
     #
     - PR_INFO="${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
-    - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d:%H%M" -- dockerfiles/$IMAGE_NAME/*)
+    - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d%H%M" -- dockerfiles/$IMAGE_NAME/*)
     - echo "$GCP_REGISTRY_KEY_CI_CACHE" |
       buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH_CI_CACHE}     
     - $BUILDAH_COMMAND build
@@ -472,7 +472,7 @@ ci-unified:
     - source dockerfiles/$IMAGE_NAME/build-args
     - export $(cut -d= -f1 -s dockerfiles/$IMAGE_NAME/build-args)
     #
-    - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d:%H%M" -- dockerfiles/$IMAGE_NAME/*)
+    - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d%H%M" -- dockerfiles/$IMAGE_NAME/*)
     - echo "$GCP_REGISTRY_KEY_CI_CACHE" |
       buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH_CI_CACHE}    
     - $BUILDAH_COMMAND build
