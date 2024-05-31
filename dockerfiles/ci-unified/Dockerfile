@@ -3,14 +3,7 @@ FROM docker.io/library/debian:bullseye-20230522-slim
 
 ### meta ###
 
-ENV RUST_STABLE_VERSION="1.77.0" \
-    RUST_NIGHTLY_VERSION="2024-04-10" \
-    FORKLIFT_VERSION="0.12.6" \
-    CODECOV_UPLOADER_VERSION="v0.7.3" \
-    CODECOV_CLI_VERSION="v0.6.0"
-
-ENV DISTRO_CODENAME="bullseye" \
-    RESTIC_VERSION="0.16.1" \
+ENV RESTIC_VERSION="0.16.1" \
     LLVM_VERSION="15" \
     MINIO_VERSION="2023-04-06T16-51-10Z" \
     RUSTC_RV32E_TOOLCHAIN_TAG="v1.1.0" \
@@ -52,6 +45,8 @@ RUN set -eux; \
     bzip2 xz-utils zstd unzip gnupg protobuf-compiler
 
 # base | add llvm repo, clang and dependencies
+ARG DISTRO_CODENAME="bullseye"
+
 RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc && \
     echo "deb http://apt.llvm.org/${DISTRO_CODENAME}/ llvm-toolchain-${DISTRO_CODENAME}-${LLVM_VERSION} main" >> /etc/apt/sources.list.d/llvm-toochain-${DISTRO_CODENAME}-${LLVM_VERSION}.list; \
     echo "deb-src http://apt.llvm.org/${DISTRO_CODENAME}/ llvm-toolchain-${DISTRO_CODENAME}-${LLVM_VERSION} main" >> /etc/apt/sources.list.d/llvm-toochain-${DISTRO_CODENAME}-${LLVM_VERSION}.list; \
@@ -88,6 +83,7 @@ RUN pip install yq
 
 ### generic ci ####
 
+ARG RUST_STABLE_VERSION="1.77.0"
 
 # generic ci | install stable rust
 RUN rustup toolchain install "${RUST_STABLE_VERSION}" --profile minimal && \
@@ -98,6 +94,8 @@ RUN ln -s "/usr/local/rustup/toolchains/${RUST_STABLE_VERSION}-x86_64-unknown-li
 
 # generic ci | install additional rustup components for the ci tests
 RUN rustup component add rust-src rustfmt clippy
+
+ARG RUST_NIGHTLY_VERSION="2024-04-10"
 
 # generic ci | install specific rust nightly, default is stable, use minimum components
 RUN rustup toolchain install "nightly-${RUST_NIGHTLY_VERSION}" --profile minimal --component rustfmt rust-analyzer
@@ -287,6 +285,9 @@ RUN wget -q https://github.com/paritytech/rustc-rv32e-toolchain/releases/downloa
 # forklift | install forklift
 COPY ci-unified/download-forklift.sh download-forklift.sh
 RUN chmod +x download-forklift.sh
+
+ARG FORKLIFT_VERSION="0.12.4"
+
 RUN bash download-forklift.sh -v ${FORKLIFT_VERSION} -p ./forklift/
 
 
@@ -296,6 +297,8 @@ RUN bash download-forklift.sh -v ${FORKLIFT_VERSION} -p ./forklift/
 RUN curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
 
 # codecov uploader
+ARG CODECOV_UPLOADER_VERSION="v0.7.3"
+
 RUN	curl --remote-name --silent https://uploader.codecov.io/${CODECOV_UPLOADER_VERSION}/linux/codecov && \
     curl --remote-name --silent https://uploader.codecov.io/${CODECOV_UPLOADER_VERSION}/linux/codecov.SHA256SUM && \
     curl --remote-name --silent https://uploader.codecov.io/${CODECOV_UPLOADER_VERSION}/linux/codecov.SHA256SUM.sig && \
@@ -306,6 +309,8 @@ RUN	curl --remote-name --silent https://uploader.codecov.io/${CODECOV_UPLOADER_V
     rm -f codecov.SHA256SUM codecov.SHA256SUM.sig
 
 #codecov-cli
+ARG CODECOV_CLI_VERSION="v0.6.0"
+
 RUN curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov && \
     curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov.SHA256SUM && \
     curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov.SHA256SUM.sig && \
