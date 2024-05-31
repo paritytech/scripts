@@ -46,7 +46,7 @@ RUN set -eux; \
 
 # base | add llvm repo, clang and dependencies
 ARG DISTRO_CODENAME="bullseye"
-
+RUN echo ${DISTRO_CODENAME}
 RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc && \
     echo "deb http://apt.llvm.org/${DISTRO_CODENAME}/ llvm-toolchain-${DISTRO_CODENAME}-${LLVM_VERSION} main" >> /etc/apt/sources.list.d/llvm-toochain-${DISTRO_CODENAME}-${LLVM_VERSION}.list; \
     echo "deb-src http://apt.llvm.org/${DISTRO_CODENAME}/ llvm-toolchain-${DISTRO_CODENAME}-${LLVM_VERSION} main" >> /etc/apt/sources.list.d/llvm-toochain-${DISTRO_CODENAME}-${LLVM_VERSION}.list; \
