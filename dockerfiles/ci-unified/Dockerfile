@@ -2,17 +2,12 @@ FROM docker.io/library/debian:bullseye-20230522-slim
 
 
 ### meta ###
-
-ARG DISTRO_CODENAME="bullseye"
-ARG RESTIC_VERSION="0.16.1"
-ARG RUST_STABLE_VERSION="1.77.0"
-ARG RUST_NIGHTLY_VERSION="2024-04-10"
-ARG LLVM_VERSION="15"
-ARG FORKLIFT_VERSION="latest"
-ARG MINIO_VERSION="2023-04-06T16-51-10Z"
-ARG RUSTC_RV32E_TOOLCHAIN_TAG="v1.1.0"
-ARG RUSTC_RV32E_TOOLCHAIN_VERSION="nightly-2024-01-05"
-
+# Static vars, dynamic vars can be found in the build-args file. Variables were moved for caching.
+ENV RESTIC_VERSION="0.16.1" \
+    LLVM_VERSION="15" \
+    MINIO_VERSION="2023-04-06T16-51-10Z" \
+    RUSTC_RV32E_TOOLCHAIN_TAG="v1.1.0" \
+    RUSTC_RV32E_TOOLCHAIN_VERSION="nightly-2024-01-05"
 
 WORKDIR /builds
 
@@ -50,6 +45,8 @@ RUN set -eux; \
     bzip2 xz-utils zstd unzip gnupg protobuf-compiler
 
 # base | add llvm repo, clang and dependencies
+ARG DISTRO_CODENAME="bullseye"
+RUN echo ${DISTRO_CODENAME} ${LLVM_VERSION}
 RUN wget -qO- https://apt.llvm.org/llvm-snapshot.gpg.key | tee /etc/apt/trusted.gpg.d/apt.llvm.org.asc && \
     echo "deb http://apt.llvm.org/${DISTRO_CODENAME}/ llvm-toolchain-${DISTRO_CODENAME}-${LLVM_VERSION} main" >> /etc/apt/sources.list.d/llvm-toochain-${DISTRO_CODENAME}-${LLVM_VERSION}.list; \
     echo "deb-src http://apt.llvm.org/${DISTRO_CODENAME}/ llvm-toolchain-${DISTRO_CODENAME}-${LLVM_VERSION} main" >> /etc/apt/sources.list.d/llvm-toochain-${DISTRO_CODENAME}-${LLVM_VERSION}.list; \
@@ -86,6 +83,7 @@ RUN pip install yq
 
 ### generic ci ####
 
+ARG RUST_STABLE_VERSION="1.77.0"
 
 # generic ci | install stable rust
 RUN rustup toolchain install "${RUST_STABLE_VERSION}" --profile minimal && \
@@ -96,6 +94,8 @@ RUN ln -s "/usr/local/rustup/toolchains/${RUST_STABLE_VERSION}-x86_64-unknown-li
 
 # generic ci | install additional rustup components for the ci tests
 RUN rustup component add rust-src rustfmt clippy
+
+ARG RUST_NIGHTLY_VERSION="2024-04-10"
 
 # generic ci | install specific rust nightly, default is stable, use minimum components
 RUN rustup toolchain install "nightly-${RUST_NIGHTLY_VERSION}" --profile minimal --component rustfmt rust-analyzer
@@ -285,6 +285,9 @@ RUN wget -q https://github.com/paritytech/rustc-rv32e-toolchain/releases/downloa
 # forklift | install forklift
 COPY ci-unified/download-forklift.sh download-forklift.sh
 RUN chmod +x download-forklift.sh
+
+ARG FORKLIFT_VERSION="0.12.4"
+
 RUN bash download-forklift.sh -v ${FORKLIFT_VERSION} -p ./forklift/
 
 
@@ -294,9 +297,11 @@ RUN bash download-forklift.sh -v ${FORKLIFT_VERSION} -p ./forklift/
 RUN curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import
 
 # codecov uploader
-RUN	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov && \
-    curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM && \
-    curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
+ARG CODECOV_UPLOADER_VERSION="v0.7.3"
+
+RUN	curl --remote-name --silent https://uploader.codecov.io/${CODECOV_UPLOADER_VERSION}/linux/codecov && \
+    curl --remote-name --silent https://uploader.codecov.io/${CODECOV_UPLOADER_VERSION}/linux/codecov.SHA256SUM && \
+    curl --remote-name --silent https://uploader.codecov.io/${CODECOV_UPLOADER_VERSION}/linux/codecov.SHA256SUM.sig && \
     gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \
     shasum --algorithm 256 --check codecov.SHA256SUM && \
     chmod +x codecov && \
@@ -304,9 +309,11 @@ RUN	curl --remote-name --silent https://uploader.codecov.io/latest/linux/codecov
     rm -f codecov.SHA256SUM codecov.SHA256SUM.sig
 
 #codecov-cli
-RUN curl -Os https://cli.codecov.io/latest/linux/codecov && \
-    curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM && \
-    curl -Os https://cli.codecov.io/latest/linux/codecov.SHA256SUM.sig && \
+ARG CODECOV_CLI_VERSION="v0.6.0"
+
+RUN curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov && \
+    curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov.SHA256SUM && \
+    curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov.SHA256SUM.sig && \
     gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \ 
     shasum -a 256 -c codecov.SHA256SUM && \
     chmod +x codecov && \

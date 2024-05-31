@@ -13,6 +13,7 @@ variables: &default-vars
   REGISTRY_NAME: docker.io
   GCP_REGISTRY_PATH: europe-docker.pkg.dev/parity-build/ci-images
   GCP_REGISTRY_PATH_CI: europe-docker.pkg.dev/parity-ci-2024/ci-images
+  GCP_REGISTRY_PATH_CI_CACHE: europe-docker.pkg.dev/parity-ci-2024/layers-cache
   GCP_REGISTRY_NAME: europe-docker.pkg.dev
   # BUILDAH_IMAGE is defined in group variables
   CI_IMAGE: $BUILDAH_IMAGE
@@ -174,6 +175,23 @@ ci-unified-pr:
   <<: *docker_build_pr
   variables:
     IMAGE_NAME: "ci-unified"
+  script:
+    - source dockerfiles/$IMAGE_NAME/build-args
+    - export $(cut -d= -f1 -s dockerfiles/$IMAGE_NAME/build-args)  
+    - echo "$GCP_REGISTRY_KEY_CI_CACHE" |
+      buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH_CI_CACHE}     
+    - $BUILDAH_COMMAND build
+      --cache-to $GCP_REGISTRY_PATH_CI_CACHE/cache
+      --cache-from $GCP_REGISTRY_PATH_CI_CACHE/cache     
+      --layers=true
+      --format=docker
+      --build-arg VCS_REF="$CI_COMMIT_SHA"
+      --build-arg BUILD_DATE="$(date +%Y%m%d)"
+      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
+      --build-arg-file dockerfiles/$IMAGE_NAME/build-args      
+      --tag "$REGISTRY_PATH/$IMAGE_NAME:staging"
+      --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+    - buildah logout "${GCP_REGISTRY_NAME}"      
   tags:
     - linux-docker
 
@@ -406,24 +424,31 @@ ci-unified-pr-push:
   before_script:
     - dnf install -y git
   script:
-    - DISTRO_CODENAME=$(grep 'DISTRO_CODENAME' dockerfiles/$IMAGE_NAME/Dockerfile | head -n 1 | cut -d '"' -f 2)
+    - source dockerfiles/$IMAGE_NAME/build-args
+    - export $(cut -d= -f1 -s dockerfiles/$IMAGE_NAME/build-args)  
+    #
     - PR_INFO="${CI_COMMIT_REF_NAME}-${CI_COMMIT_SHORT_SHA}"
-    - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d" -- dockerfiles/$IMAGE_NAME/Dockerfile)
+    - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d:%H%M" -- dockerfiles/$IMAGE_NAME/*)
+    - echo "$GCP_REGISTRY_KEY_CI_CACHE" |
+      buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH_CI_CACHE}     
     - $BUILDAH_COMMAND build
+      --cache-to $GCP_REGISTRY_PATH_CI_CACHE/cache
+      --cache-from $GCP_REGISTRY_PATH_CI_CACHE/cache
+      --layers=true
       --format=docker
       --build-arg VCS_REF="$CI_COMMIT_SHA"
       --build-arg BUILD_DATE="$(date +%Y%m%d)"
       --build-arg REGISTRY_PATH="$REGISTRY_PATH"
-      --build-arg RUST_STABLE_VERSION="$RUST_STABLE_VERSION"
-      --build-arg RUST_NIGHTLY_VERSION="$RUST_NIGHTLY_VERSION"
+      --build-arg-file dockerfiles/$IMAGE_NAME/build-args
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$PR_INFO-$DISTRO_CODENAME-$RUST_STABLE_VERSION"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$PR_INFO-$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$PR_INFO-$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$PR_INFO-$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION-v$DATESTAMP"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+    - buildah logout "${GCP_REGISTRY_NAME}"       
     - $BUILDAH_COMMAND info
     - echo "$PARITYPR_PASS" |
-      buildah login --username "$PARITYPR_USER" --password-stdin "$REGISTRY_NAME"
+      buildah login --username "$PARITYPR_USER" --password-stdin "$REGISTRY_NAME"        
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$PR_INFO-$DISTRO_CODENAME-$RUST_STABLE_VERSION"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$PR_INFO-$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
     - $BUILDAH_COMMAND push --format=v2s2 "$REGISTRY_PATH/$IMAGE_NAME:$PR_INFO-$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
@@ -444,15 +469,18 @@ ci-unified:
   before_script:
     - dnf install -y git
   script:
-    - DISTRO_CODENAME=$(grep 'DISTRO_CODENAME' dockerfiles/$IMAGE_NAME/Dockerfile | head -n 1 | cut -d '"' -f 2)
-    - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d" -- dockerfiles/$IMAGE_NAME/Dockerfile)
+    - source dockerfiles/$IMAGE_NAME/build-args
+    - export $(cut -d= -f1 -s dockerfiles/$IMAGE_NAME/build-args)
+    #
+    - DATESTAMP=$(git log -1 --pretty=format:"%ad" --date=format:"%Y%m%d:%H%M" -- dockerfiles/$IMAGE_NAME/*)
+    - echo "$GCP_REGISTRY_KEY_CI_CACHE" |
+      buildah login -u _json_key_base64 --password-stdin https://${GCP_REGISTRY_PATH_CI_CACHE}    
     - $BUILDAH_COMMAND build
+      --cache-to $GCP_REGISTRY_PATH_CI_CACHE/cache
+      --cache-from $GCP_REGISTRY_PATH_CI_CACHE/cache    
+      --layers=true
       --format=docker
-      --build-arg VCS_REF="$CI_COMMIT_SHA"
-      --build-arg BUILD_DATE="$(date +%Y%m%d)"
-      --build-arg REGISTRY_PATH="$REGISTRY_PATH"
-      --build-arg RUST_STABLE_VERSION="$RUST_STABLE_VERSION"
-      --build-arg RUST_NIGHTLY_VERSION="$RUST_NIGHTLY_VERSION"
+      --build-arg-file dockerfiles/$IMAGE_NAME/build-args      
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-v$DATESTAMP"
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION"
@@ -469,6 +497,7 @@ ci-unified:
       --tag "$GCP_REGISTRY_PATH_CI/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION-$RUST_NIGHTLY_VERSION-v$DATESTAMP"
       --tag "$GCP_REGISTRY_PATH_CI/$IMAGE_NAME:latest"
       --file "dockerfiles/$IMAGE_NAME/Dockerfile" dockerfiles
+    - buildah logout "${GCP_REGISTRY_NAME}"      
     - $BUILDAH_COMMAND info
     - echo "Pushing to $REGISTRY_NAME"
     - echo "$Docker_Hub_Pass_Parity" |
