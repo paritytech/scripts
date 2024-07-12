@@ -17,7 +17,7 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
 	chmod +x kubectl && \
 	mv kubectl /usr/local/bin/ && \
 	apt-get update && apt-get --no-install-recommends install -y gettext python3-setuptools && \
-	pip install poetry && \
+	pip install poetry==1.8.3 && \
 	# add non-root user
 	groupadd -g 10000 nonroot && \
 	useradd -u 10000 -g 10000 -s /bin/bash -m nonroot
