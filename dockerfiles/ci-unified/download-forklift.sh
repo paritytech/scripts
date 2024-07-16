@@ -18,10 +18,6 @@ while getopts "p:v:" flag; do
   esac
 done
 
-
-echo "Downloading forklift $VERSION to $DL_PATH"
-
-
 RELEASE_URL="https://api.github.com/repos/paritytech/forklift/releases/tags/$VERSION"
 
 if [ $VERSION="latest" ]
@@ -29,6 +25,7 @@ if [ $VERSION="latest" ]
   RELEASE_URL="https://api.github.com/repos/paritytech/forklift/releases/latest"
 fi
 
+echo "Downloading forklift $VERSION to $DL_PATH from $RELEASE_URL"
 
 RELEASE=`curl -s $RELEASE_URL`
 ASSET=`jq '.assets[] | select(.name | endswith("linux_amd64"))' <<< "$RELEASE"`
@@ -37,7 +34,7 @@ ASSET_NAME=`jq -r '.name' <<< "$ASSET"`
 ASSET_URL=`jq -r '.browser_download_url' <<< "$ASSET"`
 
 mkdir -p $DL_PATH
-curl -s -o $DL_PATH/$ASSET_NAME -L $ASSET_URL
+curl -L -s -o $DL_PATH/$ASSET_NAME -L $ASSET_URL
 cp -r $DL_PATH/$ASSET_NAME /usr/local/bin/forklift
 
 chmod 755 /usr/local/bin/forklift
