@@ -287,6 +287,7 @@ COPY ci-unified/download-forklift.sh download-forklift.sh
 RUN chmod +x download-forklift.sh
 
 ARG FORKLIFT_VERSION="0.13.2"
+ENV FORKLIFT_VERSION="${FORKLIFT_VERSION}"
 
 RUN bash download-forklift.sh -v ${FORKLIFT_VERSION} -p ./forklift/
 
