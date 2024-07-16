@@ -20,8 +20,7 @@ done
 
 RELEASE_URL="https://api.github.com/repos/paritytech/forklift/releases/tags/$VERSION"
 
-if [ $VERSION="latest" ]
- then
+if [[ "latest" == $VERSION ]]; then
   RELEASE_URL="https://api.github.com/repos/paritytech/forklift/releases/latest"
 fi
 
