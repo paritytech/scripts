@@ -479,6 +479,7 @@ ci-unified:
       --cache-to $GCP_REGISTRY_PATH_CI_CACHE/cache
       --cache-from $GCP_REGISTRY_PATH_CI_CACHE/cache    
       --layers=true
+      --squash
       --format=docker
       --build-arg-file dockerfiles/$IMAGE_NAME/build-args      
       --tag "$REGISTRY_PATH/$IMAGE_NAME:$DISTRO_CODENAME-$RUST_STABLE_VERSION"
