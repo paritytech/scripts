@@ -83,7 +83,8 @@ RUN pip install yq
 
 ### generic ci ####
 
-ARG RUST_STABLE_VERSION="1.77.0"
+# Please update version in the build-args file
+ARG RUST_STABLE_VERSION="1.79.0"
 
 # generic ci | install stable rust
 RUN rustup toolchain install "${RUST_STABLE_VERSION}" --profile minimal && \
