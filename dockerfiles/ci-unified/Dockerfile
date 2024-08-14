@@ -133,6 +133,9 @@ RUN cargo install zepter --locked --version 0.15.0
 # generic ci | install wasm-gc. useful for stripping slimming down wasm binaries
 RUN cargo install wasm-gc
 
+# generic ci | install cargo-edit. Manipilation of Cargo.tomls (like bumping versions) in CI
+RUN cargo install cargo-edit
+
 # generic ci | install cargo hfuzz and honggfuzz dependencies
 RUN apt-get -y update && \
     apt-get install -y binutils-dev libunwind-dev libblocksruntime-dev && \
@@ -314,7 +317,7 @@ ARG CODECOV_CLI_VERSION="v0.6.0"
 RUN curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov && \
     curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov.SHA256SUM && \
     curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov.SHA256SUM.sig && \
-    gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \ 
+    gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \
     shasum -a 256 -c codecov.SHA256SUM && \
     chmod +x codecov && \
     mv codecov /usr/local/bin/codecovcli && \
