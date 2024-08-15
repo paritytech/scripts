@@ -240,13 +240,6 @@ RUN	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/late
     chmod +x geckodriver && \
     mv geckodriver /usr/local/bin/
 
-# !!! TODO: check substrate-contracts-node in contracts-ci
-# ink-waterfall-ci
-# `substrate-contracts-node` is a Substrate chain with smart contract functionality.
-# `--locked` ensures the project's `Cargo.lock` is used.
-RUN	cargo install --git https://github.com/paritytech/substrate-contracts-node.git \
-    --locked --branch main --force
-
 # ink-waterfall-ci
 # We additionally install the `substrate-contracts-node` as `substrate-contracts-rand-extension`.
 # This installation though is a modified `substrate-contracts-node`, so that ink!'s
