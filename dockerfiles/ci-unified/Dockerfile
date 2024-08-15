@@ -83,6 +83,11 @@ RUN pip install yq
 
 ### generic ci ####
 
+ARG GH_TOOL_VERSION="2.54.0"
+
+RUN wget "https://github.com/cli/cli/releases/download/v${GH_TOOL_VERSION}/gh_${GH_TOOL_VERSION}_linux_amd64.deb" && \
+    dpkg -i "gh_${GH_TOOL_VERSION}_linux_amd64.deb"
+
 ARG RUST_STABLE_VERSION="1.77.0"
 
 # generic ci | install stable rust
@@ -132,6 +137,9 @@ RUN cargo install zepter --locked --version 0.15.0
 
 # generic ci | install wasm-gc. useful for stripping slimming down wasm binaries
 RUN cargo install wasm-gc
+
+# generic ci | install cargo-edit. Manipilation of Cargo.tomls (like bumping versions) in CI
+RUN cargo install cargo-edit
 
 # generic ci | install cargo hfuzz and honggfuzz dependencies
 RUN apt-get -y update && \
@@ -237,13 +245,6 @@ RUN	curl --silent https://api.github.com/repos/mozilla/geckodriver/releases/late
     chmod +x geckodriver && \
     mv geckodriver /usr/local/bin/
 
-# !!! TODO: check substrate-contracts-node in contracts-ci
-# ink-waterfall-ci
-# `substrate-contracts-node` is a Substrate chain with smart contract functionality.
-# `--locked` ensures the project's `Cargo.lock` is used.
-RUN	cargo install --git https://github.com/paritytech/substrate-contracts-node.git \
-    --locked --branch main --force
-
 # ink-waterfall-ci
 # We additionally install the `substrate-contracts-node` as `substrate-contracts-rand-extension`.
 # This installation though is a modified `substrate-contracts-node`, so that ink!'s
@@ -314,7 +315,7 @@ ARG CODECOV_CLI_VERSION="v0.6.0"
 RUN curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov && \
     curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov.SHA256SUM && \
     curl -Os https://cli.codecov.io/${CODECOV_CLI_VERSION}/linux/codecov.SHA256SUM.sig && \
-    gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \ 
+    gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM && \
     shasum -a 256 -c codecov.SHA256SUM && \
     chmod +x codecov && \
     mv codecov /usr/local/bin/codecovcli && \
