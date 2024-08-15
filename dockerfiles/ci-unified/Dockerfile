@@ -83,6 +83,11 @@ RUN pip install yq
 
 ### generic ci ####
 
+ARG GH_TOOL_VERSION="2.54.0"
+
+RUN wget "https://github.com/cli/cli/releases/download/v${GH_TOOL_VERSION}/gh_${GH_TOOL_VERSION}_linux_amd64.deb" && \
+    dpkg -i "gh_${GH_TOOL_VERSION}_linux_amd64.deb"
+
 ARG RUST_STABLE_VERSION="1.77.0"
 
 # generic ci | install stable rust
