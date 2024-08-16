@@ -144,7 +144,7 @@ RUN cargo install cargo-edit
 # generic ci | install cargo hfuzz and honggfuzz dependencies
 RUN apt-get -y update && \
     apt-get install -y binutils-dev libunwind-dev libblocksruntime-dev && \
-    cargo install honggfuzz@0.5.55
+    cargo install honggfuzz@0.5.56
 
 
 ### contracts ci ####
