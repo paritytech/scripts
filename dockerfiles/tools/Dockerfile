@@ -34,7 +34,8 @@ RUN set -x \
     && useradd -u 1000 -g 1000 -s /bin/bash -m nonroot \
     && git config --global --add safe.directory '*' \
     && cp /root/.gitconfig /home/nonroot/.gitconfig \
-    && chown nonroot:nonroot /home/nonroot/.gitconfig
+    && chown nonroot:nonroot /home/nonroot/.gitconfig \
+    && mkdir /__w && chown nonroot:nonroot /__w
 
 USER nonroot:nonroot
 CMD ["/bin/bash"]
