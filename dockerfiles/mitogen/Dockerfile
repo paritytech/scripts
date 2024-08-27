@@ -36,7 +36,7 @@ RUN  curl -fSL -o /usr/local/bin/subkey 'https://releases.parity.io/substrate/x8
 
 ENV ANSIBLE_STRATEGY=mitogen_linear
 ENV ANSIBLE_STRATEGY_PLUGINS=/opt/mitogen/ansible_mitogen/plugins/strategy
-RUN  cd /opt && git clone --depth 1 --branch v0.3.3 https://github.com/mitogen-hq/mitogen.git
+RUN  cd /opt && git clone --depth 1 --branch v0.3.9 https://github.com/mitogen-hq/mitogen.git
 
 ARG WORKDIR=/work
 RUN groupadd --gid 10001 nonroot && \
