@@ -4,8 +4,8 @@ FROM docker.io/paritytech/mitogen:latest
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
-ARG PACKER_VERSION
-ARG VAULT_VERSION
+ARG PACKER_VERSION=1.8.7
+ARG VAULT_VERSION=1.17.3
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
         io.parity.image.vendor="Parity Technologies" \
