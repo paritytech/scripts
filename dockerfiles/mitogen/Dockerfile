@@ -19,7 +19,7 @@ dockerfiles/mitogen/README.md" \
 
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    sshpass ssh-client rsync tini curl git ruby \
+    sshpass ssh-client rsync tini curl git ruby unzip \
     && rm -rf /var/lib/apt/lists/*
 
 RUN	curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" \
