@@ -4,6 +4,7 @@ FROM docker.io/library/python:3.9-slim-buster
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
+ARG VAULT_VERSION=1.17.3
 
 LABEL io.parity.image.authors="devops-team@parity.io" \
         io.parity.image.vendor="Parity Technologies" \
@@ -18,8 +19,14 @@ dockerfiles/mitogen/README.md" \
 
 RUN apt-get update -y && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    sshpass ssh-client rsync tini curl git ruby \
+    sshpass ssh-client rsync tini curl git ruby unzip \
     && rm -rf /var/lib/apt/lists/*
+
+RUN	curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" \
+		-o vault.zip; \
+	unzip vault.zip	-d /usr/local/bin/vault; \
+	rm vault.zip; \
+	chmod +x /usr/local/bin/vault
 
 RUN pip install --no-cache-dir pip --upgrade
 RUN pip install --no-cache-dir ansible==5.10 google-auth requests jmespath dnspython
@@ -29,7 +36,7 @@ RUN  curl -fSL -o /usr/local/bin/subkey 'https://releases.parity.io/substrate/x8
 
 ENV ANSIBLE_STRATEGY=mitogen_linear
 ENV ANSIBLE_STRATEGY_PLUGINS=/opt/mitogen/ansible_mitogen/plugins/strategy
-RUN  cd /opt && git clone --depth 1 --branch v0.3.3 https://github.com/mitogen-hq/mitogen.git
+RUN  cd /opt && git clone --depth 1 --branch v0.3.9 https://github.com/mitogen-hq/mitogen.git
 
 ARG WORKDIR=/work
 RUN groupadd --gid 10001 nonroot && \

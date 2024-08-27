@@ -754,7 +754,7 @@ kubetools-helm:
     # https://github.com/variantdev/vals/releases
     VALS_VERSION: "0.33.0"
     # https://releases.hashicorp.com/vault/
-    VAULT_VERSION: "1.15.4"
+    VAULT_VERSION: "1.17.3"
     # https://github.com/kubernetes-sigs/kustomize/releases
     KUSTOMIZE_VERSION: "4.5.7"
   script:
@@ -831,7 +831,7 @@ python:
     <<: *default-vars
     PYTHON_VERSION: "3.12"
     # https://releases.hashicorp.com/vault/
-    VAULT_VERSION: "1.15.4"
+    VAULT_VERSION: "1.17.3"
   script:
     - |
       cat <<-EOT
@@ -862,10 +862,6 @@ terraform:
   <<: *docker_build
   variables:
     <<: *default-vars
-    # https://releases.hashicorp.com/terraform/
-    TERRAFORM_VERSION: "1.5.6"
-    # https://releases.hashicorp.com/vault/
-    VAULT_VERSION: "1.15.4"
   script:
     - |
       cat <<-EOT
@@ -898,10 +894,6 @@ sops:
   <<: *docker_build
   variables:
     <<: *default-vars
-    # https://github.com/mozilla/sops/releases/
-    SOPS_VERSION: "3.7.3"
-    # https://releases.hashicorp.com/vault/
-    VAULT_VERSION: "1.11.2"
   script:
     - |
       cat <<-EOT
@@ -934,10 +926,6 @@ packer:
   <<: *docker_build
   variables:
     <<: *default-vars
-    # https://releases.hashicorp.com/packer/
-    PACKER_VERSION: "1.8.7"
-    # https://releases.hashicorp.com/vault/
-    VAULT_VERSION: "1.13.2"
   script:
     - export IMAGE_DATE_TAG="$CI_COMMIT_SHORT_SHA-$(date +%Y%m%d)"
     - |
