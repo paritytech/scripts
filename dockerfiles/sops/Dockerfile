@@ -3,8 +3,8 @@ FROM docker.io/library/alpine:latest
 ARG VCS_REF=master
 ARG BUILD_DATE=""
 ARG REGISTRY_PATH=docker.io/paritytech
-ARG SOPS_VERSION=3.9.0
-ARG VAULT_VERSION=1.17.3
+ARG SOPS_VERSION
+ARG VAULT_VERSION
 
 # metadata
 LABEL io.parity.image.authors="devops-team@parity.io" \

@@ -894,11 +894,13 @@ sops:
   <<: *docker_build
   variables:
     <<: *default-vars
+    SOPS_VERSION: "3.9.0"
+    VAULT_VERSION: "1.17.3"
   script:
     - |
       cat <<-EOT
       |
-      | # build of terraform image
+      | # build of sops image
       |
       | SOPS_VERSION      = $SOPS_VERSION
       | VAULT_VERSION     = $VAULT_VERSION
