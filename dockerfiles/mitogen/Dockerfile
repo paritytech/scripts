@@ -1,4 +1,4 @@
-FROM docker.io/library/python:3.9-slim-buster
+FROM docker.io/library/python:3.12-slim
 
 # metadata
 ARG VCS_REF=master
@@ -22,17 +22,14 @@ RUN apt-get update -y && \
     sshpass ssh-client rsync tini curl git ruby unzip \
     && rm -rf /var/lib/apt/lists/*
 
-RUN	curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" \
-		-o vault.zip; \
-	unzip vault.zip	-d /usr/local/bin/vault; \
-	rm vault.zip; \
-	chmod +x /usr/local/bin/vault
-
 RUN pip install --no-cache-dir pip --upgrade
 RUN pip install --no-cache-dir ansible==5.10 google-auth requests jmespath dnspython
 
-RUN  curl -fSL -o /usr/local/bin/subkey 'https://releases.parity.io/substrate/x86_64-debian%3Astretch/v3.0.0/subkey/subkey' \
-     && chmod +x /usr/local/bin/subkey
+RUN curl -fSL -o /usr/local/bin/subkey 'https://releases.parity.io/substrate/x86_64-debian%3Astretch/v3.0.0/subkey/subkey' \
+    && chmod +x /usr/local/bin/subkey \
+    && curl "https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip" -o vault.zip \
+    && unzip vault.zip -d /usr/local/bin vault \
+    && chmod +x /usr/local/bin/vault
 
 ENV ANSIBLE_STRATEGY=mitogen_linear
 ENV ANSIBLE_STRATEGY_PLUGINS=/opt/mitogen/ansible_mitogen/plugins/strategy
