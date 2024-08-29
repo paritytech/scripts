@@ -1,4 +1,4 @@
-FROM docker.io/library/python:3.9-slim-buster
+FROM docker.io/library/python:3.12-slim
 
 # metadata
 ARG VCS_REF=master
