@@ -88,7 +88,7 @@ ARG GH_TOOL_VERSION="2.54.0"
 RUN wget "https://github.com/cli/cli/releases/download/v${GH_TOOL_VERSION}/gh_${GH_TOOL_VERSION}_linux_amd64.deb" && \
     dpkg -i "gh_${GH_TOOL_VERSION}_linux_amd64.deb"
 
-ARG RUST_STABLE_VERSION="1.77.0"
+ARG RUST_STABLE_VERSION="1.81.0"
 
 # generic ci | install stable rust
 RUN rustup toolchain install "${RUST_STABLE_VERSION}" --profile minimal && \
@@ -100,7 +100,7 @@ RUN ln -s "/usr/local/rustup/toolchains/${RUST_STABLE_VERSION}-x86_64-unknown-li
 # generic ci | install additional rustup components for the ci tests
 RUN rustup component add rust-src rustfmt clippy
 
-ARG RUST_NIGHTLY_VERSION="2024-04-10"
+ARG RUST_NIGHTLY_VERSION="2024-09-11"
 
 # generic ci | install specific rust nightly, default is stable, use minimum components
 RUN rustup toolchain install "nightly-${RUST_NIGHTLY_VERSION}" --profile minimal --component rustfmt rust-analyzer
