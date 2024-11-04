@@ -1,3 +1,6 @@
+> [!WARNING]
+> This repo is deprecated, Dockerfiles are now located at https://github.com/paritytech/dockerfiles
+
 # Parity Scripts & Dockerfiles
 
 Nowadays, this repo is mostly the open collection of the company's Dockerfiles that are used by Parity in different ways. If you work on a Polkadot SDK-based project, you could be interested in our CI image (`ci-unified`) in the `dockerfiles` directory.
